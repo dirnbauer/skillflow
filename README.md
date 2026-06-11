@@ -11,6 +11,12 @@ the workspace review workflow.
 
 - **Skill records** (`tx_skillflow_skill`): editable in the backend with the SKILL.md structure — name, identifier,
   description, markdown body (code editor), `allowed-tools`, extra frontmatter as JSON.
+- **Supporting files** (`tx_skillflow_file`): everything next to the SKILL.md (`references/`, `scripts/`, templates)
+  is imported as attachment records (text files up to 256 KB; binaries are skipped and counted) and editable under
+  the skill's *Attachments* tab. Re-sync updates them in place and soft-deletes attachments whose source file
+  disappeared. At run time the CLI runner materializes the full skill folder into `var/transient/` (and auto-allows
+  `Read`) so progressive disclosure works as the skill author intended; the API runner inlines referenced files into
+  the system prompt under a size budget.
 - **Folder import**: scans a configurable project folder (default `<project>/skills/`, each subfolder containing a
   `SKILL.md`) and imports/updates skills.
 - **Repository import**: point a repository record at a GitHub/GitLab/Gitea URL (or a direct `.zip`). Sync downloads

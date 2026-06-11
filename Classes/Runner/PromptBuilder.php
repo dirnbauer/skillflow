@@ -28,6 +28,62 @@ final class PromptBuilder
         ]);
     }
 
+    /**
+     * Inlines supporting files into the system prompt (API runner).
+     * Files referenced in the skill body come first, then smaller files;
+     * the section stops at a byte budget and lists what was omitted.
+     *
+     * @param array<int, array<string, mixed>> $files
+     */
+    public function buildFilesSection(string $body, array $files, int $budget = 32768): string
+    {
+        if ($files === []) {
+            return '';
+        }
+        $normalized = [];
+        foreach ($files as $file) {
+            $path = Typed::string($file['relative_path'] ?? null);
+            $content = Typed::string($file['content'] ?? null);
+            if ($path === '' || $content === '') {
+                continue;
+            }
+            $normalized[] = [
+                'path' => $path,
+                'content' => $content,
+                'referenced' => str_contains($body, $path) || str_contains($body, basename($path)),
+            ];
+        }
+        usort($normalized, static function (array $a, array $b): int {
+            if ($a['referenced'] !== $b['referenced']) {
+                return $a['referenced'] ? -1 : 1;
+            }
+            return strlen($a['content']) <=> strlen($b['content']);
+        });
+
+        $sections = [];
+        $omitted = [];
+        $used = 0;
+        foreach ($normalized as $file) {
+            $length = strlen($file['content']);
+            if ($used + $length > $budget) {
+                $omitted[] = $file['path'];
+                continue;
+            }
+            $used += $length;
+            $sections[] = sprintf("### File: %s\n```\n%s\n```", $file['path'], $file['content']);
+        }
+        if ($sections === [] && $omitted === []) {
+            return '';
+        }
+        $result = "\n\n## Supporting files of this skill\n"
+            . "Use these files as the skill instructs; they are part of the skill, not of the reviewed content.\n\n"
+            . implode("\n\n", $sections);
+        if ($omitted !== []) {
+            $result .= "\n\n(Omitted for size: " . implode(', ', $omitted) . ')';
+        }
+        return $result;
+    }
+
     public function buildUserPrompt(string $content): string
     {
         return $content . "\n\n---\n"

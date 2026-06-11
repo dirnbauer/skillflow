@@ -34,7 +34,7 @@ final class AnthropicApiRunner implements SkillRunnerInterface
         return 'anthropic-api';
     }
 
-    public function run(array $skill, string $content): SkillRunResult
+    public function run(array $skill, string $content, array $files = []): SkillRunResult
     {
         $conf = $this->configuration();
         $envVar = trim(Typed::string($conf['apiKeyEnvVar'] ?? null)) ?: 'ANTHROPIC_API_KEY';
@@ -49,7 +49,8 @@ final class AnthropicApiRunner implements SkillRunnerInterface
         $payload = [
             'model' => trim(Typed::string($conf['model'] ?? null)) ?: 'claude-sonnet-4-6',
             'max_tokens' => max(256, Typed::int($conf['maxTokens'] ?? 2048)),
-            'system' => $this->promptBuilder->buildSystemPrompt($skill),
+            'system' => $this->promptBuilder->buildSystemPrompt($skill)
+                . $this->promptBuilder->buildFilesSection(Typed::string($skill['body'] ?? null), $files),
             'messages' => [
                 ['role' => 'user', 'content' => $this->promptBuilder->buildUserPrompt($content)],
             ],

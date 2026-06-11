@@ -119,6 +119,24 @@ final class SkillFinder
     }
 
     /**
+     * Supporting files (attachments) of a skill, ordered by path.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function findFilesForSkill(int $skillUid): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_skillflow_file');
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        return $queryBuilder
+            ->select('uid', 'relative_path', 'content', 'size')
+            ->from('tx_skillflow_file')
+            ->where($queryBuilder->expr()->eq('skill', $queryBuilder->createNamedParameter($skillUid, \Doctrine\DBAL\ParameterType::INTEGER)))
+            ->orderBy('relative_path')
+            ->executeQuery()
+            ->fetchAllAssociative();
+    }
+
+    /**
      * @return array<int, array<string, mixed>>
      */
     public function findAllRepositories(): array

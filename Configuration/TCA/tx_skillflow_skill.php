@@ -78,6 +78,21 @@ return [
                 'type' => 'json',
             ],
         ],
+        'files' => [
+            'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:skill.files',
+            'description' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:skill.files.description',
+            'config' => [
+                'type' => 'inline',
+                'foreign_table' => 'tx_skillflow_file',
+                'foreign_field' => 'skill',
+                'appearance' => [
+                    'collapseAll' => true,
+                    'expandSingle' => true,
+                    'useSortable' => false,
+                    'showPossibleLocalizationRecords' => false,
+                ],
+            ],
+        ],
         'source_type' => [
             'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:skill.source_type',
             'config' => [
@@ -133,6 +148,8 @@ return [
                     title, identifier, description, body,
                 --div--;LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:tab.options,
                     allowed_tools, metadata,
+                --div--;LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:tab.attachments,
+                    files,
                 --div--;LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:tab.source,
                     source_type, repository, relative_path, last_synced,
                 --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:access,

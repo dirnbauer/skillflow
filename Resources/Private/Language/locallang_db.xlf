@@ -29,6 +29,30 @@
       <trans-unit id="tab.skills" resname="tab.skills">
         <source>Skills</source>
       </trans-unit>
+      <trans-unit id="tab.attachments" resname="tab.attachments">
+        <source>Attachments</source>
+      </trans-unit>
+      <trans-unit id="tx_skillflow_file" resname="tx_skillflow_file">
+        <source>Skill attachment</source>
+      </trans-unit>
+      <trans-unit id="skill.files" resname="skill.files">
+        <source>Supporting files</source>
+      </trans-unit>
+      <trans-unit id="skill.files.description" resname="skill.files.description">
+        <source>References, scripts and templates that belong to this skill (everything next to the SKILL.md). Runners hand them to the model: the CLI runner materializes them on disk, the API runner inlines referenced files into the prompt.</source>
+      </trans-unit>
+      <trans-unit id="file.relative_path" resname="file.relative_path">
+        <source>Path</source>
+      </trans-unit>
+      <trans-unit id="file.relative_path.description" resname="file.relative_path.description">
+        <source>Path relative to the skill folder, e.g. references/checklist.md</source>
+      </trans-unit>
+      <trans-unit id="file.content" resname="file.content">
+        <source>Content</source>
+      </trans-unit>
+      <trans-unit id="file.size" resname="file.size">
+        <source>Size (bytes)</source>
+      </trans-unit>
       <trans-unit id="skill.title" resname="skill.title">
         <source>Name</source>
       </trans-unit>

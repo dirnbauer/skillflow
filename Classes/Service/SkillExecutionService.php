@@ -38,7 +38,8 @@ final class SkillExecutionService
             $this->environmentGuard->assertExecutionAllowed();
             $runner = $this->runnerFactory->create();
             $content = $this->contentCollector->collect($table, $recordUid, $workspaceId);
-            $result = $runner->run($skill, $content);
+            $files = $this->skillFinder->findFilesForSkill($skillUid);
+            $result = $runner->run($skill, $content, $files);
         } catch (ExecutionBlockedException $e) {
             $result = new SkillRunResult('blocked', $e->getMessage(), 'none');
             $this->logger->warning('Skill run blocked', ['skill' => $skillUid, 'reason' => $e->getMessage()]);

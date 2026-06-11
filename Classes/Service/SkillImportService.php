@@ -14,13 +14,28 @@ use Webconsulting\Skillflow\Support\Typed;
 
 /**
  * Imports skills from a local folder containing skill directories,
- * each with a SKILL.md file (Anthropic skill structure).
+ * each with a SKILL.md file (Anthropic skill structure). Supporting
+ * files next to the SKILL.md (references/, scripts/, templates, ...)
+ * are imported as attachment records (tx_skillflow_file) so the
+ * runners can hand them to the model - progressive disclosure works
+ * even though the original folder is gone after import.
  *
  * Existing skills are matched by identifier + source, updated in place
  * (the uid is kept stable) and only touched when their content changed.
  */
 final class SkillImportService
 {
+    /**
+     * Text-based supporting files imported as attachments. Binaries
+     * (images, archives, ...) are skipped and counted in the summary.
+     */
+    private const ALLOWED_FILE_EXTENSIONS = [
+        'md', 'txt', 'rst', 'py', 'sh', 'bash', 'json', 'yaml', 'yml',
+        'csv', 'xml', 'html', 'htm', 'js', 'ts', 'php', 'sql', 'css', 'twig',
+    ];
+
+    private const MAX_FILE_SIZE = 262144; // 256 KB per supporting file
+
     public function __construct(
         private readonly SkillParser $skillParser,
         private readonly ConnectionPool $connectionPool,
@@ -62,7 +77,9 @@ final class SkillImportService
             $relativePath = ltrim(substr($skillFile, strlen($realPath)), '/');
             try {
                 $parsed = $this->skillParser->parse((string)file_get_contents($skillFile), $relativePath);
-                $result->{$this->upsert($parsed, $sourceType, $repositoryUid, $relativePath)}++;
+                [$status, $skillUid] = $this->upsert($parsed, $sourceType, $repositoryUid, $relativePath);
+                $result->{$status}++;
+                $this->syncSupportingFiles($skillUid, dirname($skillFile), $result);
             } catch (\Throwable $e) {
                 $result->errors[] = $relativePath . ': ' . $e->getMessage();
             }
@@ -94,9 +111,9 @@ final class SkillImportService
     }
 
     /**
-     * @return 'created'|'updated'|'unchanged'
+     * @return array{0: 'created'|'updated'|'unchanged', 1: int} status and skill uid
      */
-    private function upsert(ParsedSkill $skill, string $sourceType, int $repositoryUid, string $relativePath): string
+    private function upsert(ParsedSkill $skill, string $sourceType, int $repositoryUid, string $relativePath): array
     {
         $connection = $this->connectionPool->getConnectionForTable('tx_skillflow_skill');
         $existing = $connection->select(
@@ -124,12 +141,13 @@ final class SkillImportService
         ];
 
         if ($existing !== false) {
+            $uid = Typed::int($existing['uid']);
             if (Typed::string($existing['content_hash']) === $skill->contentHash()) {
-                $connection->update('tx_skillflow_skill', ['last_synced' => $now], ['uid' => Typed::int($existing['uid'])]);
-                return 'unchanged';
+                $connection->update('tx_skillflow_skill', ['last_synced' => $now], ['uid' => $uid]);
+                return ['unchanged', $uid];
             }
-            $connection->update('tx_skillflow_skill', $fields, ['uid' => Typed::int($existing['uid'])]);
-            return 'updated';
+            $connection->update('tx_skillflow_skill', $fields, ['uid' => $uid]);
+            return ['updated', $uid];
         }
 
         $connection->insert('tx_skillflow_skill', $fields + [
@@ -141,6 +159,99 @@ final class SkillImportService
         ], [
             'body' => Connection::PARAM_STR,
         ]);
-        return 'created';
+        return ['created', (int)$connection->lastInsertId()];
+    }
+
+    /**
+     * Syncs the supporting files of one skill directory into
+     * tx_skillflow_file: upsert by relative path (uids stay stable),
+     * soft-delete attachments whose file disappeared from the source.
+     */
+    private function syncSupportingFiles(int $skillUid, string $skillDirectory, ImportResult $result): void
+    {
+        if ($skillUid <= 0) {
+            return;
+        }
+        $connection = $this->connectionPool->getConnectionForTable('tx_skillflow_file');
+        $existing = [];
+        $rows = $connection->select(['uid', 'relative_path', 'content_hash'], 'tx_skillflow_file', ['skill' => $skillUid, 'deleted' => 0])->fetchAllAssociative();
+        foreach ($rows as $row) {
+            $existing[Typed::string($row['relative_path'])] = $row;
+        }
+
+        $now = time();
+        $seenPaths = [];
+        foreach ($this->collectSupportingFiles($skillDirectory, $result) as $relativePath => $content) {
+            $seenPaths[$relativePath] = true;
+            $hash = sha1($content);
+            $row = $existing[$relativePath] ?? null;
+            if ($row !== null) {
+                if (Typed::string($row['content_hash']) !== $hash) {
+                    $connection->update('tx_skillflow_file', [
+                        'content' => $content,
+                        'content_hash' => $hash,
+                        'size' => strlen($content),
+                        'tstamp' => $now,
+                    ], ['uid' => Typed::int($row['uid'])]);
+                }
+            } else {
+                $connection->insert('tx_skillflow_file', [
+                    'pid' => 0,
+                    'crdate' => $now,
+                    'tstamp' => $now,
+                    'skill' => $skillUid,
+                    'relative_path' => $relativePath,
+                    'content' => $content,
+                    'content_hash' => $hash,
+                    'size' => strlen($content),
+                ], ['content' => Connection::PARAM_STR]);
+            }
+            $result->files++;
+        }
+
+        foreach ($existing as $relativePath => $row) {
+            if (!isset($seenPaths[$relativePath])) {
+                $connection->update('tx_skillflow_file', ['deleted' => 1, 'tstamp' => $now], ['uid' => Typed::int($row['uid'])]);
+            }
+        }
+    }
+
+    /**
+     * @return array<string, string> relative path => content
+     */
+    private function collectSupportingFiles(string $skillDirectory, ImportResult $result): array
+    {
+        $realDirectory = realpath($skillDirectory);
+        if ($realDirectory === false) {
+            return [];
+        }
+        $files = [];
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($realDirectory, \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS)
+        );
+        $iterator->setMaxDepth(6);
+        /** @var \SplFileInfo $file */
+        foreach ($iterator as $file) {
+            if (!$file->isFile() || $file->getFilename() === 'SKILL.md') {
+                continue;
+            }
+            $relativePath = ltrim(substr($file->getPathname(), strlen($realDirectory)), '/');
+            if (str_contains($relativePath, '..')) {
+                continue;
+            }
+            $extension = strtolower($file->getExtension());
+            if (!in_array($extension, self::ALLOWED_FILE_EXTENSIONS, true) || $file->getSize() > self::MAX_FILE_SIZE) {
+                $result->skippedFiles++;
+                continue;
+            }
+            $content = (string)file_get_contents($file->getPathname());
+            if (!mb_check_encoding($content, 'UTF-8')) {
+                $result->skippedFiles++;
+                continue;
+            }
+            $files[$relativePath] = $content;
+        }
+        ksort($files);
+        return $files;
     }
 }
