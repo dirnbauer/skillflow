@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="EXT:webcon_skills/Resources/Private/Language/locallang_db.xlf" product-name="webcon_skills">
+    <body>
+      <trans-unit id="tx_webconskills_skill" resname="tx_webconskills_skill">
+        <source>Skill</source>
+      </trans-unit>
+      <trans-unit id="tx_webconskills_repository" resname="tx_webconskills_repository">
+        <source>Skill repository</source>
+      </trans-unit>
+      <trans-unit id="tx_webconskills_run" resname="tx_webconskills_run">
+        <source>Skill run</source>
+      </trans-unit>
+      <trans-unit id="tab.general" resname="tab.general">
+        <source>General</source>
+      </trans-unit>
+      <trans-unit id="tab.options" resname="tab.options">
+        <source>Skill options</source>
+      </trans-unit>
+      <trans-unit id="tab.source" resname="tab.source">
+        <source>Source</source>
+      </trans-unit>
+      <trans-unit id="tab.credentials" resname="tab.credentials">
+        <source>Credentials</source>
+      </trans-unit>
+      <trans-unit id="tab.status" resname="tab.status">
+        <source>Status</source>
+      </trans-unit>
+      <trans-unit id="tab.skills" resname="tab.skills">
+        <source>Skills</source>
+      </trans-unit>
+      <trans-unit id="skill.title" resname="skill.title">
+        <source>Name</source>
+      </trans-unit>
+      <trans-unit id="skill.identifier" resname="skill.identifier">
+        <source>Identifier</source>
+      </trans-unit>
+      <trans-unit id="skill.identifier.description" resname="skill.identifier.description">
+        <source>Stable kebab-case identifier (matches the "name" frontmatter of the SKILL.md). Used to match skills on re-import so assignments survive updates.</source>
+      </trans-unit>
+      <trans-unit id="skill.description" resname="skill.description">
+        <source>Description</source>
+      </trans-unit>
+      <trans-unit id="skill.description.description" resname="skill.description.description">
+        <source>What the skill does and when to use it ("description" frontmatter).</source>
+      </trans-unit>
+      <trans-unit id="skill.body" resname="skill.body">
+        <source>Skill instructions (markdown body of SKILL.md)</source>
+      </trans-unit>
+      <trans-unit id="skill.body.description" resname="skill.body.description">
+        <source>The markdown instructions after the YAML frontmatter. This is what the AI runner receives as its working instructions.</source>
+      </trans-unit>
+      <trans-unit id="skill.allowed_tools" resname="skill.allowed_tools">
+        <source>Allowed tools</source>
+      </trans-unit>
+      <trans-unit id="skill.allowed_tools.description" resname="skill.allowed_tools.description">
+        <source>Comma-separated tool whitelist ("allowed-tools" frontmatter). Only relevant for the Claude CLI runner; tools not listed here are denied.</source>
+      </trans-unit>
+      <trans-unit id="skill.metadata" resname="skill.metadata">
+        <source>Additional frontmatter (JSON)</source>
+      </trans-unit>
+      <trans-unit id="skill.source_type" resname="skill.source_type">
+        <source>Source</source>
+      </trans-unit>
+      <trans-unit id="skill.source_type.manual" resname="skill.source_type.manual">
+        <source>Created manually</source>
+      </trans-unit>
+      <trans-unit id="skill.source_type.folder" resname="skill.source_type.folder">
+        <source>Imported from local folder</source>
+      </trans-unit>
+      <trans-unit id="skill.source_type.repository" resname="skill.source_type.repository">
+        <source>Imported from repository</source>
+      </trans-unit>
+      <trans-unit id="skill.repository" resname="skill.repository">
+        <source>Repository</source>
+      </trans-unit>
+      <trans-unit id="skill.relative_path" resname="skill.relative_path">
+        <source>Path in source</source>
+      </trans-unit>
+      <trans-unit id="skill.last_synced" resname="skill.last_synced">
+        <source>Last synced</source>
+      </trans-unit>
+      <trans-unit id="repository.title" resname="repository.title">
+        <source>Title</source>
+      </trans-unit>
+      <trans-unit id="repository.url" resname="repository.url">
+        <source>Repository URL</source>
+      </trans-unit>
+      <trans-unit id="repository.url.description" resname="repository.url.description">
+        <source>GitHub/GitLab/Gitea repository URL (https://github.com/owner/repo) or a direct link to a .zip archive containing skill folders.</source>
+      </trans-unit>
+      <trans-unit id="repository.branch" resname="repository.branch">
+        <source>Branch</source>
+      </trans-unit>
+      <trans-unit id="repository.subfolder" resname="repository.subfolder">
+        <source>Subfolder</source>
+      </trans-unit>
+      <trans-unit id="repository.subfolder.description" resname="repository.subfolder.description">
+        <source>Optional folder inside the repository that contains the skill directories, e.g. "skills".</source>
+      </trans-unit>
+      <trans-unit id="repository.token_env_var" resname="repository.token_env_var">
+        <source>Access token environment variable</source>
+      </trans-unit>
+      <trans-unit id="repository.token_env_var.description" resname="repository.token_env_var.description">
+        <source>For private repositories: the NAME of the environment variable that holds the access token (e.g. GITHUB_TOKEN). The token itself is never stored in the database.</source>
+      </trans-unit>
+      <trans-unit id="repository.last_synced" resname="repository.last_synced">
+        <source>Last synced</source>
+      </trans-unit>
+      <trans-unit id="repository.last_error" resname="repository.last_error">
+        <source>Last error</source>
+      </trans-unit>
+      <trans-unit id="run.skill" resname="run.skill">
+        <source>Skill</source>
+      </trans-unit>
+      <trans-unit id="run.target_table" resname="run.target_table">
+        <source>Table</source>
+      </trans-unit>
+      <trans-unit id="run.target_uid" resname="run.target_uid">
+        <source>Record uid</source>
+      </trans-unit>
+      <trans-unit id="run.workspace_uid" resname="run.workspace_uid">
+        <source>Workspace</source>
+      </trans-unit>
+      <trans-unit id="run.stage_uid" resname="run.stage_uid">
+        <source>Stage</source>
+      </trans-unit>
+      <trans-unit id="run.status" resname="run.status">
+        <source>Status</source>
+      </trans-unit>
+      <trans-unit id="run.status.success" resname="run.status.success">
+        <source>Success</source>
+      </trans-unit>
+      <trans-unit id="run.status.failed" resname="run.status.failed">
+        <source>Failed</source>
+      </trans-unit>
+      <trans-unit id="run.status.blocked" resname="run.status.blocked">
+        <source>Blocked (environment guard or missing credentials)</source>
+      </trans-unit>
+      <trans-unit id="run.runner" resname="run.runner">
+        <source>Runner</source>
+      </trans-unit>
+      <trans-unit id="run.output" resname="run.output">
+        <source>Report</source>
+      </trans-unit>
+      <trans-unit id="stage.skills" resname="stage.skills">
+        <source>Skills for this stage</source>
+      </trans-unit>
+      <trans-unit id="stage.skills.description" resname="stage.skills.description">
+        <source>These skills review a record when it is sent to this stage.</source>
+      </trans-unit>
+      <trans-unit id="stage.auto_run" resname="stage.auto_run">
+        <source>Run skills automatically on stage change</source>
+      </trans-unit>
+      <trans-unit id="stage.auto_run.description" resname="stage.auto_run.description">
+        <source>If enabled, the assigned skills run automatically whenever a record is sent to this stage. Reports are stored in the Skills module. Requires a local DDEV installation.</source>
+      </trans-unit>
+      <trans-unit id="workspace.auto_workflow" resname="workspace.auto_workflow">
+        <source>Start workflow automatically for new elements</source>
+      </trans-unit>
+      <trans-unit id="workspace.auto_workflow.description" resname="workspace.auto_workflow.description">
+        <source>New elements created in this workspace are automatically sent to the selected stage, which starts the review workflow (and its skills).</source>
+      </trans-unit>
+      <trans-unit id="workspace.auto_workflow_stage" resname="workspace.auto_workflow_stage">
+        <source>Stage for new elements</source>
+      </trans-unit>
+      <trans-unit id="workspace.auto_workflow_stage.description" resname="workspace.auto_workflow_stage.description">
+        <source>Custom stage of this workspace that new elements are sent to.</source>
+      </trans-unit>
+      <trans-unit id="workspace.auto_workflow_stage.none" resname="workspace.auto_workflow_stage.none">
+        <source>(none)</source>
+      </trans-unit>
+      <trans-unit id="pages.skills" resname="pages.skills">
+        <source>Skills for this page</source>
+      </trans-unit>
+      <trans-unit id="pages.skills.description" resname="pages.skills.description">
+        <source>Quality skills (SEO, tone of voice, content QA, ...) that can be run against this page and its content from the Skills module.</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

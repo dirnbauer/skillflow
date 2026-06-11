@@ -1,0 +1,185 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Webconsulting\Skills\Service;
+
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use Webconsulting\Skills\Support\Typed;
+
+/**
+ * Read access to skills, repositories and run protocol records.
+ */
+final class SkillFinder
+{
+    public function __construct(
+        private readonly ConnectionPool $connectionPool,
+    ) {
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function findAllSkills(bool $includeHidden = false): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_webconskills_skill');
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        if (!$includeHidden) {
+            $queryBuilder->getRestrictions()->add(GeneralUtility::makeInstance(HiddenRestriction::class));
+        }
+        return $queryBuilder
+            ->select('*')
+            ->from('tx_webconskills_skill')
+            ->orderBy('title')
+            ->executeQuery()
+            ->fetchAllAssociative();
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function findSkillByUid(int $uid): ?array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_webconskills_skill');
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $row = $queryBuilder
+            ->select('*')
+            ->from('tx_webconskills_skill')
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \Doctrine\DBAL\ParameterType::INTEGER)))
+            ->executeQuery()
+            ->fetchAssociative();
+        return $row ?: null;
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function findSkillsByUidList(string $uidList): array
+    {
+        $uids = GeneralUtility::intExplode(',', $uidList, true);
+        if ($uids === []) {
+            return [];
+        }
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_webconskills_skill');
+        $queryBuilder->getRestrictions()->removeAll()
+            ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
+            ->add(GeneralUtility::makeInstance(HiddenRestriction::class));
+        return $queryBuilder
+            ->select('*')
+            ->from('tx_webconskills_skill')
+            ->where($queryBuilder->expr()->in('uid', $queryBuilder->createNamedParameter($uids, \Doctrine\DBAL\ArrayParameterType::INTEGER)))
+            ->orderBy('title')
+            ->executeQuery()
+            ->fetchAllAssociative();
+    }
+
+    /**
+     * Skills assigned to a custom workspace stage (sys_workspace_stage record).
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function findSkillsForStage(int $stageUid, bool $onlyAutoRun = true): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_workspace_stage');
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $stage = $queryBuilder
+            ->select('uid', 'tx_webconskills_skills', 'tx_webconskills_auto_run')
+            ->from('sys_workspace_stage')
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($stageUid, \Doctrine\DBAL\ParameterType::INTEGER)))
+            ->executeQuery()
+            ->fetchAssociative();
+        if ($stage === false || ($onlyAutoRun && !(bool)$stage['tx_webconskills_auto_run'])) {
+            return [];
+        }
+        return $this->findSkillsByUidList(Typed::string($stage['tx_webconskills_skills']));
+    }
+
+    /**
+     * Skills assigned to a page via pages.tx_webconskills_skills.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function findSkillsForPage(int $pageUid): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('pages');
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $page = $queryBuilder
+            ->select('uid', 'tx_webconskills_skills')
+            ->from('pages')
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($pageUid, \Doctrine\DBAL\ParameterType::INTEGER)))
+            ->executeQuery()
+            ->fetchAssociative();
+        if ($page === false) {
+            return [];
+        }
+        return $this->findSkillsByUidList(Typed::string($page['tx_webconskills_skills']));
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function findAllRepositories(): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_webconskills_repository');
+        $queryBuilder->getRestrictions()->removeAll()
+            ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
+            ->add(GeneralUtility::makeInstance(HiddenRestriction::class));
+        return $queryBuilder
+            ->select('*')
+            ->from('tx_webconskills_repository')
+            ->orderBy('title')
+            ->executeQuery()
+            ->fetchAllAssociative();
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function findRepositoryByUid(int $uid): ?array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_webconskills_repository');
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $row = $queryBuilder
+            ->select('*')
+            ->from('tx_webconskills_repository')
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \Doctrine\DBAL\ParameterType::INTEGER)))
+            ->executeQuery()
+            ->fetchAssociative();
+        return $row ?: null;
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function findRecentRuns(int $limit = 20): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_webconskills_run');
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        return $queryBuilder
+            ->select('*')
+            ->from('tx_webconskills_run')
+            ->orderBy('crdate', 'DESC')
+            ->setMaxResults($limit)
+            ->executeQuery()
+            ->fetchAllAssociative();
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function findRunByUid(int $uid): ?array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_webconskills_run');
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $row = $queryBuilder
+            ->select('*')
+            ->from('tx_webconskills_run')
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \Doctrine\DBAL\ParameterType::INTEGER)))
+            ->executeQuery()
+            ->fetchAssociative();
+        return $row ?: null;
+    }
+}

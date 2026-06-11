@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="EXT:webcon_skills/Resources/Private/Language/locallang.xlf" product-name="webcon_skills">
+    <body>
+      <trans-unit id="module.headline" resname="module.headline">
+        <source>Agent Skills</source>
+      </trans-unit>
+      <trans-unit id="security.blocked.title" resname="security.blocked.title">
+        <source>Skill execution is blocked on this installation</source>
+      </trans-unit>
+      <trans-unit id="security.blocked.hint" resname="security.blocked.hint">
+        <source>Skills send editorial content to an AI runner and may execute a local CLI. They are therefore restricted to local DDEV installations running in Development context. Managing and editing skills is still possible.</source>
+      </trans-unit>
+      <trans-unit id="security.local.title" resname="security.local.title">
+        <source>Local development installation detected</source>
+      </trans-unit>
+      <trans-unit id="security.local.text" resname="security.local.text">
+        <source>Skill execution is enabled (Development context + DDEV). Remember: skill runs send record content to the configured AI runner. Review skills from third-party repositories before running them, and never disable the environment guard on shared or production systems.</source>
+      </trans-unit>
+      <trans-unit id="skills.headline" resname="skills.headline">
+        <source>Skills</source>
+      </trans-unit>
+      <trans-unit id="skills.new" resname="skills.new">
+        <source>New skill</source>
+      </trans-unit>
+      <trans-unit id="skills.scanFolder" resname="skills.scanFolder">
+        <source>Import from skills folder</source>
+      </trans-unit>
+      <trans-unit id="skills.col.title" resname="skills.col.title">
+        <source>Name</source>
+      </trans-unit>
+      <trans-unit id="skills.col.identifier" resname="skills.col.identifier">
+        <source>Identifier</source>
+      </trans-unit>
+      <trans-unit id="skills.col.description" resname="skills.col.description">
+        <source>Description</source>
+      </trans-unit>
+      <trans-unit id="skills.col.source" resname="skills.col.source">
+        <source>Source</source>
+      </trans-unit>
+      <trans-unit id="skills.empty" resname="skills.empty">
+        <source>No skills yet. Create one manually, import the local skills folder or add a repository.</source>
+      </trans-unit>
+      <trans-unit id="repositories.headline" resname="repositories.headline">
+        <source>Skill repositories</source>
+      </trans-unit>
+      <trans-unit id="repositories.new" resname="repositories.new">
+        <source>New repository</source>
+      </trans-unit>
+      <trans-unit id="repositories.col.title" resname="repositories.col.title">
+        <source>Title</source>
+      </trans-unit>
+      <trans-unit id="repositories.col.lastSynced" resname="repositories.col.lastSynced">
+        <source>Last synced</source>
+      </trans-unit>
+      <trans-unit id="repositories.col.lastError" resname="repositories.col.lastError">
+        <source>Last error</source>
+      </trans-unit>
+      <trans-unit id="repositories.sync" resname="repositories.sync">
+        <source>Sync</source>
+      </trans-unit>
+      <trans-unit id="run.headline" resname="run.headline">
+        <source>Run a skill on a page</source>
+      </trans-unit>
+      <trans-unit id="run.hint" resname="run.hint">
+        <source>Runs the skill against the page properties and its content elements in your current workspace and stores a report.</source>
+      </trans-unit>
+      <trans-unit id="run.workspace" resname="run.workspace">
+        <source>current workspace</source>
+      </trans-unit>
+      <trans-unit id="run.page" resname="run.page">
+        <source>Page uid</source>
+      </trans-unit>
+      <trans-unit id="run.skill" resname="run.skill">
+        <source>Skill</source>
+      </trans-unit>
+      <trans-unit id="run.submit" resname="run.submit">
+        <source>Run skill</source>
+      </trans-unit>
+      <trans-unit id="run.submitAssigned" resname="run.submitAssigned">
+        <source>Run skills assigned to the page</source>
+      </trans-unit>
+      <trans-unit id="runs.headline" resname="runs.headline">
+        <source>Recent runs</source>
+      </trans-unit>
+      <trans-unit id="runs.col.date" resname="runs.col.date">
+        <source>Date</source>
+      </trans-unit>
+      <trans-unit id="runs.col.skill" resname="runs.col.skill">
+        <source>Skill</source>
+      </trans-unit>
+      <trans-unit id="runs.col.target" resname="runs.col.target">
+        <source>Target</source>
+      </trans-unit>
+      <trans-unit id="runs.col.status" resname="runs.col.status">
+        <source>Status</source>
+      </trans-unit>
+      <trans-unit id="runs.show" resname="runs.show">
+        <source>Show report</source>
+      </trans-unit>
+      <trans-unit id="runs.empty" resname="runs.empty">
+        <source>No runs yet.</source>
+      </trans-unit>
+      <trans-unit id="runDetail.headline" resname="runDetail.headline">
+        <source>Skill run</source>
+      </trans-unit>
+      <trans-unit id="runDetail.back" resname="runDetail.back">
+        <source>Back to overview</source>
+      </trans-unit>
+      <trans-unit id="runDetail.report" resname="runDetail.report">
+        <source>Report</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

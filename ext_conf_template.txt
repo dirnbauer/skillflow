@@ -1,0 +1,23 @@
+# cat=runner/enable/100; type=options[Anthropic API=api,Claude Code CLI=cli]; label=Skill runner: "api" calls the Anthropic Messages API, "cli" executes the local Claude Code CLI (supports project MCP servers)
+runner = api
+
+# cat=runner/enable/110; type=string; label=Model: Model id used by the API runner
+model = claude-sonnet-4-6
+
+# cat=runner/enable/120; type=string; label=API key environment variable: Name of the env var that holds the Anthropic API key. The key itself is never stored in the database.
+apiKeyEnvVar = ANTHROPIC_API_KEY
+
+# cat=runner/enable/130; type=string; label=Claude CLI binary: Path or name of the claude binary (cli runner)
+claudeBinary = claude
+
+# cat=runner/enable/140; type=int+; label=Max output tokens (api runner)
+maxTokens = 2048
+
+# cat=runner/enable/150; type=string; label=MCP servers JSON (api runner, optional): JSON array for the Anthropic MCP connector (remote MCP servers). Leave empty to disable.
+mcpServersJson =
+
+# cat=import/enable/100; type=string; label=Skills folder: Folder with skill directories (each containing a SKILL.md), relative to the project root
+skillsFolder = skills
+
+# cat=security/enable/100; type=boolean; label=Require local environment: Only allow skill execution when TYPO3 runs in Development context inside a DDEV project (IS_DDEV_PROJECT=true). Do NOT disable this on shared or production systems.
+requireLocalEnvironment = 1

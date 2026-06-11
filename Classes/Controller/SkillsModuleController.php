@@ -1,0 +1,237 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Webconsulting\Skills\Controller;
+
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Backend\Template\ModuleTemplate;
+use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use Webconsulting\Skills\Service\EnvironmentGuard;
+use Webconsulting\Skills\Service\RepositoryImportService;
+use Webconsulting\Skills\Service\SkillExecutionService;
+use Webconsulting\Skills\Service\SkillFinder;
+use Webconsulting\Skills\Service\SkillImportService;
+use Webconsulting\Skills\Support\Typed;
+
+/**
+ * Backend module "Skills": list and edit skills, manage repositories,
+ * import/sync, run skills against pages and inspect run reports.
+ */
+final class SkillsModuleController
+{
+    public function __construct(
+        private readonly ModuleTemplateFactory $moduleTemplateFactory,
+        private readonly UriBuilder $uriBuilder,
+        private readonly SkillFinder $skillFinder,
+        private readonly SkillImportService $skillImportService,
+        private readonly RepositoryImportService $repositoryImportService,
+        private readonly SkillExecutionService $skillExecutionService,
+        private readonly EnvironmentGuard $environmentGuard,
+    ) {
+    }
+
+    public function handleRequest(ServerRequestInterface $request): ResponseInterface
+    {
+        $moduleTemplate = $this->moduleTemplateFactory->create($request);
+        $moduleTemplate->setTitle('Skills');
+
+        $parsedBody = Typed::stringKeyedArray($request->getParsedBody());
+        $action = Typed::string($parsedBody['action'] ?? $request->getQueryParams()['action'] ?? null) ?: 'index';
+        if ($request->getMethod() === 'POST') {
+            match ($action) {
+                'scanFolder' => $this->scanFolderAction($moduleTemplate),
+                'syncRepository' => $this->syncRepositoryAction($request, $moduleTemplate),
+                'run' => $this->runAction($request, $moduleTemplate),
+                'runPageSkills' => $this->runPageSkillsAction($request, $moduleTemplate),
+                default => null,
+            };
+        } elseif ($action === 'showRun') {
+            return $this->renderRun($request, $moduleTemplate);
+        }
+
+        return $this->renderIndex($request, $moduleTemplate);
+    }
+
+    private function renderIndex(ServerRequestInterface $request, ModuleTemplate $moduleTemplate): ResponseInterface
+    {
+        $moduleUri = (string)$this->uriBuilder->buildUriFromRoute('content_webconskills');
+        $skills = $this->skillFinder->findAllSkills(true);
+        foreach ($skills as &$skill) {
+            $skill['editUri'] = (string)$this->uriBuilder->buildUriFromRoute('record_edit', [
+                'edit' => ['tx_webconskills_skill' => [Typed::int($skill['uid']) => 'edit']],
+                'returnUrl' => $moduleUri,
+            ]);
+            $skill['descriptionShort'] = $this->crop(Typed::string($skill['description']), 120);
+        }
+        unset($skill);
+
+        $repositories = $this->skillFinder->findAllRepositories();
+        foreach ($repositories as &$repository) {
+            $repository['editUri'] = (string)$this->uriBuilder->buildUriFromRoute('record_edit', [
+                'edit' => ['tx_webconskills_repository' => [Typed::int($repository['uid']) => 'edit']],
+                'returnUrl' => $moduleUri,
+            ]);
+            $repository['lastSyncedFormatted'] = Typed::int($repository['last_synced']) > 0
+                ? date('Y-m-d H:i', Typed::int($repository['last_synced']))
+                : '–';
+            $repository['lastErrorShort'] = $this->crop(Typed::string($repository['last_error']), 80);
+        }
+        unset($repository);
+
+        $skillTitles = [];
+        foreach ($skills as $skill) {
+            $skillTitles[Typed::int($skill['uid'])] = Typed::string($skill['title']);
+        }
+        $runs = $this->skillFinder->findRecentRuns(25);
+        foreach ($runs as &$run) {
+            $run['skillTitle'] = $skillTitles[Typed::int($run['skill'])] ?? ('#' . Typed::int($run['skill']));
+            $run['createdFormatted'] = date('Y-m-d H:i', Typed::int($run['crdate']));
+            $run['showUri'] = (string)$this->uriBuilder->buildUriFromRoute('content_webconskills', [
+                'action' => 'showRun',
+                'run' => Typed::int($run['uid']),
+            ]);
+        }
+        unset($run);
+
+        $moduleTemplate->assignMultiple([
+            'moduleUri' => $moduleUri,
+            'isAdmin' => $this->getBackendUser()->isAdmin(),
+            'executionBlockReason' => $this->environmentGuard->getBlockReason(),
+            'skills' => $skills,
+            'repositories' => $repositories,
+            'runs' => $runs,
+            'skillsFolder' => $this->skillImportService->getConfiguredFolder(),
+            'currentWorkspace' => (int)$this->getBackendUser()->workspace,
+            'newSkillUri' => (string)$this->uriBuilder->buildUriFromRoute('record_edit', [
+                'edit' => ['tx_webconskills_skill' => [0 => 'new']],
+                'returnUrl' => $moduleUri,
+            ]),
+            'newRepositoryUri' => (string)$this->uriBuilder->buildUriFromRoute('record_edit', [
+                'edit' => ['tx_webconskills_repository' => [0 => 'new']],
+                'returnUrl' => $moduleUri,
+            ]),
+        ]);
+        return $moduleTemplate->renderResponse('SkillsModule/Index');
+    }
+
+    private function renderRun(ServerRequestInterface $request, ModuleTemplate $moduleTemplate): ResponseInterface
+    {
+        $runUid = Typed::int($request->getQueryParams()['run'] ?? 0);
+        $run = $this->skillFinder->findRunByUid($runUid);
+        if ($run === null) {
+            $moduleTemplate->addFlashMessage('Run ' . $runUid . ' not found.', 'Not found', ContextualFeedbackSeverity::ERROR);
+            return $this->renderIndex($request, $moduleTemplate);
+        }
+        $skill = $this->skillFinder->findSkillByUid(Typed::int($run['skill']));
+        $moduleTemplate->assignMultiple([
+            'moduleUri' => (string)$this->uriBuilder->buildUriFromRoute('content_webconskills'),
+            'run' => $run,
+            'skillTitle' => Typed::string($skill['title'] ?? null) ?: ('#' . Typed::int($run['skill'])),
+            'createdFormatted' => date('Y-m-d H:i:s', Typed::int($run['crdate'])),
+        ]);
+        return $moduleTemplate->renderResponse('SkillsModule/Run');
+    }
+
+    private function scanFolderAction(ModuleTemplate $moduleTemplate): void
+    {
+        if (!$this->getBackendUser()->isAdmin()) {
+            $this->denied($moduleTemplate);
+            return;
+        }
+        $result = $this->skillImportService->importFromConfiguredFolder();
+        $moduleTemplate->addFlashMessage(
+            $result->summary(),
+            'Folder import finished',
+            $result->errors === [] ? ContextualFeedbackSeverity::OK : ContextualFeedbackSeverity::WARNING
+        );
+    }
+
+    private function syncRepositoryAction(ServerRequestInterface $request, ModuleTemplate $moduleTemplate): void
+    {
+        if (!$this->getBackendUser()->isAdmin()) {
+            $this->denied($moduleTemplate);
+            return;
+        }
+        $repositoryUid = Typed::int(Typed::stringKeyedArray($request->getParsedBody())['repository'] ?? 0);
+        try {
+            $result = $this->repositoryImportService->sync($repositoryUid);
+            $moduleTemplate->addFlashMessage(
+                $result->summary(),
+                'Repository sync finished',
+                $result->errors === [] ? ContextualFeedbackSeverity::OK : ContextualFeedbackSeverity::WARNING
+            );
+        } catch (\Throwable $e) {
+            $moduleTemplate->addFlashMessage($e->getMessage(), 'Repository sync failed', ContextualFeedbackSeverity::ERROR);
+        }
+    }
+
+    private function runAction(ServerRequestInterface $request, ModuleTemplate $moduleTemplate): void
+    {
+        $body = Typed::stringKeyedArray($request->getParsedBody());
+        $skillUid = Typed::int($body['skill'] ?? 0);
+        $pageUid = Typed::int($body['page'] ?? 0);
+        if ($skillUid <= 0 || $pageUid <= 0) {
+            $moduleTemplate->addFlashMessage('Please select a skill and provide a page uid.', 'Missing input', ContextualFeedbackSeverity::WARNING);
+            return;
+        }
+        $this->executeAndReport($moduleTemplate, $skillUid, $pageUid);
+    }
+
+    private function runPageSkillsAction(ServerRequestInterface $request, ModuleTemplate $moduleTemplate): void
+    {
+        $pageUid = Typed::int(Typed::stringKeyedArray($request->getParsedBody())['page'] ?? 0);
+        $skills = $pageUid > 0 ? $this->skillFinder->findSkillsForPage($pageUid) : [];
+        if ($skills === []) {
+            $moduleTemplate->addFlashMessage(
+                'No skills are assigned to page ' . $pageUid . ' (page properties > Skills tab).',
+                'Nothing to run',
+                ContextualFeedbackSeverity::INFO
+            );
+            return;
+        }
+        foreach ($skills as $skill) {
+            $this->executeAndReport($moduleTemplate, Typed::int($skill['uid']), $pageUid);
+        }
+    }
+
+    private function executeAndReport(ModuleTemplate $moduleTemplate, int $skillUid, int $pageUid): void
+    {
+        $result = $this->skillExecutionService->runSkillOnRecord(
+            $skillUid,
+            'pages',
+            $pageUid,
+            (int)$this->getBackendUser()->workspace
+        );
+        $skill = $this->skillFinder->findSkillByUid($skillUid);
+        $moduleTemplate->addFlashMessage(
+            $result->isSuccess() ? 'Report stored - see "Recent runs" below.' : mb_substr($result->output, 0, 500),
+            sprintf('Skill "%s" on page %d: %s', Typed::string($skill['title'] ?? null) ?: (string)$skillUid, $pageUid, $result->status),
+            $result->isSuccess() ? ContextualFeedbackSeverity::OK : ContextualFeedbackSeverity::WARNING
+        );
+    }
+
+    private function crop(string $text, int $maxCharacters): string
+    {
+        $text = trim($text);
+        return mb_strlen($text) > $maxCharacters ? mb_substr($text, 0, $maxCharacters) . '…' : $text;
+    }
+
+    private function denied(ModuleTemplate $moduleTemplate): void
+    {
+        $moduleTemplate->addFlashMessage('This action requires administrator privileges.', 'Access denied', ContextualFeedbackSeverity::ERROR);
+    }
+
+    private function getBackendUser(): BackendUserAuthentication
+    {
+        $backendUser = $GLOBALS['BE_USER'] ?? null;
+        if (!$backendUser instanceof BackendUserAuthentication) {
+            throw new \RuntimeException('No backend user available', 1760000050);
+        }
+        return $backendUser;
+    }
+}

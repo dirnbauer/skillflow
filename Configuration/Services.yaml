@@ -1,0 +1,20 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Webconsulting\Skills\:
+    resource: '../Classes/*'
+    exclude:
+      - '../Classes/Domain/*'
+      - '../Classes/Exception/*'
+      - '../Classes/Support/*'
+
+  # Instantiated via GeneralUtility::makeInstance() by the DataHandler hook registry
+  Webconsulting\Skills\Hooks\DataHandlerHook:
+    public: true
+
+  # Backend module route target
+  Webconsulting\Skills\Controller\SkillsModuleController:
+    public: true
