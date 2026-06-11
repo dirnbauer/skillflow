@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webconsulting\Skills\Support;
+namespace Webconsulting\Skillflow\Support;
 
 /**
  * Safe scalar extraction from mixed values (database rows, extension

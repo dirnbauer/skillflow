@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webconsulting\Skills\Controller;
+namespace Webconsulting\Skillflow\Controller;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -11,12 +11,12 @@ use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
-use Webconsulting\Skills\Service\EnvironmentGuard;
-use Webconsulting\Skills\Service\RepositoryImportService;
-use Webconsulting\Skills\Service\SkillExecutionService;
-use Webconsulting\Skills\Service\SkillFinder;
-use Webconsulting\Skills\Service\SkillImportService;
-use Webconsulting\Skills\Support\Typed;
+use Webconsulting\Skillflow\Service\EnvironmentGuard;
+use Webconsulting\Skillflow\Service\RepositoryImportService;
+use Webconsulting\Skillflow\Service\SkillExecutionService;
+use Webconsulting\Skillflow\Service\SkillFinder;
+use Webconsulting\Skillflow\Service\SkillImportService;
+use Webconsulting\Skillflow\Support\Typed;
 
 /**
  * Backend module "Skills": list and edit skills, manage repositories,
@@ -59,11 +59,11 @@ final class SkillsModuleController
 
     private function renderIndex(ServerRequestInterface $request, ModuleTemplate $moduleTemplate): ResponseInterface
     {
-        $moduleUri = (string)$this->uriBuilder->buildUriFromRoute('content_webconskills');
+        $moduleUri = (string)$this->uriBuilder->buildUriFromRoute('content_skillflow');
         $skills = $this->skillFinder->findAllSkills(true);
         foreach ($skills as &$skill) {
             $skill['editUri'] = (string)$this->uriBuilder->buildUriFromRoute('record_edit', [
-                'edit' => ['tx_webconskills_skill' => [Typed::int($skill['uid']) => 'edit']],
+                'edit' => ['tx_skillflow_skill' => [Typed::int($skill['uid']) => 'edit']],
                 'returnUrl' => $moduleUri,
             ]);
             $skill['descriptionShort'] = $this->crop(Typed::string($skill['description']), 120);
@@ -73,7 +73,7 @@ final class SkillsModuleController
         $repositories = $this->skillFinder->findAllRepositories();
         foreach ($repositories as &$repository) {
             $repository['editUri'] = (string)$this->uriBuilder->buildUriFromRoute('record_edit', [
-                'edit' => ['tx_webconskills_repository' => [Typed::int($repository['uid']) => 'edit']],
+                'edit' => ['tx_skillflow_repository' => [Typed::int($repository['uid']) => 'edit']],
                 'returnUrl' => $moduleUri,
             ]);
             $repository['lastSyncedFormatted'] = Typed::int($repository['last_synced']) > 0
@@ -91,7 +91,7 @@ final class SkillsModuleController
         foreach ($runs as &$run) {
             $run['skillTitle'] = $skillTitles[Typed::int($run['skill'])] ?? ('#' . Typed::int($run['skill']));
             $run['createdFormatted'] = date('Y-m-d H:i', Typed::int($run['crdate']));
-            $run['showUri'] = (string)$this->uriBuilder->buildUriFromRoute('content_webconskills', [
+            $run['showUri'] = (string)$this->uriBuilder->buildUriFromRoute('content_skillflow', [
                 'action' => 'showRun',
                 'run' => Typed::int($run['uid']),
             ]);
@@ -108,11 +108,11 @@ final class SkillsModuleController
             'skillsFolder' => $this->skillImportService->getConfiguredFolder(),
             'currentWorkspace' => (int)$this->getBackendUser()->workspace,
             'newSkillUri' => (string)$this->uriBuilder->buildUriFromRoute('record_edit', [
-                'edit' => ['tx_webconskills_skill' => [0 => 'new']],
+                'edit' => ['tx_skillflow_skill' => [0 => 'new']],
                 'returnUrl' => $moduleUri,
             ]),
             'newRepositoryUri' => (string)$this->uriBuilder->buildUriFromRoute('record_edit', [
-                'edit' => ['tx_webconskills_repository' => [0 => 'new']],
+                'edit' => ['tx_skillflow_repository' => [0 => 'new']],
                 'returnUrl' => $moduleUri,
             ]),
         ]);
@@ -129,7 +129,7 @@ final class SkillsModuleController
         }
         $skill = $this->skillFinder->findSkillByUid(Typed::int($run['skill']));
         $moduleTemplate->assignMultiple([
-            'moduleUri' => (string)$this->uriBuilder->buildUriFromRoute('content_webconskills'),
+            'moduleUri' => (string)$this->uriBuilder->buildUriFromRoute('content_skillflow'),
             'run' => $run,
             'skillTitle' => Typed::string($skill['title'] ?? null) ?: ('#' . Typed::int($run['skill'])),
             'createdFormatted' => date('Y-m-d H:i:s', Typed::int($run['crdate'])),

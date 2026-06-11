@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Webconsulting\Skills\Service;
+namespace Webconsulting\Skillflow\Service;
 
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use Webconsulting\Skills\Domain\ImportResult;
-use Webconsulting\Skills\Domain\ParsedSkill;
-use Webconsulting\Skills\Support\Typed;
+use Webconsulting\Skillflow\Domain\ImportResult;
+use Webconsulting\Skillflow\Domain\ParsedSkill;
+use Webconsulting\Skillflow\Support\Typed;
 
 /**
  * Imports skills from a local folder containing skill directories,
@@ -31,7 +31,7 @@ final class SkillImportService
     public function getConfiguredFolder(): string
     {
         try {
-            $conf = Typed::stringKeyedArray($this->extensionConfiguration->get('webcon_skills'));
+            $conf = Typed::stringKeyedArray($this->extensionConfiguration->get('skillflow'));
         } catch (\Throwable) {
             $conf = [];
         }
@@ -98,10 +98,10 @@ final class SkillImportService
      */
     private function upsert(ParsedSkill $skill, string $sourceType, int $repositoryUid, string $relativePath): string
     {
-        $connection = $this->connectionPool->getConnectionForTable('tx_webconskills_skill');
+        $connection = $this->connectionPool->getConnectionForTable('tx_skillflow_skill');
         $existing = $connection->select(
             ['uid', 'content_hash'],
-            'tx_webconskills_skill',
+            'tx_skillflow_skill',
             [
                 'identifier' => $skill->identifier,
                 'source_type' => $sourceType,
@@ -125,14 +125,14 @@ final class SkillImportService
 
         if ($existing !== false) {
             if (Typed::string($existing['content_hash']) === $skill->contentHash()) {
-                $connection->update('tx_webconskills_skill', ['last_synced' => $now], ['uid' => Typed::int($existing['uid'])]);
+                $connection->update('tx_skillflow_skill', ['last_synced' => $now], ['uid' => Typed::int($existing['uid'])]);
                 return 'unchanged';
             }
-            $connection->update('tx_webconskills_skill', $fields, ['uid' => Typed::int($existing['uid'])]);
+            $connection->update('tx_skillflow_skill', $fields, ['uid' => Typed::int($existing['uid'])]);
             return 'updated';
         }
 
-        $connection->insert('tx_webconskills_skill', $fields + [
+        $connection->insert('tx_skillflow_skill', $fields + [
             'pid' => 0,
             'identifier' => $skill->identifier,
             'source_type' => $sourceType,

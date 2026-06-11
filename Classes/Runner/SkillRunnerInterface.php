@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Webconsulting\Skills\Runner;
+namespace Webconsulting\Skillflow\Runner;
 
-use Webconsulting\Skills\Domain\SkillRunResult;
+use Webconsulting\Skillflow\Domain\SkillRunResult;
 
 interface SkillRunnerInterface
 {
     /**
      * Executes a skill against collected record content and returns the report.
      *
-     * @param array<string, mixed> $skill tx_webconskills_skill row
+     * @param array<string, mixed> $skill tx_skillflow_skill row
      */
     public function run(array $skill, string $content): SkillRunResult;
 

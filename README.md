@@ -1,4 +1,4 @@
-# webcon_skills — Agent Skills for TYPO3 Workspaces
+# skillflow — Agent Skills for TYPO3 Workspaces
 
 Brings [Anthropic-style agent skills](https://docs.claude.com/en/docs/agents-and-tools/agent-skills) (folders with a
 `SKILL.md`: YAML frontmatter `name`/`description` + markdown instructions) into the TYPO3 backend and wires them into
@@ -9,7 +9,7 @@ the workspace review workflow.
 
 ## Features
 
-- **Skill records** (`tx_webconskills_skill`): editable in the backend with the SKILL.md structure — name, identifier,
+- **Skill records** (`tx_skillflow_skill`): editable in the backend with the SKILL.md structure — name, identifier,
   description, markdown body (code editor), `allowed-tools`, extra frontmatter as JSON.
 - **Folder import**: scans a configurable project folder (default `<project>/skills/`, each subfolder containing a
   `SKILL.md`) and imports/updates skills.
@@ -27,11 +27,11 @@ the workspace review workflow.
 - **Page skills**: assign QM skills (SEO, tone of voice, content QA, …) to a page (*Skills* tab in page properties)
   and run them from the module against the page **in your current workspace** (draft content is reviewed via
   workspace overlays).
-- **CLI**: `vendor/bin/typo3 webconskills:sync` (cron-able) refreshes the folder and all repositories.
+- **CLI**: `vendor/bin/typo3 skillflow:sync` (cron-able) refreshes the folder and all repositories.
 
 ## Runners & MCP
 
-Configured in *Settings → Extension Configuration → webcon_skills*:
+Configured in *Settings → Extension Configuration → skillflow*:
 
 | Runner | How it works | MCP support |
 |---|---|---|
@@ -66,17 +66,17 @@ Read this before using the extension.
    demo content that is fine; do not point this at confidential data.
 6. **Permissions.** Repositories are `adminOnly`; folder/repo imports in the module are admin-gated. Editors only
    need list/module access plus read access to skills to run them. Reports are stored server-side
-   (`tx_webconskills_run`) and shown in the module.
+   (`tx_skillflow_run`) and shown in the module.
 
 ## Quick start
 
 ```bash
-composer require webconsulting/webcon-skills:@dev
+composer require webconsulting/skillflow:@dev
 ddev exec vendor/bin/typo3 extension:setup
 # put your key into the DDEV web environment:
 #   .ddev/config.local.yaml: web_environment: ["ANTHROPIC_API_KEY=sk-ant-..."]
 ddev restart
-ddev exec vendor/bin/typo3 webconskills:sync     # imports <project>/skills/*
+ddev exec vendor/bin/typo3 skillflow:sync     # imports <project>/skills/*
 ```
 
 Then, in the backend:

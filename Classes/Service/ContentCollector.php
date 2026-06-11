@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Webconsulting\Skills\Service;
+namespace Webconsulting\Skillflow\Service;
 
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\WorkspaceRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use Webconsulting\Skills\Support\Typed;
+use Webconsulting\Skillflow\Support\Typed;
 
 /**
  * Collects the editorial content of a record (and, for pages, its content

@@ -1,5 +1,5 @@
 {
-    "name": "webconsulting/webcon-skills",
+    "name": "webconsulting/skillflow",
     "description": "Agent Skills for TYPO3 - manage Anthropic-style skills, import them from folders or git repositories, attach them to workspace stages and pages, and run them against content (SEO, tone, QA). Local/DDEV installs only.",
     "type": "typo3-cms-extension",
     "license": "GPL-2.0-or-later",
@@ -18,12 +18,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Webconsulting\\Skills\\": "Classes/"
+            "Webconsulting\\Skillflow\\": "Classes/"
         }
     },
     "extra": {
         "typo3/cms": {
-            "extension-key": "webcon_skills"
+            "extension-key": "skillflow"
         }
     }
 }

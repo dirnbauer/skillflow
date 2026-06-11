@@ -5,20 +5,20 @@ declare(strict_types=1);
 use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
 
 return [
-    'webconskills-module' => [
+    'skillflow-module' => [
         'provider' => SvgIconProvider::class,
-        'source' => 'EXT:webcon_skills/Resources/Public/Icons/Module.svg',
+        'source' => 'EXT:skillflow/Resources/Public/Icons/Module.svg',
     ],
-    'webconskills-skill' => [
+    'skillflow-skill' => [
         'provider' => SvgIconProvider::class,
-        'source' => 'EXT:webcon_skills/Resources/Public/Icons/Skill.svg',
+        'source' => 'EXT:skillflow/Resources/Public/Icons/Skill.svg',
     ],
-    'webconskills-repository' => [
+    'skillflow-repository' => [
         'provider' => SvgIconProvider::class,
-        'source' => 'EXT:webcon_skills/Resources/Public/Icons/Repository.svg',
+        'source' => 'EXT:skillflow/Resources/Public/Icons/Repository.svg',
     ],
-    'webconskills-run' => [
+    'skillflow-run' => [
         'provider' => SvgIconProvider::class,
-        'source' => 'EXT:webcon_skills/Resources/Public/Icons/Run.svg',
+        'source' => 'EXT:skillflow/Resources/Public/Icons/Run.svg',
     ],
 ];

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Webconsulting\Skills\Service;
+namespace Webconsulting\Skillflow\Service;
 
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use Webconsulting\Skills\Support\Typed;
+use Webconsulting\Skillflow\Support\Typed;
 
 /**
  * Read access to skills, repositories and run protocol records.
@@ -25,14 +25,14 @@ final class SkillFinder
      */
     public function findAllSkills(bool $includeHidden = false): array
     {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_webconskills_skill');
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_skillflow_skill');
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
         if (!$includeHidden) {
             $queryBuilder->getRestrictions()->add(GeneralUtility::makeInstance(HiddenRestriction::class));
         }
         return $queryBuilder
             ->select('*')
-            ->from('tx_webconskills_skill')
+            ->from('tx_skillflow_skill')
             ->orderBy('title')
             ->executeQuery()
             ->fetchAllAssociative();
@@ -43,11 +43,11 @@ final class SkillFinder
      */
     public function findSkillByUid(int $uid): ?array
     {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_webconskills_skill');
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_skillflow_skill');
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
         $row = $queryBuilder
             ->select('*')
-            ->from('tx_webconskills_skill')
+            ->from('tx_skillflow_skill')
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \Doctrine\DBAL\ParameterType::INTEGER)))
             ->executeQuery()
             ->fetchAssociative();
@@ -63,13 +63,13 @@ final class SkillFinder
         if ($uids === []) {
             return [];
         }
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_webconskills_skill');
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_skillflow_skill');
         $queryBuilder->getRestrictions()->removeAll()
             ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
             ->add(GeneralUtility::makeInstance(HiddenRestriction::class));
         return $queryBuilder
             ->select('*')
-            ->from('tx_webconskills_skill')
+            ->from('tx_skillflow_skill')
             ->where($queryBuilder->expr()->in('uid', $queryBuilder->createNamedParameter($uids, \Doctrine\DBAL\ArrayParameterType::INTEGER)))
             ->orderBy('title')
             ->executeQuery()
@@ -86,19 +86,19 @@ final class SkillFinder
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_workspace_stage');
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
         $stage = $queryBuilder
-            ->select('uid', 'tx_webconskills_skills', 'tx_webconskills_auto_run')
+            ->select('uid', 'tx_skillflow_skills', 'tx_skillflow_auto_run')
             ->from('sys_workspace_stage')
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($stageUid, \Doctrine\DBAL\ParameterType::INTEGER)))
             ->executeQuery()
             ->fetchAssociative();
-        if ($stage === false || ($onlyAutoRun && !(bool)$stage['tx_webconskills_auto_run'])) {
+        if ($stage === false || ($onlyAutoRun && !(bool)$stage['tx_skillflow_auto_run'])) {
             return [];
         }
-        return $this->findSkillsByUidList(Typed::string($stage['tx_webconskills_skills']));
+        return $this->findSkillsByUidList(Typed::string($stage['tx_skillflow_skills']));
     }
 
     /**
-     * Skills assigned to a page via pages.tx_webconskills_skills.
+     * Skills assigned to a page via pages.tx_skillflow_skills.
      *
      * @return array<int, array<string, mixed>>
      */
@@ -107,7 +107,7 @@ final class SkillFinder
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable('pages');
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
         $page = $queryBuilder
-            ->select('uid', 'tx_webconskills_skills')
+            ->select('uid', 'tx_skillflow_skills')
             ->from('pages')
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($pageUid, \Doctrine\DBAL\ParameterType::INTEGER)))
             ->executeQuery()
@@ -115,7 +115,7 @@ final class SkillFinder
         if ($page === false) {
             return [];
         }
-        return $this->findSkillsByUidList(Typed::string($page['tx_webconskills_skills']));
+        return $this->findSkillsByUidList(Typed::string($page['tx_skillflow_skills']));
     }
 
     /**
@@ -123,13 +123,13 @@ final class SkillFinder
      */
     public function findAllRepositories(): array
     {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_webconskills_repository');
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_skillflow_repository');
         $queryBuilder->getRestrictions()->removeAll()
             ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
             ->add(GeneralUtility::makeInstance(HiddenRestriction::class));
         return $queryBuilder
             ->select('*')
-            ->from('tx_webconskills_repository')
+            ->from('tx_skillflow_repository')
             ->orderBy('title')
             ->executeQuery()
             ->fetchAllAssociative();
@@ -140,11 +140,11 @@ final class SkillFinder
      */
     public function findRepositoryByUid(int $uid): ?array
     {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_webconskills_repository');
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_skillflow_repository');
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
         $row = $queryBuilder
             ->select('*')
-            ->from('tx_webconskills_repository')
+            ->from('tx_skillflow_repository')
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \Doctrine\DBAL\ParameterType::INTEGER)))
             ->executeQuery()
             ->fetchAssociative();
@@ -156,11 +156,11 @@ final class SkillFinder
      */
     public function findRecentRuns(int $limit = 20): array
     {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_webconskills_run');
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_skillflow_run');
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
         return $queryBuilder
             ->select('*')
-            ->from('tx_webconskills_run')
+            ->from('tx_skillflow_run')
             ->orderBy('crdate', 'DESC')
             ->setMaxResults($limit)
             ->executeQuery()
@@ -172,11 +172,11 @@ final class SkillFinder
      */
     public function findRunByUid(int $uid): ?array
     {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_webconskills_run');
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_skillflow_run');
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
         $row = $queryBuilder
             ->select('*')
-            ->from('tx_webconskills_run')
+            ->from('tx_skillflow_run')
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \Doctrine\DBAL\ParameterType::INTEGER)))
             ->executeQuery()
             ->fetchAssociative();

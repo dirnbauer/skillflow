@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Webconsulting\Skills\Service;
+namespace Webconsulting\Skillflow\Service;
 
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use Webconsulting\Skills\Domain\ImportResult;
-use Webconsulting\Skills\Support\Typed;
+use Webconsulting\Skillflow\Domain\ImportResult;
+use Webconsulting\Skillflow\Support\Typed;
 
 /**
  * Imports/updates skills from a remote git hosting provider (GitHub, GitLab,
@@ -66,7 +66,7 @@ final class RepositoryImportService
 
     private function createWorkDirectory(): string
     {
-        $directory = Environment::getVarPath() . '/transient/webcon_skills/' . bin2hex(random_bytes(8));
+        $directory = Environment::getVarPath() . '/transient/skillflow/' . bin2hex(random_bytes(8));
         GeneralUtility::mkdir_deep($directory);
         return $directory;
     }
@@ -79,7 +79,7 @@ final class RepositoryImportService
         $token = $this->resolveToken($repository);
         $archiveUrl = $this->buildArchiveUrl($repository, $token !== null);
 
-        $headers = ['User-Agent' => 'TYPO3-webcon_skills'];
+        $headers = ['User-Agent' => 'TYPO3-skillflow'];
         if ($token !== null) {
             $headers['Authorization'] = 'Bearer ' . $token;
         }
@@ -177,8 +177,8 @@ final class RepositoryImportService
 
     private function updateRepositoryRecord(int $repositoryUid, string $error): void
     {
-        $this->connectionPool->getConnectionForTable('tx_webconskills_repository')->update(
-            'tx_webconskills_repository',
+        $this->connectionPool->getConnectionForTable('tx_skillflow_repository')->update(
+            'tx_skillflow_repository',
             [
                 'last_synced' => time(),
                 'last_error' => mb_substr($error, 0, 60000),

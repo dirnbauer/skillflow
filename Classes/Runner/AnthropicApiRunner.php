@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Webconsulting\Skills\Runner;
+namespace Webconsulting\Skillflow\Runner;
 
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Http\RequestFactory;
-use Webconsulting\Skills\Domain\SkillRunResult;
-use Webconsulting\Skills\Exception\ExecutionBlockedException;
-use Webconsulting\Skills\Support\Typed;
+use Webconsulting\Skillflow\Domain\SkillRunResult;
+use Webconsulting\Skillflow\Exception\ExecutionBlockedException;
+use Webconsulting\Skillflow\Support\Typed;
 
 /**
  * Runs a skill through the Anthropic Messages API.
@@ -107,7 +107,7 @@ final class AnthropicApiRunner implements SkillRunnerInterface
     private function configuration(): array
     {
         try {
-            return Typed::stringKeyedArray($this->extensionConfiguration->get('webcon_skills'));
+            return Typed::stringKeyedArray($this->extensionConfiguration->get('skillflow'));
         } catch (\Throwable) {
             return [];
         }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webconsulting\Skills\Command;
+namespace Webconsulting\Skillflow\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -10,13 +10,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Webconsulting\Skills\Service\RepositoryImportService;
-use Webconsulting\Skills\Service\SkillFinder;
-use Webconsulting\Skills\Service\SkillImportService;
-use Webconsulting\Skills\Support\Typed;
+use Webconsulting\Skillflow\Service\RepositoryImportService;
+use Webconsulting\Skillflow\Service\SkillFinder;
+use Webconsulting\Skillflow\Service\SkillImportService;
+use Webconsulting\Skillflow\Support\Typed;
 
 #[AsCommand(
-    name: 'webconskills:sync',
+    name: 'skillflow:sync',
     description: 'Import/update skills from the configured skills folder and all skill repositories'
 )]
 final class SyncSkillsCommand extends Command

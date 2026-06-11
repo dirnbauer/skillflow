@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file source-language="en" datatype="plaintext" original="EXT:webcon_skills/Resources/Private/Language/locallang_db.xlf" product-name="webcon_skills">
+  <file source-language="en" datatype="plaintext" original="EXT:skillflow/Resources/Private/Language/locallang_db.xlf" product-name="skillflow">
     <body>
-      <trans-unit id="tx_webconskills_skill" resname="tx_webconskills_skill">
+      <trans-unit id="tx_skillflow_skill" resname="tx_skillflow_skill">
         <source>Skill</source>
       </trans-unit>
-      <trans-unit id="tx_webconskills_repository" resname="tx_webconskills_repository">
+      <trans-unit id="tx_skillflow_repository" resname="tx_skillflow_repository">
         <source>Skill repository</source>
       </trans-unit>
-      <trans-unit id="tx_webconskills_run" resname="tx_webconskills_run">
+      <trans-unit id="tx_skillflow_run" resname="tx_skillflow_run">
         <source>Skill run</source>
       </trans-unit>
       <trans-unit id="tab.general" resname="tab.general">

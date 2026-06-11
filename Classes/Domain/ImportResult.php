@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webconsulting\Skills\Domain;
+namespace Webconsulting\Skillflow\Domain;
 
 final class ImportResult
 {

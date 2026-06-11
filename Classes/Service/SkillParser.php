@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Webconsulting\Skills\Service;
+namespace Webconsulting\Skillflow\Service;
 
 use Symfony\Component\Yaml\Yaml;
-use Webconsulting\Skills\Domain\ParsedSkill;
-use Webconsulting\Skills\Exception\InvalidSkillException;
-use Webconsulting\Skills\Support\Typed;
+use Webconsulting\Skillflow\Domain\ParsedSkill;
+use Webconsulting\Skillflow\Exception\InvalidSkillException;
+use Webconsulting\Skillflow\Support\Typed;
 
 /**
  * Parses SKILL.md files (Anthropic skill structure): YAML frontmatter

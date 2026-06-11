@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Webconsulting\Skills\Service;
+namespace Webconsulting\Skillflow\Service;
 
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use Webconsulting\Skills\Domain\SkillRunResult;
-use Webconsulting\Skills\Exception\ExecutionBlockedException;
-use Webconsulting\Skills\Runner\RunnerFactory;
+use Webconsulting\Skillflow\Domain\SkillRunResult;
+use Webconsulting\Skillflow\Exception\ExecutionBlockedException;
+use Webconsulting\Skillflow\Runner\RunnerFactory;
 
 /**
  * Orchestrates a single skill run: environment guard, content collection,
- * runner execution and persisting the run protocol (tx_webconskills_run).
+ * runner execution and persisting the run protocol (tx_skillflow_run).
  * Never lets an AI failure escape into the calling editing process.
  */
 final class SkillExecutionService
@@ -54,7 +54,7 @@ final class SkillExecutionService
     private function persistRun(int $skillUid, string $table, int $recordUid, int $workspaceId, int $stageUid, SkillRunResult $result): void
     {
         $now = time();
-        $this->connectionPool->getConnectionForTable('tx_webconskills_run')->insert('tx_webconskills_run', [
+        $this->connectionPool->getConnectionForTable('tx_skillflow_run')->insert('tx_skillflow_run', [
             'pid' => 0,
             'crdate' => $now,
             'tstamp' => $now,

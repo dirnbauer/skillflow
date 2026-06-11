@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webconsulting\Skills\Exception;
+namespace Webconsulting\Skillflow\Exception;
 
 /**
  * Thrown when a SKILL.md file cannot be parsed or misses required frontmatter.

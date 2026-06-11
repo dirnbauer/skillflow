@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Webconsulting\Skills\Service;
+namespace Webconsulting\Skillflow\Service;
 
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Core\Environment;
-use Webconsulting\Skills\Exception\ExecutionBlockedException;
+use Webconsulting\Skillflow\Exception\ExecutionBlockedException;
 
 /**
  * Security guard: skill execution sends content to an AI runner and may
@@ -52,7 +52,7 @@ final class EnvironmentGuard
     public function requiresLocalEnvironment(): bool
     {
         try {
-            $conf = $this->extensionConfiguration->get('webcon_skills');
+            $conf = $this->extensionConfiguration->get('skillflow');
         } catch (\Throwable) {
             return true;
         }

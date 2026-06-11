@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Webconsulting\Skills\Runner;
+namespace Webconsulting\Skillflow\Runner;
 
-use Webconsulting\Skills\Support\Typed;
+use Webconsulting\Skillflow\Support\Typed;
 
 /**
  * Builds the system and user prompts shared by all runners.

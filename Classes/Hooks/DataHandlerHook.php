@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webconsulting\Skills\Hooks;
+namespace Webconsulting\Skillflow\Hooks;
 
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -10,9 +10,9 @@ use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use Webconsulting\Skills\Service\SkillExecutionService;
-use Webconsulting\Skills\Support\Typed;
-use Webconsulting\Skills\Service\SkillFinder;
+use Webconsulting\Skillflow\Service\SkillExecutionService;
+use Webconsulting\Skillflow\Support\Typed;
+use Webconsulting\Skillflow\Service\SkillFinder;
 
 /**
  * Workspace integration:
@@ -92,8 +92,8 @@ final class DataHandlerHook
         }
         $workspace = BackendUtility::getRecord('sys_workspace', $workspaceId);
         if ($workspace === null
-            || !(bool)($workspace['tx_webconskills_auto_workflow'] ?? false)
-            || Typed::int($workspace['tx_webconskills_auto_workflow_stage'] ?? 0) <= 0
+            || !(bool)($workspace['tx_skillflow_auto_workflow'] ?? false)
+            || Typed::int($workspace['tx_skillflow_auto_workflow_stage'] ?? 0) <= 0
         ) {
             return;
         }
@@ -104,7 +104,7 @@ final class DataHandlerHook
         $this->pendingAutoWorkflow[] = [
             'table' => $table,
             'uid' => $recordUid,
-            'stage' => Typed::int($workspace['tx_webconskills_auto_workflow_stage']),
+            'stage' => Typed::int($workspace['tx_skillflow_auto_workflow_stage']),
         ];
     }
 

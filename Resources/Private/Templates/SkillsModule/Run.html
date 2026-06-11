@@ -3,18 +3,18 @@
 <f:layout name="Module"/>
 
 <f:section name="Content">
-    <h1><f:translate key="LLL:EXT:webcon_skills/Resources/Private/Language/locallang.xlf:runDetail.headline"/> #{run.uid}</h1>
+    <h1><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:runDetail.headline"/> #{run.uid}</h1>
     <p>
-        <a class="btn btn-default" href="{moduleUri}">&larr; <f:translate key="LLL:EXT:webcon_skills/Resources/Private/Language/locallang.xlf:runDetail.back"/></a>
+        <a class="btn btn-default" href="{moduleUri}">&larr; <f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:runDetail.back"/></a>
     </p>
     <table class="table table-striped" style="max-width: 720px;">
-        <tr><th><f:translate key="LLL:EXT:webcon_skills/Resources/Private/Language/locallang.xlf:runs.col.skill"/></th><td>{skillTitle}</td></tr>
-        <tr><th><f:translate key="LLL:EXT:webcon_skills/Resources/Private/Language/locallang.xlf:runs.col.date"/></th><td>{createdFormatted}</td></tr>
-        <tr><th><f:translate key="LLL:EXT:webcon_skills/Resources/Private/Language/locallang.xlf:runs.col.target"/></th><td><code>{run.target_table}:{run.target_uid}</code></td></tr>
+        <tr><th><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:runs.col.skill"/></th><td>{skillTitle}</td></tr>
+        <tr><th><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:runs.col.date"/></th><td>{createdFormatted}</td></tr>
+        <tr><th><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:runs.col.target"/></th><td><code>{run.target_table}:{run.target_uid}</code></td></tr>
         <tr><th>Workspace / Stage</th><td>{run.workspace_uid} / {run.stage_uid}</td></tr>
-        <tr><th><f:translate key="LLL:EXT:webcon_skills/Resources/Private/Language/locallang.xlf:runs.col.status"/></th><td>{run.status} ({run.runner})</td></tr>
+        <tr><th><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:runs.col.status"/></th><td>{run.status} ({run.runner})</td></tr>
     </table>
-    <h2><f:translate key="LLL:EXT:webcon_skills/Resources/Private/Language/locallang.xlf:runDetail.report"/></h2>
+    <h2><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:runDetail.report"/></h2>
     <pre style="white-space: pre-wrap; background: var(--typo3-surface-container-low, #f4f4f4); padding: 1rem; border-radius: 4px;">{run.output}</pre>
 </f:section>
 </html>

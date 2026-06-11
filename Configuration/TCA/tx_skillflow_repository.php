@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:webcon_skills/Resources/Private/Language/locallang_db.xlf:tx_webconskills_repository',
+        'title' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:tx_skillflow_repository',
         'label' => 'title',
         'label_alt' => 'url',
         'tstamp' => 'tstamp',
@@ -18,13 +18,13 @@ return [
             'disabled' => 'hidden',
         ],
         'typeicon_classes' => [
-            'default' => 'webconskills-repository',
+            'default' => 'skillflow-repository',
         ],
         'searchFields' => 'title,url',
     ],
     'columns' => [
         'title' => [
-            'label' => 'LLL:EXT:webcon_skills/Resources/Private/Language/locallang_db.xlf:repository.title',
+            'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:repository.title',
             'config' => [
                 'type' => 'input',
                 'size' => 50,
@@ -34,8 +34,8 @@ return [
             ],
         ],
         'url' => [
-            'label' => 'LLL:EXT:webcon_skills/Resources/Private/Language/locallang_db.xlf:repository.url',
-            'description' => 'LLL:EXT:webcon_skills/Resources/Private/Language/locallang_db.xlf:repository.url.description',
+            'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:repository.url',
+            'description' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:repository.url.description',
             'config' => [
                 'type' => 'link',
                 'allowedTypes' => ['url'],
@@ -43,7 +43,7 @@ return [
             ],
         ],
         'branch' => [
-            'label' => 'LLL:EXT:webcon_skills/Resources/Private/Language/locallang_db.xlf:repository.branch',
+            'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:repository.branch',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -53,8 +53,8 @@ return [
             ],
         ],
         'subfolder' => [
-            'label' => 'LLL:EXT:webcon_skills/Resources/Private/Language/locallang_db.xlf:repository.subfolder',
-            'description' => 'LLL:EXT:webcon_skills/Resources/Private/Language/locallang_db.xlf:repository.subfolder.description',
+            'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:repository.subfolder',
+            'description' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:repository.subfolder.description',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -63,8 +63,8 @@ return [
             ],
         ],
         'token_env_var' => [
-            'label' => 'LLL:EXT:webcon_skills/Resources/Private/Language/locallang_db.xlf:repository.token_env_var',
-            'description' => 'LLL:EXT:webcon_skills/Resources/Private/Language/locallang_db.xlf:repository.token_env_var.description',
+            'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:repository.token_env_var',
+            'description' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:repository.token_env_var.description',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -73,14 +73,14 @@ return [
             ],
         ],
         'last_synced' => [
-            'label' => 'LLL:EXT:webcon_skills/Resources/Private/Language/locallang_db.xlf:repository.last_synced',
+            'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:repository.last_synced',
             'config' => [
                 'type' => 'datetime',
                 'readOnly' => true,
             ],
         ],
         'last_error' => [
-            'label' => 'LLL:EXT:webcon_skills/Resources/Private/Language/locallang_db.xlf:repository.last_error',
+            'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:repository.last_error',
             'config' => [
                 'type' => 'text',
                 'rows' => 3,
@@ -91,11 +91,11 @@ return [
     'types' => [
         '0' => [
             'showitem' => '
-                --div--;LLL:EXT:webcon_skills/Resources/Private/Language/locallang_db.xlf:tab.general,
+                --div--;LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:tab.general,
                     title, url, branch, subfolder,
-                --div--;LLL:EXT:webcon_skills/Resources/Private/Language/locallang_db.xlf:tab.credentials,
+                --div--;LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:tab.credentials,
                     token_env_var,
-                --div--;LLL:EXT:webcon_skills/Resources/Private/Language/locallang_db.xlf:tab.status,
+                --div--;LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:tab.status,
                     last_synced, last_error,
                 --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:access,
                     hidden,

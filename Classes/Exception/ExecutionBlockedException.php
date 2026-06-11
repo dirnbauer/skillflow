@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webconsulting\Skills\Exception;
+namespace Webconsulting\Skillflow\Exception;
 
 /**
  * Thrown when skill execution is blocked, e.g. because the installation

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Webconsulting\Skills\Runner;
+namespace Webconsulting\Skillflow\Runner;
 
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Core\Environment;
-use Webconsulting\Skills\Domain\SkillRunResult;
-use Webconsulting\Skills\Exception\ExecutionBlockedException;
-use Webconsulting\Skills\Support\Typed;
+use Webconsulting\Skillflow\Domain\SkillRunResult;
+use Webconsulting\Skillflow\Exception\ExecutionBlockedException;
+use Webconsulting\Skillflow\Support\Typed;
 
 /**
  * Runs a skill through the local Claude Code CLI in non-interactive print
@@ -83,7 +83,7 @@ final class ClaudeCliRunner implements SkillRunnerInterface
     private function resolveBinary(): string
     {
         try {
-            $conf = Typed::stringKeyedArray($this->extensionConfiguration->get('webcon_skills'));
+            $conf = Typed::stringKeyedArray($this->extensionConfiguration->get('skillflow'));
         } catch (\Throwable) {
             $conf = [];
         }
