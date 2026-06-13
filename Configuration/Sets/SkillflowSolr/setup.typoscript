@@ -1,0 +1,152 @@
+#
+# Skillflow – Solr skills index & search
+#
+# Registers the index queue for tx_skillflow_skill records, the facets,
+# sorting and result-template path overrides for the EXT:skillflow skill
+# documents. Depends on the base "apache-solr-for-typo3/solr" set.
+#
+# NOTE: category/tags/version/license are NOT mapped here on purpose – they
+# are written into the Solr document by the PSR-14 indexing listener from the
+# JSON metadata column. Only the fields backed by real TCA columns are mapped.
+#
+
+# -----------------------------------------------------------------------------
+# (1) Index queue for skill records
+# -----------------------------------------------------------------------------
+plugin.tx_solr.index.queue {
+
+  skills = 1
+  skills {
+    type = tx_skillflow_skill
+
+    # Points the queue at the SysFolder(s) that hold the skill records.
+    # Set via the constant exposed in constants.typoscript.
+    additionalPageIds = {$plugin.tx_solr.index.queue.skills.additionalPageIds}
+
+    fields {
+      title = title
+      description = description
+
+      content = SOLR_CONTENT
+      content {
+        cObject = COA
+        cObject {
+          10 = TEXT
+          10 {
+            field = body
+            noTrimWrap = || |
+          }
+          20 = TEXT
+          20 {
+            field = description
+            noTrimWrap = || |
+          }
+        }
+      }
+
+      identifier_stringS = identifier
+      sourceType_stringS = source_type
+      sortTitle_stringS = title
+
+      allowedTools_stringM = SOLR_MULTIVALUE
+      allowedTools_stringM {
+        field = allowed_tools
+        separator = ,
+        removeEmptyValues = 1
+        removeDuplicateValues = 1
+      }
+    }
+  }
+
+}
+
+plugin.tx_solr.logging.indexing.queue.skills = 1
+
+# -----------------------------------------------------------------------------
+# (2) Faceting
+# -----------------------------------------------------------------------------
+plugin.tx_solr.search.faceting = 1
+plugin.tx_solr.search.faceting {
+  minimumCount = 1
+  sortBy = count
+  showEmptyFacets = 0
+
+  facets {
+    category {
+      label = Category
+      field = category_stringS
+    }
+    tags {
+      label = Tags
+      field = tags_stringM
+    }
+    source {
+      label = Source
+      field = sourceType_stringS
+    }
+    tools {
+      label = Allowed tools
+      field = allowedTools_stringM
+    }
+    license {
+      label = License
+      field = license_stringS
+    }
+    type {
+      label = Content type
+      field = type
+    }
+  }
+}
+
+# -----------------------------------------------------------------------------
+# (3) Sorting
+# -----------------------------------------------------------------------------
+plugin.tx_solr.search.sorting = 1
+plugin.tx_solr.search.sorting {
+  defaultOrder = asc
+
+  options {
+    relevance {
+      field = relevance
+      label = Relevance
+    }
+    title {
+      field = sortTitle_stringS
+      label = Title
+    }
+    category {
+      field = category_stringS
+      label = Category
+    }
+  }
+}
+
+# -----------------------------------------------------------------------------
+# (4) Results & highlighting
+# -----------------------------------------------------------------------------
+plugin.tx_solr.search.results {
+  resultsPerPage = 12
+  resultsPerPageSwitchOptions = 12,24,48
+
+  resultsHighlighting = 1
+  resultsHighlighting {
+    highlightFields = content
+  }
+}
+
+# NOTE: "show all skills on the empty landing query" is configured PER PLUGIN
+# INSTANCE via the content element's FlexForm (search.initializeWithEmptyQuery +
+# search.showResultsOfInitialEmptyQuery), NOT globally here — setting these on
+# the global plugin.tx_solr.search path would also force every other Solr search
+# plugin on the site (general site search) to dump all results on its landing
+# page. The skills content element ships those FlexForm flags pre-set.
+
+# -----------------------------------------------------------------------------
+# (5) Skill result template / partial / layout overrides
+# -----------------------------------------------------------------------------
+plugin.tx_solr.view {
+  templateRootPaths.200 = EXT:skillflow/Resources/Private/Solr/Templates/
+  partialRootPaths.200 = EXT:skillflow/Resources/Private/Solr/Partials/
+  layoutRootPaths.200 = EXT:skillflow/Resources/Private/Solr/Layouts/
+}

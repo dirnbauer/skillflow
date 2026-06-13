@@ -1,0 +1,5 @@
+plugin.tx_solr.index.queue.skills {
+  # Pid(s) of the SysFolder holding the tx_skillflow_skill records.
+  # The orchestrator must set this to the skills SysFolder pid (comma separated list allowed).
+  additionalPageIds =
+}
