@@ -4,222 +4,323 @@
 <f:layout name="Module"/>
 
 <f:section name="Content">
-    <h1><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:module.headline"/></h1>
+<f:variable name="ll">LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:</f:variable>
+<div class="skf-module">
 
     <f:if condition="{executionBlockReason}">
         <f:then>
             <div class="callout callout-warning">
                 <div class="callout-content">
-                    <h4 class="callout-title"><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:security.blocked.title"/></h4>
+                    <h4 class="callout-title"><f:translate key="{ll}security.blocked.title"/></h4>
                     <p>{executionBlockReason}</p>
-                    <p><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:security.blocked.hint"/></p>
+                    <p class="mb-0"><f:translate key="{ll}security.blocked.hint"/></p>
                 </div>
             </div>
         </f:then>
         <f:else>
             <div class="callout callout-info">
                 <div class="callout-content">
-                    <h4 class="callout-title"><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:security.local.title"/></h4>
-                    <p><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:security.local.text"/></p>
+                    <h4 class="callout-title"><f:translate key="{ll}security.local.title"/></h4>
+                    <p class="mb-0"><f:translate key="{ll}security.local.text"/></p>
                 </div>
             </div>
         </f:else>
     </f:if>
 
-    <h2><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:skills.headline"/> ({skills -> f:count()})</h2>
-    <div style="display:flex; gap:.5rem; margin-bottom:1rem;">
-        <a class="btn btn-primary" href="{newSkillUri}"><core:icon identifier="actions-add" size="small"/> <f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:skills.new"/></a>
-        <f:if condition="{isAdmin}">
-            <form action="{moduleUri}" method="post">
-                <input type="hidden" name="action" value="scanFolder"/>
-                <button type="submit" class="btn btn-default" title="{skillsFolder}">
-                    <core:icon identifier="actions-refresh" size="small"/>
-                    <f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:skills.scanFolder"/>
-                </button>
-            </form>
-        </f:if>
-    </div>
-    <f:if condition="{skills}">
-        <f:then>
-            <div class="table-fit">
-                <table class="table table-striped table-hover">
-                    <thead>
-                    <tr>
-                        <th><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:skills.col.title"/></th>
-                        <th><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:skills.col.identifier"/></th>
-                        <th><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:skills.col.description"/></th>
-                        <th><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:skills.col.source"/></th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <f:for each="{skills}" as="skill">
-                        <tr>
-                            <td>{skill.title}</td>
-                            <td><code>{skill.identifier}</code></td>
-                            <td>{skill.descriptionShort}</td>
-                            <td><span class="badge badge-info">{skill.source_type}</span></td>
-                            <td>
-                                <a class="btn btn-default btn-sm" href="{skill.editUri}" title="Edit">
-                                    <core:icon identifier="actions-open" size="small"/>
-                                </a>
-                            </td>
-                        </tr>
-                    </f:for>
-                    </tbody>
-                </table>
-            </div>
-        </f:then>
-        <f:else>
-            <p><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:skills.empty"/></p>
-        </f:else>
-    </f:if>
+    <f:comment>===================== PRIMARY: run a skill =====================</f:comment>
+    <div class="card skf-card skf-run">
+        <div class="card-header">
+            <h2 class="skf-card-title">
+                <core:icon identifier="actions-play" size="small"/>
+                <f:translate key="{ll}run.headline"/>
+            </h2>
+        </div>
+        <div class="card-body">
+            <p class="skf-muted">
+                <f:translate key="{ll}run.hint"/>
+                &middot; <f:translate key="{ll}run.workspace"/>: <strong>{currentWorkspace}</strong>
+            </p>
 
-    <f:if condition="{isAdmin}">
-        <h2><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:repositories.headline"/></h2>
-        <p>
-            <a class="btn btn-default" href="{newRepositoryUri}"><core:icon identifier="actions-add" size="small"/> <f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:repositories.new"/></a>
-        </p>
-        <f:if condition="{repositories}">
-            <div class="table-fit">
-                <table class="table table-striped table-hover">
-                    <thead>
-                    <tr>
-                        <th><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:repositories.col.title"/></th>
-                        <th>URL</th>
-                        <th><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:repositories.col.lastSynced"/></th>
-                        <th><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:repositories.col.lastError"/></th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <f:for each="{repositories}" as="repository">
-                        <tr>
-                            <td>{repository.title}</td>
-                            <td><code>{repository.url}</code> <small>({repository.branch})</small></td>
-                            <td>{repository.lastSyncedFormatted}</td>
-                            <td class="text-danger">{repository.lastErrorShort}</td>
-                            <td>
-                                <div style="display:flex; gap:.25rem;">
-                                    <form action="{moduleUri}" method="post">
-                                        <input type="hidden" name="action" value="syncRepository"/>
-                                        <input type="hidden" name="repository" value="{repository.uid}"/>
-                                        <button type="submit" class="btn btn-default btn-sm" title="Sync now">
-                                            <core:icon identifier="actions-system-extension-download" size="small"/>
-                                            <f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:repositories.sync"/>
+            <f:if condition="{hasCurrentPage}">
+                <f:then>
+                    <div class="skf-target">
+                        <core:icon identifier="apps-pagetree-page-default" size="small"/>
+                        <span class="skf-target__title">{currentPageTitle}</span>
+                        <span class="badge badge-info"><f:translate key="{ll}common.id"/> {currentPageUid}</span>
+                    </div>
+                </f:then>
+                <f:else>
+                    <div class="callout callout-info">
+                        <div class="callout-content">
+                            <strong><f:translate key="{ll}run.target.none.title"/></strong>
+                            <p class="mb-0"><f:translate key="{ll}run.target.none.text"/></p>
+                        </div>
+                    </div>
+                </f:else>
+            </f:if>
+
+            <f:if condition="{skills}">
+                <f:then>
+                    <form action="{moduleUri}" method="post">
+                        <div class="skf-run-grid">
+                            <div class="skf-field skf-field--page">
+                                <label class="form-label" for="skillflow-page"><f:translate key="{ll}run.page"/></label>
+                                <input id="skillflow-page" type="number" min="1" name="page"
+                                       value="<f:if condition="{currentPageUid}">{currentPageUid}</f:if>"
+                                       class="form-control" required="required"/>
+                            </div>
+                            <div class="skf-field skf-field--skill">
+                                <label class="form-label" for="skillflow-skill"><f:translate key="{ll}run.skill"/></label>
+                                <select id="skillflow-skill" name="skill" class="form-select">
+                                    <f:for each="{skills}" as="skill">
+                                        <option value="{skill.uid}">{skill.title}</option>
+                                    </f:for>
+                                </select>
+                            </div>
+                            <div class="skf-actions">
+                                <f:if condition="{executionBlockReason}">
+                                    <f:then>
+                                        <button type="submit" class="btn btn-primary" disabled="disabled">
+                                            <core:icon identifier="actions-play" size="small"/>
+                                            <f:translate key="{ll}run.submitSelected"/>
                                         </button>
-                                    </form>
-                                    <a class="btn btn-default btn-sm" href="{repository.editUri}" title="Edit">
-                                        <core:icon identifier="actions-open" size="small"/>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                    </f:for>
-                    </tbody>
-                </table>
-            </div>
-        </f:if>
-    </f:if>
+                                        <button type="submit" class="btn btn-default" disabled="disabled">
+                                            <f:translate key="{ll}run.runAssigned"/>
+                                        </button>
+                                    </f:then>
+                                    <f:else>
+                                        <button type="submit" name="action" value="run" class="btn btn-primary">
+                                            <core:icon identifier="actions-play" size="small"/>
+                                            <f:translate key="{ll}run.submitSelected"/>
+                                        </button>
+                                        <f:if condition="{assignedSkillsCount} > 0">
+                                            <f:then>
+                                                <button type="submit" name="action" value="runPageSkills" class="btn btn-default">
+                                                    <core:icon identifier="actions-play" size="small"/>
+                                                    <f:translate key="{ll}run.runAssigned"/> ({assignedSkillsCount})
+                                                </button>
+                                            </f:then>
+                                            <f:else>
+                                                <button type="submit" class="btn btn-default" disabled="disabled"
+                                                        title="{f:translate(key:'LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:run.assigned.none')}">
+                                                    <f:translate key="{ll}run.runAssigned"/>
+                                                </button>
+                                            </f:else>
+                                        </f:if>
+                                    </f:else>
+                                </f:if>
+                            </div>
+                        </div>
+                    </form>
 
-    <h2><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:run.headline"/></h2>
-    <p><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:run.hint"/> (<f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:run.workspace"/>: {currentWorkspace})</p>
-    <div class="row">
-        <div class="col-md-6">
-            <form action="{moduleUri}" method="post">
-                <input type="hidden" name="action" value="run"/>
-                <div style="display:flex; gap:.5rem; align-items:flex-end; flex-wrap:wrap;">
-                    <div>
-                        <label class="form-label" for="skillflow-page"><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:run.page"/></label>
-                        <input id="skillflow-page" type="number" min="1" name="page" class="form-control" required="required"/>
-                    </div>
-                    <div>
-                        <label class="form-label" for="skillflow-skill"><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:run.skill"/></label>
-                        <select id="skillflow-skill" name="skill" class="form-select">
-                            <f:for each="{skills}" as="skill">
-                                <option value="{skill.uid}">{skill.title}</option>
-                            </f:for>
-                        </select>
-                    </div>
-                    <div>
-                        <f:if condition="{executionBlockReason}">
+                    <f:if condition="{hasCurrentPage}">
+                        <f:if condition="{assignedSkills}">
                             <f:then>
-                                <button type="submit" class="btn btn-primary" disabled="disabled"><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:run.submit"/></button>
+                                <div class="skf-assigned">
+                                    <span class="skf-assigned__label"><f:translate key="{ll}run.assigned.label"/></span>
+                                    <f:for each="{assignedSkills}" as="assignedSkill">
+                                        <span class="skf-chip"><core:icon identifier="skillflow-skill" size="small"/> {assignedSkill.title}</span>
+                                    </f:for>
+                                </div>
                             </f:then>
                             <f:else>
-                                <button type="submit" class="btn btn-primary"><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:run.submit"/></button>
+                                <p class="skf-muted"><f:translate key="{ll}run.assigned.none"/></p>
                             </f:else>
                         </f:if>
+                    </f:if>
+                </f:then>
+                <f:else>
+                    <div class="callout callout-info">
+                        <div class="callout-content">
+                            <p class="mb-0"><f:translate key="{ll}skills.empty"/></p>
+                        </div>
                     </div>
-                </div>
-            </form>
-        </div>
-        <div class="col-md-6">
-            <form action="{moduleUri}" method="post">
-                <input type="hidden" name="action" value="runPageSkills"/>
-                <div style="display:flex; gap:.5rem; align-items:flex-end; flex-wrap:wrap;">
-                    <div>
-                        <label class="form-label" for="skillflow-page2"><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:run.page"/></label>
-                        <input id="skillflow-page2" type="number" min="1" name="page" class="form-control" required="required"/>
-                    </div>
-                    <div>
-                        <f:if condition="{executionBlockReason}">
-                            <f:then>
-                                <button type="submit" class="btn btn-default" disabled="disabled"><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:run.submitAssigned"/></button>
-                            </f:then>
-                            <f:else>
-                                <button type="submit" class="btn btn-default"><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:run.submitAssigned"/></button>
-                            </f:else>
-                        </f:if>
-                    </div>
-                </div>
-            </form>
+                    <a class="btn btn-primary" href="{newSkillUri}">
+                        <core:icon identifier="actions-plus" size="small"/> <f:translate key="{ll}skills.new"/>
+                    </a>
+                </f:else>
+            </f:if>
         </div>
     </div>
 
-    <h2><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:runs.headline"/></h2>
-    <f:if condition="{runs}">
-        <f:then>
-            <div class="table-fit">
-                <table class="table table-striped table-hover">
-                    <thead>
-                    <tr>
-                        <th><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:runs.col.date"/></th>
-                        <th><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:runs.col.skill"/></th>
-                        <th><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:runs.col.target"/></th>
-                        <th>WS</th>
-                        <th><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:runs.col.status"/></th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <f:for each="{runs}" as="run">
+    <f:comment>===================== Recent runs =====================</f:comment>
+    <div class="card skf-card">
+        <div class="card-header">
+            <h2 class="skf-card-title">
+                <core:icon identifier="actions-history" size="small"/>
+                <f:translate key="{ll}runs.headline"/>
+            </h2>
+        </div>
+        <f:if condition="{runs}">
+            <f:then>
+                <div class="table-fit">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead>
                         <tr>
-                            <td>{run.createdFormatted}</td>
-                            <td>{run.skillTitle}</td>
-                            <td><code>{run.target_table}:{run.target_uid}</code></td>
-                            <td>{run.workspace_uid}</td>
-                            <td>
-                                <f:switch expression="{run.status}">
-                                    <f:case value="success"><span class="badge badge-success">success</span></f:case>
-                                    <f:case value="blocked"><span class="badge badge-warning">blocked</span></f:case>
-                                    <f:defaultCase><span class="badge badge-danger">{run.status}</span></f:defaultCase>
-                                </f:switch>
-                            </td>
-                            <td>
-                                <a class="btn btn-default btn-sm" href="{run.showUri}">
-                                    <f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:runs.show"/>
-                                </a>
-                            </td>
+                            <th><f:translate key="{ll}runs.col.date"/></th>
+                            <th><f:translate key="{ll}runs.col.skill"/></th>
+                            <th><f:translate key="{ll}runs.col.target"/></th>
+                            <th>WS</th>
+                            <th><f:translate key="{ll}runs.col.status"/></th>
+                            <th class="col-control"></th>
                         </tr>
-                    </f:for>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        <f:for each="{runs}" as="run">
+                            <tr>
+                                <td><span class="text-nowrap">{run.createdFormatted}</span></td>
+                                <td>{run.skillTitle}</td>
+                                <td><code>{run.target_table}:{run.target_uid}</code></td>
+                                <td>{run.workspace_uid}</td>
+                                <td>
+                                    <f:switch expression="{run.status}">
+                                        <f:case value="success"><span class="badge badge-success">success</span></f:case>
+                                        <f:case value="blocked"><span class="badge badge-warning">blocked</span></f:case>
+                                        <f:defaultCase><span class="badge badge-danger">{run.status}</span></f:defaultCase>
+                                    </f:switch>
+                                </td>
+                                <td class="col-control">
+                                    <a class="btn btn-default btn-sm" href="{run.showUri}">
+                                        <core:icon identifier="actions-eye" size="small"/>
+                                        <f:translate key="{ll}runs.show"/>
+                                    </a>
+                                </td>
+                            </tr>
+                        </f:for>
+                        </tbody>
+                    </table>
+                </div>
+            </f:then>
+            <f:else>
+                <div class="card-body">
+                    <p class="skf-muted mb-0"><f:translate key="{ll}runs.empty"/></p>
+                </div>
+            </f:else>
+        </f:if>
+    </div>
+
+    <f:comment>===================== Skill catalogue (collapsible) =====================</f:comment>
+    <details class="card skf-card skf-section" open="open">
+        <summary class="card-header">
+            <h2 class="skf-card-title">
+                <f:translate key="{ll}skills.headline"/>
+                <span class="badge badge-info">{skills -> f:count()}</span>
+            </h2>
+        </summary>
+        <div class="card-body">
+            <f:if condition="{isAdmin}">
+                <form action="{moduleUri}" method="post" class="mb-3">
+                    <input type="hidden" name="action" value="scanFolder"/>
+                    <button type="submit" class="btn btn-default btn-sm" title="{skillsFolder}">
+                        <core:icon identifier="actions-refresh" size="small"/>
+                        <f:translate key="{ll}skills.scanFolder"/>
+                    </button>
+                </form>
+            </f:if>
+            <f:if condition="{skills}">
+                <f:then>
+                    <div class="table-fit">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead>
+                            <tr>
+                                <th><f:translate key="{ll}skills.col.title"/></th>
+                                <th><f:translate key="{ll}skills.col.identifier"/></th>
+                                <th><f:translate key="{ll}skills.col.description"/></th>
+                                <th><f:translate key="{ll}skills.col.source"/></th>
+                                <th class="col-control"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <f:for each="{skills}" as="skill">
+                                <tr>
+                                    <td>
+                                        <core:icon identifier="skillflow-skill" size="small"/>
+                                        {skill.title}
+                                    </td>
+                                    <td><code>{skill.identifier}</code></td>
+                                    <td>{skill.descriptionShort}</td>
+                                    <td><span class="badge badge-info">{skill.source_type}</span></td>
+                                    <td class="col-control">
+                                        <a class="btn btn-default btn-sm" href="{skill.editUri}" title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:edit')}">
+                                            <core:icon identifier="actions-open" size="small"/>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </f:for>
+                            </tbody>
+                        </table>
+                    </div>
+                </f:then>
+                <f:else>
+                    <p class="skf-muted mb-0"><f:translate key="{ll}skills.empty"/></p>
+                </f:else>
+            </f:if>
+        </div>
+    </details>
+
+    <f:comment>===================== Repositories (admin, collapsible) =====================</f:comment>
+    <f:if condition="{isAdmin}">
+        <details class="card skf-card skf-section">
+            <summary class="card-header">
+                <h2 class="skf-card-title">
+                    <core:icon identifier="actions-database" size="small"/>
+                    <f:translate key="{ll}repositories.headline"/>
+                    <span class="badge badge-info">{repositories -> f:count()}</span>
+                </h2>
+            </summary>
+            <div class="card-body">
+                <a class="btn btn-default btn-sm mb-3" href="{newRepositoryUri}">
+                    <core:icon identifier="actions-plus" size="small"/> <f:translate key="{ll}repositories.new"/>
+                </a>
+                <f:if condition="{repositories}">
+                    <f:then>
+                        <div class="table-fit">
+                            <table class="table table-striped table-hover mb-0">
+                                <thead>
+                                <tr>
+                                    <th><f:translate key="{ll}repositories.col.title"/></th>
+                                    <th>URL</th>
+                                    <th><f:translate key="{ll}repositories.col.lastSynced"/></th>
+                                    <th><f:translate key="{ll}repositories.col.lastError"/></th>
+                                    <th class="col-control"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <f:for each="{repositories}" as="repository">
+                                    <tr>
+                                        <td>{repository.title}</td>
+                                        <td><code>{repository.url}</code> <small>({repository.branch})</small></td>
+                                        <td><span class="text-nowrap">{repository.lastSyncedFormatted}</span></td>
+                                        <td class="text-danger">{repository.lastErrorShort}</td>
+                                        <td class="col-control">
+                                            <div class="btn-group">
+                                                <form action="{moduleUri}" method="post">
+                                                    <input type="hidden" name="action" value="syncRepository"/>
+                                                    <input type="hidden" name="repository" value="{repository.uid}"/>
+                                                    <button type="submit" class="btn btn-default btn-sm" title="{f:translate(key:'LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:repositories.sync')}">
+                                                        <core:icon identifier="actions-system-extension-download" size="small"/>
+                                                        <f:translate key="{ll}repositories.sync"/>
+                                                    </button>
+                                                </form>
+                                                <a class="btn btn-default btn-sm" href="{repository.editUri}" title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:edit')}">
+                                                    <core:icon identifier="actions-open" size="small"/>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </f:for>
+                                </tbody>
+                            </table>
+                        </div>
+                    </f:then>
+                    <f:else>
+                        <p class="skf-muted mb-0"><f:translate key="{ll}repositories.empty"/></p>
+                    </f:else>
+                </f:if>
             </div>
-        </f:then>
-        <f:else>
-            <p><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:runs.empty"/></p>
-        </f:else>
+        </details>
     </f:if>
+
+</div>
 </f:section>
 </html>

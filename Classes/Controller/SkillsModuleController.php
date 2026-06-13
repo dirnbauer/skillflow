@@ -7,10 +7,16 @@ namespace Webconsulting\Skillflow\Controller;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Imaging\IconSize;
+use TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use Webconsulting\Skillflow\Service\EnvironmentGuard;
 use Webconsulting\Skillflow\Service\RepositoryImportService;
 use Webconsulting\Skillflow\Service\SkillExecutionService;
@@ -59,7 +65,19 @@ final class SkillsModuleController
 
     private function renderIndex(ServerRequestInterface $request, ModuleTemplate $moduleTemplate): ResponseInterface
     {
-        $moduleUri = (string)$this->uriBuilder->buildUriFromRoute('content_skillflow');
+        GeneralUtility::makeInstance(PageRenderer::class)
+            ->addCssFile('EXT:skillflow/Resources/Public/Css/module.css');
+
+        // The page currently selected in the page tree (?id=). Pre-fills the run form.
+        $currentPageUid = Typed::int($request->getQueryParams()['id'] ?? 0);
+        $currentPage = $this->skillFinder->findPageByUid($currentPageUid);
+        $assignedSkills = $currentPageUid > 0 ? $this->skillFinder->findSkillsForPage($currentPageUid) : [];
+
+        // Keep the page-tree context on the form action so a POST re-render stays on the same page.
+        $moduleUri = (string)$this->uriBuilder->buildUriFromRoute(
+            'content_skillflow',
+            $currentPageUid > 0 ? ['id' => $currentPageUid] : []
+        );
         $skills = $this->skillFinder->findAllSkills(true);
         foreach ($skills as &$skill) {
             $skill['editUri'] = (string)$this->uriBuilder->buildUriFromRoute('record_edit', [
@@ -98,25 +116,80 @@ final class SkillsModuleController
         }
         unset($run);
 
+        $newSkillUri = (string)$this->uriBuilder->buildUriFromRoute('record_edit', [
+            'edit' => ['tx_skillflow_skill' => [0 => 'new']],
+            'returnUrl' => $moduleUri,
+        ]);
+        $newRepositoryUri = (string)$this->uriBuilder->buildUriFromRoute('record_edit', [
+            'edit' => ['tx_skillflow_repository' => [0 => 'new']],
+            'returnUrl' => $moduleUri,
+        ]);
+
+        $isAdmin = $this->getBackendUser()->isAdmin();
+        $this->registerDocHeaderButtons($moduleTemplate, $moduleUri, $newSkillUri, $newRepositoryUri, $currentPageUid, $isAdmin);
+
         $moduleTemplate->assignMultiple([
             'moduleUri' => $moduleUri,
-            'isAdmin' => $this->getBackendUser()->isAdmin(),
+            'isAdmin' => $isAdmin,
             'executionBlockReason' => $this->environmentGuard->getBlockReason(),
             'skills' => $skills,
             'repositories' => $repositories,
             'runs' => $runs,
             'skillsFolder' => $this->skillImportService->getConfiguredFolder(),
             'currentWorkspace' => (int)$this->getBackendUser()->workspace,
-            'newSkillUri' => (string)$this->uriBuilder->buildUriFromRoute('record_edit', [
-                'edit' => ['tx_skillflow_skill' => [0 => 'new']],
-                'returnUrl' => $moduleUri,
-            ]),
-            'newRepositoryUri' => (string)$this->uriBuilder->buildUriFromRoute('record_edit', [
-                'edit' => ['tx_skillflow_repository' => [0 => 'new']],
-                'returnUrl' => $moduleUri,
-            ]),
+            'currentPageUid' => $currentPageUid,
+            'currentPageTitle' => Typed::string($currentPage['title'] ?? null),
+            'hasCurrentPage' => $currentPage !== null,
+            'assignedSkills' => $assignedSkills,
+            'assignedSkillsCount' => count($assignedSkills),
+            'newSkillUri' => $newSkillUri,
+            'newRepositoryUri' => $newRepositoryUri,
         ]);
         return $moduleTemplate->renderResponse('SkillsModule/Index');
+    }
+
+    /**
+     * Primary actions live in the module doc header (standard TYPO3 placement),
+     * so the body can focus on the run form and reports.
+     */
+    private function registerDocHeaderButtons(
+        ModuleTemplate $moduleTemplate,
+        string $moduleUri,
+        string $newSkillUri,
+        string $newRepositoryUri,
+        int $currentPageUid,
+        bool $isAdmin,
+    ): void {
+        $buttonBar = $moduleTemplate->getDocHeaderComponent()->getButtonBar();
+        $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+
+        $newSkill = $buttonBar->makeLinkButton()
+            ->setHref($newSkillUri)
+            ->setTitle($this->lll('skills.new'))
+            ->setShowLabelText(true)
+            ->setIcon($iconFactory->getIcon('actions-plus', IconSize::SMALL));
+        $buttonBar->addButton($newSkill, ButtonBar::BUTTON_POSITION_LEFT, 1);
+
+        if ($isAdmin) {
+            $newRepository = $buttonBar->makeLinkButton()
+                ->setHref($newRepositoryUri)
+                ->setTitle($this->lll('repositories.new'))
+                ->setShowLabelText(true)
+                ->setIcon($iconFactory->getIcon('actions-database', IconSize::SMALL));
+            $buttonBar->addButton($newRepository, ButtonBar::BUTTON_POSITION_LEFT, 2);
+        }
+
+        $reload = $buttonBar->makeLinkButton()
+            ->setHref($moduleUri)
+            ->setTitle($this->getLanguageService()->sL('LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.reload'))
+            ->setIcon($iconFactory->getIcon('actions-refresh', IconSize::SMALL));
+        $buttonBar->addButton($reload, ButtonBar::BUTTON_POSITION_RIGHT);
+
+        $shortcut = $buttonBar->makeShortcutButton()
+            ->setRouteIdentifier('content_skillflow')
+            ->setDisplayName($this->lll('module.headline'))
+            ->setArguments($currentPageUid > 0 ? ['id' => $currentPageUid] : []);
+        $buttonBar->addButton($shortcut, ButtonBar::BUTTON_POSITION_RIGHT);
     }
 
     private function renderRun(ServerRequestInterface $request, ModuleTemplate $moduleTemplate): ResponseInterface
@@ -128,11 +201,17 @@ final class SkillsModuleController
             return $this->renderIndex($request, $moduleTemplate);
         }
         $skill = $this->skillFinder->findSkillByUid(Typed::int($run['skill']));
+        $targetTable = Typed::string($run['target_table']);
+        $targetUid = Typed::int($run['target_uid']);
+        $targetPageUri = ($targetTable === 'pages' && $targetUid > 0)
+            ? (string)$this->uriBuilder->buildUriFromRoute('content_skillflow', ['id' => $targetUid])
+            : '';
         $moduleTemplate->assignMultiple([
-            'moduleUri' => (string)$this->uriBuilder->buildUriFromRoute('content_skillflow'),
+            'moduleUri' => $targetPageUri ?: (string)$this->uriBuilder->buildUriFromRoute('content_skillflow'),
             'run' => $run,
             'skillTitle' => Typed::string($skill['title'] ?? null) ?: ('#' . Typed::int($run['skill'])),
             'createdFormatted' => date('Y-m-d H:i:s', Typed::int($run['crdate'])),
+            'targetPageUri' => $targetPageUri,
         ]);
         return $moduleTemplate->renderResponse('SkillsModule/Run');
     }
@@ -209,7 +288,7 @@ final class SkillsModuleController
         );
         $skill = $this->skillFinder->findSkillByUid($skillUid);
         $moduleTemplate->addFlashMessage(
-            $result->isSuccess() ? 'Report stored - see "Recent runs" below.' : mb_substr($result->output, 0, 500),
+            $result->isSuccess() ? 'Report stored — see "Recent runs".' : mb_substr($result->output, 0, 500),
             sprintf('Skill "%s" on page %d: %s', Typed::string($skill['title'] ?? null) ?: (string)$skillUid, $pageUid, $result->status),
             $result->isSuccess() ? ContextualFeedbackSeverity::OK : ContextualFeedbackSeverity::WARNING
         );
@@ -233,5 +312,17 @@ final class SkillsModuleController
             throw new \RuntimeException('No backend user available', 1760000050);
         }
         return $backendUser;
+    }
+
+    private function getLanguageService(): LanguageService
+    {
+        return $GLOBALS['LANG'];
+    }
+
+    private function lll(string $key): string
+    {
+        return $this->getLanguageService()->sL(
+            'LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:' . $key
+        );
     }
 }

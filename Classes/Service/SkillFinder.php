@@ -98,6 +98,27 @@ final class SkillFinder
     }
 
     /**
+     * Minimal page record (uid, title, doktype) for the run target preview.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function findPageByUid(int $pageUid): ?array
+    {
+        if ($pageUid <= 0) {
+            return null;
+        }
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('pages');
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $row = $queryBuilder
+            ->select('uid', 'title', 'doktype', 'tx_skillflow_skills')
+            ->from('pages')
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($pageUid, \Doctrine\DBAL\ParameterType::INTEGER)))
+            ->executeQuery()
+            ->fetchAssociative();
+        return $row ?: null;
+    }
+
+    /**
      * Skills assigned to a page via pages.tx_skillflow_skills.
      *
      * @return array<int, array<string, mixed>>
