@@ -26,15 +26,32 @@ use Webconsulting\Skillflow\Support\Typed;
 final class SkillImportService
 {
     /**
-     * Text-based supporting files imported as attachments. Binaries
-     * (images, archives, ...) are skipped and counted in the summary.
+     * Binary / non-text extensions that are never imported as supporting
+     * files. Everything else that is valid UTF-8 and within the size limit
+     * IS imported, so code examples in any text format (neon, typoscript,
+     * xlf, scss, tsx, Makefile, Dockerfile, ...) survive the import and are
+     * available to the runners afterwards.
      */
-    private const ALLOWED_FILE_EXTENSIONS = [
-        'md', 'txt', 'rst', 'py', 'sh', 'bash', 'json', 'yaml', 'yml',
-        'csv', 'xml', 'html', 'htm', 'js', 'ts', 'php', 'sql', 'css', 'twig',
+    private const BINARY_FILE_EXTENSIONS = [
+        'png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'ico', 'icns', 'svgz', 'tif', 'tiff',
+        'pdf', 'zip', 'gz', 'tgz', 'bz2', 'xz', 'tar', 'rar', '7z', 'jar', 'war',
+        'woff', 'woff2', 'ttf', 'otf', 'eot',
+        'mp3', 'mp4', 'm4a', 'wav', 'ogg', 'webm', 'mov', 'avi', 'mkv', 'flac',
+        'exe', 'dll', 'so', 'dylib', 'bin', 'class', 'phar',
+        'sqlite', 'db', 'mo', 'keystore', 'p12', 'pfx',
     ];
 
-    private const MAX_FILE_SIZE = 262144; // 256 KB per supporting file
+    /**
+     * Directory names skipped wholesale (VCS metadata, dependency and build
+     * output) so a local skill checkout does not drag thousands of vendored
+     * files into the database.
+     */
+    private const IGNORED_DIRECTORIES = [
+        '.git', '.svn', '.hg', 'node_modules', 'vendor', '.Build',
+        '.idea', '.vscode', '__pycache__', '.pytest_cache',
+    ];
+
+    private const MAX_FILE_SIZE = 524288; // 512 KB per supporting file
 
     public function __construct(
         private readonly SkillParser $skillParser,
@@ -236,16 +253,27 @@ final class SkillImportService
                 continue;
             }
             $relativePath = ltrim(substr($file->getPathname(), strlen($realDirectory)), '/');
-            if (str_contains($relativePath, '..')) {
+            if ($relativePath === '' || str_contains($relativePath, '..')) {
                 continue;
             }
+            // Skip VCS / dependency / build-output directories anywhere in the path.
+            foreach (explode('/', $relativePath) as $segment) {
+                if (in_array($segment, self::IGNORED_DIRECTORIES, true)) {
+                    continue 2;
+                }
+            }
+            $filename = $file->getFilename();
+            if ($filename === '.DS_Store' || $filename === 'Thumbs.db') {
+                continue;
+            }
+            // Import every text file; only true binaries and oversized files are skipped.
             $extension = strtolower($file->getExtension());
-            if (!in_array($extension, self::ALLOWED_FILE_EXTENSIONS, true) || $file->getSize() > self::MAX_FILE_SIZE) {
+            if (in_array($extension, self::BINARY_FILE_EXTENSIONS, true) || $file->getSize() > self::MAX_FILE_SIZE) {
                 $result->skippedFiles++;
                 continue;
             }
             $content = (string)file_get_contents($file->getPathname());
-            if (!mb_check_encoding($content, 'UTF-8')) {
+            if ($content !== '' && !mb_check_encoding($content, 'UTF-8')) {
                 $result->skippedFiles++;
                 continue;
             }
