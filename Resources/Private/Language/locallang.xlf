@@ -59,6 +59,9 @@
       <trans-unit id="repositories.sync" resname="repositories.sync">
         <source>Sync</source>
       </trans-unit>
+      <trans-unit id="repositories.empty" resname="repositories.empty">
+        <source>No repositories configured yet.</source>
+      </trans-unit>
       <trans-unit id="run.headline" resname="run.headline">
         <source>Run a skill on a page</source>
       </trans-unit>
@@ -69,7 +72,7 @@
         <source>current workspace</source>
       </trans-unit>
       <trans-unit id="run.page" resname="run.page">
-        <source>Page uid</source>
+        <source>Page ID</source>
       </trans-unit>
       <trans-unit id="run.skill" resname="run.skill">
         <source>Skill</source>
@@ -77,8 +80,32 @@
       <trans-unit id="run.submit" resname="run.submit">
         <source>Run skill</source>
       </trans-unit>
+      <trans-unit id="run.submitSelected" resname="run.submitSelected">
+        <source>Run selected skill</source>
+      </trans-unit>
       <trans-unit id="run.submitAssigned" resname="run.submitAssigned">
         <source>Run skills assigned to the page</source>
+      </trans-unit>
+      <trans-unit id="run.runAssigned" resname="run.runAssigned">
+        <source>Run all assigned skills</source>
+      </trans-unit>
+      <trans-unit id="run.runner" resname="run.runner">
+        <source>Runner</source>
+      </trans-unit>
+      <trans-unit id="run.target.none.title" resname="run.target.none.title">
+        <source>No page selected</source>
+      </trans-unit>
+      <trans-unit id="run.target.none.text" resname="run.target.none.text">
+        <source>Pick a page in the page tree on the left, or type a page ID below.</source>
+      </trans-unit>
+      <trans-unit id="run.assigned.label" resname="run.assigned.label">
+        <source>Assigned to this page:</source>
+      </trans-unit>
+      <trans-unit id="run.assigned.none" resname="run.assigned.none">
+        <source>No skills are assigned to this page yet (Page properties → Skills tab).</source>
+      </trans-unit>
+      <trans-unit id="common.id" resname="common.id">
+        <source>ID</source>
       </trans-unit>
       <trans-unit id="runs.headline" resname="runs.headline">
         <source>Recent runs</source>
@@ -106,6 +133,9 @@
       </trans-unit>
       <trans-unit id="runDetail.back" resname="runDetail.back">
         <source>Back to overview</source>
+      </trans-unit>
+      <trans-unit id="runDetail.openTarget" resname="runDetail.openTarget">
+        <source>Open target page</source>
       </trans-unit>
       <trans-unit id="runDetail.report" resname="runDetail.report">
         <source>Report</source>

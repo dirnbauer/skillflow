@@ -1,20 +1,51 @@
 <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
       data-namespace-typo3-fluid="true">
 <f:layout name="Module"/>
 
 <f:section name="Content">
-    <h1><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:runDetail.headline"/> #{run.uid}</h1>
-    <p>
-        <a class="btn btn-default" href="{moduleUri}">&larr; <f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:runDetail.back"/></a>
-    </p>
-    <table class="table table-striped" style="max-width: 720px;">
-        <tr><th><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:runs.col.skill"/></th><td>{skillTitle}</td></tr>
-        <tr><th><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:runs.col.date"/></th><td>{createdFormatted}</td></tr>
-        <tr><th><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:runs.col.target"/></th><td><code>{run.target_table}:{run.target_uid}</code></td></tr>
-        <tr><th>Workspace / Stage</th><td>{run.workspace_uid} / {run.stage_uid}</td></tr>
-        <tr><th><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:runs.col.status"/></th><td>{run.status} ({run.runner})</td></tr>
-    </table>
-    <h2><f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:runDetail.report"/></h2>
-    <pre style="white-space: pre-wrap; background: var(--typo3-surface-container-low, #f4f4f4); padding: 1rem; border-radius: 4px;">{run.output}</pre>
+<f:variable name="ll">LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:</f:variable>
+<div class="skf-module">
+
+    <div class="skf-actions">
+        <a class="btn btn-default" href="{moduleUri}">
+            <core:icon identifier="actions-arrow-left-alt" size="small"/>
+            <f:translate key="{ll}runDetail.back"/>
+        </a>
+        <f:if condition="{targetPageUri}">
+            <a class="btn btn-default" href="{targetPageUri}">
+                <core:icon identifier="apps-pagetree-page-default" size="small"/>
+                <f:translate key="{ll}runDetail.openTarget"/>
+            </a>
+        </f:if>
+    </div>
+
+    <div class="card skf-card">
+        <div class="card-header">
+            <h2 class="skf-card-title">
+                <core:icon identifier="skillflow-run" size="small"/>
+                <f:translate key="{ll}runDetail.headline"/> #{run.uid}
+                <f:switch expression="{run.status}">
+                    <f:case value="success"><span class="badge badge-success">success</span></f:case>
+                    <f:case value="blocked"><span class="badge badge-warning">blocked</span></f:case>
+                    <f:defaultCase><span class="badge badge-danger">{run.status}</span></f:defaultCase>
+                </f:switch>
+            </h2>
+        </div>
+        <div class="card-body">
+            <dl class="skf-meta">
+                <dt><f:translate key="{ll}runs.col.skill"/></dt><dd>{skillTitle}</dd>
+                <dt><f:translate key="{ll}runs.col.date"/></dt><dd>{createdFormatted}</dd>
+                <dt><f:translate key="{ll}runs.col.target"/></dt><dd><code>{run.target_table}:{run.target_uid}</code></dd>
+                <dt>Workspace / Stage</dt><dd>{run.workspace_uid} / {run.stage_uid}</dd>
+                <dt><f:translate key="{ll}run.runner"/></dt><dd>{run.runner}</dd>
+            </dl>
+
+            <h3><f:translate key="{ll}runDetail.report"/></h3>
+            <pre class="skf-report">{run.output}</pre>
+        </div>
+    </div>
+
+</div>
 </f:section>
 </html>
