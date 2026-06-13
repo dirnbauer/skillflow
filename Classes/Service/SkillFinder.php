@@ -55,6 +55,25 @@ final class SkillFinder
     }
 
     /**
+     * @return array<string, mixed>|null
+     */
+    public function findByIdentifier(string $identifier, bool $includeHidden = false): ?array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_skillflow_skill');
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        if (!$includeHidden) {
+            $queryBuilder->getRestrictions()->add(GeneralUtility::makeInstance(HiddenRestriction::class));
+        }
+        $row = $queryBuilder
+            ->select('*')
+            ->from('tx_skillflow_skill')
+            ->where($queryBuilder->expr()->eq('identifier', $queryBuilder->createNamedParameter($identifier, \Doctrine\DBAL\ParameterType::STRING)))
+            ->executeQuery()
+            ->fetchAssociative();
+        return $row ?: null;
+    }
+
+    /**
      * @return array<int, array<string, mixed>>
      */
     public function findSkillsByUidList(string $uidList): array

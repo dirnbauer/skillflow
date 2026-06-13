@@ -1,0 +1,86 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:sf="http://typo3.org/ns/Webconsulting/Skillflow/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+<f:layout name="Default" />
+
+<f:section name="Main">
+    <f:if condition="{notFound}">
+        <f:then>
+            <div class="skillflow-skill__notfound">
+                <p>
+                    <f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:plugin.skilldetail.notfound"
+                        default="No skill found for this identifier." />
+                </p>
+                <f:if condition="{identifier}">
+                    <p class="skillflow-skill__identifier"><code>{identifier}</code></p>
+                </f:if>
+            </div>
+        </f:then>
+        <f:else>
+            <article class="skillflow-skill">
+                <nav class="skillflow-skill__breadcrumb">
+                    <f:link.page pageUid="{TSFE.id}" class="skillflow-skill__back">&larr;
+                        <f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:plugin.skilldetail.back"
+                            default="Back" />
+                    </f:link.page>
+                </nav>
+
+                <header class="skillflow-skill__header">
+                    <h1 class="skillflow-skill__title">{skill.title}</h1>
+
+                    <p class="skillflow-skill__meta">
+                        <span class="skillflow-skill__identifier"><code>{skill.identifier}</code></span>
+                        <f:if condition="{skill.source_type}">
+                            <span class="skillflow-skill__source">
+                                <f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:skill.source_type.{skill.source_type}"
+                                    default="{skill.source_type}" />
+                            </span>
+                        </f:if>
+                    </p>
+
+                    <f:if condition="{skill.description}">
+                        <p class="skillflow-skill__description">{skill.description}</p>
+                    </f:if>
+
+                    <f:if condition="{meta.category}">
+                        <p class="skillflow-skill__badges skillflow-skill__categories">
+                            <span class="skillflow-skill__badge skillflow-skill__badge--category">{meta.category}</span>
+                        </p>
+                    </f:if>
+
+                    <f:if condition="{meta.tags}">
+                        <p class="skillflow-skill__badges skillflow-skill__tags">
+                            <f:for each="{meta.tags}" as="tag">
+                                <span class="skillflow-skill__badge skillflow-skill__badge--tag">{tag}</span>
+                            </f:for>
+                        </p>
+                    </f:if>
+                </header>
+
+                <div class="skillflow-skill__body">
+                    <sf:markdown>{skill.body}</sf:markdown>
+                </div>
+
+                <f:if condition="{files}">
+                    <section class="skillflow-skill__files">
+                        <h2>
+                            <f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:skill.files"
+                                default="Supporting files" />
+                        </h2>
+                        <ul class="skillflow-skill__filelist">
+                            <f:for each="{files}" as="file">
+                                <li class="skillflow-skill__file">
+                                    <span class="skillflow-skill__file-path">{file.relative_path}</span>
+                                    <span class="skillflow-skill__file-size">{file.size} B</span>
+                                </li>
+                            </f:for>
+                        </ul>
+                    </section>
+                </f:if>
+            </article>
+        </f:else>
+    </f:if>
+</f:section>
+</html>

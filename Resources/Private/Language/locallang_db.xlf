@@ -11,6 +11,15 @@
       <trans-unit id="tx_skillflow_run" resname="tx_skillflow_run">
         <source>Skill run</source>
       </trans-unit>
+      <trans-unit id="plugin.skilldetail.title" resname="plugin.skilldetail.title">
+        <source>Skill detail</source>
+      </trans-unit>
+      <trans-unit id="plugin.skilldetail.description" resname="plugin.skilldetail.description">
+        <source>Render a single skill (identified by its identifier) in the frontend.</source>
+      </trans-unit>
+      <trans-unit id="plugin.group" resname="plugin.group">
+        <source>Skillflow</source>
+      </trans-unit>
       <trans-unit id="tab.general" resname="tab.general">
         <source>General</source>
       </trans-unit>
@@ -94,6 +103,9 @@
       </trans-unit>
       <trans-unit id="skill.source_type.repository" resname="skill.source_type.repository">
         <source>Imported from repository</source>
+      </trans-unit>
+      <trans-unit id="skill.source_type.rules" resname="skill.source_type.rules">
+        <source>Rule</source>
       </trans-unit>
       <trans-unit id="skill.repository" resname="skill.repository">
         <source>Repository</source>

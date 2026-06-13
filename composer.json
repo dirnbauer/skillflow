@@ -6,6 +6,7 @@
     "require": {
         "php": "^8.2",
         "ext-zip": "*",
+        "league/commonmark": "^2.7",
         "symfony/process": "^7.0",
         "symfony/yaml": "^7.0",
         "typo3/cms-backend": "^14.3",

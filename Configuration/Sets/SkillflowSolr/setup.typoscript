@@ -157,3 +157,17 @@ plugin.tx_solr.view {
   partialRootPaths.200 = EXT:skillflow/Resources/Private/Solr/Partials/
   layoutRootPaths.200 = EXT:skillflow/Resources/Private/Solr/Layouts/
 }
+
+# -----------------------------------------------------------------------------
+# (6) Skill detail plugin (skillflow_skilldetail) rendering
+# -----------------------------------------------------------------------------
+# On standard fluid_styled_content sites the plugin renders out of the box via
+# ExtensionUtility::configurePlugin() (tt_content.skillflow_skilldetail = the
+# EXTBASEPLUGIN). On sites whose lib.contentElement is a FLUIDTEMPLATE that maps
+# CType -> a content template (e.g. desiderio), add a per-page override, e.g.:
+#   [page["uid"] in [<detail page uids>]]
+#   tt_content.skillflow_skilldetail >
+#   tt_content.skillflow_skilldetail = COA
+#   tt_content.skillflow_skilldetail.20 = EXTBASEPLUGIN
+#   tt_content.skillflow_skilldetail.20 { extensionName = Skillflow; pluginName = SkillDetail }
+#   [END]

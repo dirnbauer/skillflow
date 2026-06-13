@@ -10,3 +10,12 @@ defined('TYPO3') or die();
 // and to new records created in a workspace (auto-start the review workflow).
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass']['skillflow'] = DataHandlerHook::class;
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass']['skillflow'] = DataHandlerHook::class;
+
+// Frontend plugin "Skill detail" (CType skillflow_skilldetail): render one skill by identifier.
+\TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
+    'Skillflow',
+    'SkillDetail',
+    [\Webconsulting\Skillflow\Controller\SkillDetailController::class => 'show'],
+    [],
+    \TYPO3\CMS\Extbase\Utility\ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT,
+);
