@@ -71,6 +71,33 @@ final class SkillImportService
         return Environment::getProjectPath() . '/' . ($folder !== '' ? $folder : 'skills');
     }
 
+    /**
+     * pid of the SysFolder imported skills are stored in. 0 keeps them on
+     * the global root level (legacy behaviour); a real SysFolder pid inside
+     * a Solr site makes the skill records indexable.
+     */
+    private function getConfiguredStoragePid(): int
+    {
+        try {
+            $conf = Typed::stringKeyedArray($this->extensionConfiguration->get('skillflow'));
+        } catch (\Throwable) {
+            $conf = [];
+        }
+        return Typed::int($conf['storagePid'] ?? 0);
+    }
+
+    /**
+     * Guards against symlinks inside a skill folder that point outside the
+     * project: both directory iterators follow symlinks, and the top-level
+     * containment check cannot catch a symlink whose in-tree path stays clean.
+     * Every resolved file must live within the project path.
+     */
+    private function isInsideProject(string $path): bool
+    {
+        $real = realpath($path);
+        return $real !== false && str_starts_with($real, Environment::getProjectPath() . '/');
+    }
+
     public function importFromConfiguredFolder(): ImportResult
     {
         return $this->importFromPath($this->getConfiguredFolder(), 'folder', 0);
@@ -119,7 +146,7 @@ final class SkillImportService
         $iterator->setMaxDepth(4);
         /** @var \SplFileInfo $file */
         foreach ($iterator as $file) {
-            if ($file->isFile() && $file->getFilename() === 'SKILL.md') {
+            if ($file->isFile() && $file->getFilename() === 'SKILL.md' && $this->isInsideProject($file->getPathname())) {
                 $files[] = $file->getPathname();
             }
         }
@@ -133,8 +160,9 @@ final class SkillImportService
     private function upsert(ParsedSkill $skill, string $sourceType, int $repositoryUid, string $relativePath): array
     {
         $connection = $this->connectionPool->getConnectionForTable('tx_skillflow_skill');
+        $targetPid = $this->getConfiguredStoragePid();
         $existing = $connection->select(
-            ['uid', 'content_hash'],
+            ['uid', 'pid', 'content_hash'],
             'tx_skillflow_skill',
             [
                 'identifier' => $skill->identifier,
@@ -153,6 +181,7 @@ final class SkillImportService
             'metadata' => json_encode($skill->metadata, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '{}',
             'relative_path' => $relativePath,
             'content_hash' => $skill->contentHash(),
+            'pid' => $targetPid,
             'last_synced' => $now,
             'tstamp' => $now,
         ];
@@ -160,7 +189,16 @@ final class SkillImportService
         if ($existing !== false) {
             $uid = Typed::int($existing['uid']);
             if (Typed::string($existing['content_hash']) === $skill->contentHash()) {
-                $connection->update('tx_skillflow_skill', ['last_synced' => $now], ['uid' => $uid]);
+                // Content is unchanged, but still migrate the record when the
+                // configured storage folder (storagePid) changed — so skills
+                // imported before storagePid was set move into the Solr site
+                // root and become indexable.
+                $touch = ['last_synced' => $now];
+                if (Typed::int($existing['pid']) !== $targetPid) {
+                    $touch['pid'] = $targetPid;
+                    $touch['tstamp'] = $now;
+                }
+                $connection->update('tx_skillflow_skill', $touch, ['uid' => $uid]);
                 return ['unchanged', $uid];
             }
             $connection->update('tx_skillflow_skill', $fields, ['uid' => $uid]);
@@ -168,7 +206,6 @@ final class SkillImportService
         }
 
         $connection->insert('tx_skillflow_skill', $fields + [
-            'pid' => 0,
             'identifier' => $skill->identifier,
             'source_type' => $sourceType,
             'repository' => $repositoryUid,
@@ -254,6 +291,13 @@ final class SkillImportService
             }
             $relativePath = ltrim(substr($file->getPathname(), strlen($realDirectory)), '/');
             if ($relativePath === '' || str_contains($relativePath, '..')) {
+                continue;
+            }
+            // A symlink inside the folder may point outside the project; the
+            // iterator follows it but its in-tree path stays clean, so re-check
+            // the resolved target is still within the project.
+            if (!$this->isInsideProject($file->getPathname())) {
+                $result->skippedFiles++;
                 continue;
             }
             // Skip VCS / dependency / build-output directories anywhere in the path.
