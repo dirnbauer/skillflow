@@ -1,0 +1,32 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      xmlns:s="http://typo3.org/ns/ApacheSolrForTypo3/Solr/ViewHelpers"
+      data-namespace-typo3-fluid="true"
+>
+
+<h2 class="facet-label solr-filter-heading">{facet.label}</h2>
+<div class="facet-option-list facet-type-options fluidfacet" data-facet-name="{facet.name}" data-facet-label="{facet.label}">
+    <ul class="solr-filter-list list-unstyled">
+    <f:for each="{facet.options}" as="option" iteration="iteration">
+        <f:if condition="{option.selected}">
+            <f:then>
+                <li>
+                    <a rel="nofollow" class="solr-filter-link solr-filter-link-active facet remove-facet-option solr-ajaxified" href="{s:uri.facet.removeFacetItem(facet: facet, facetItem: option)}">
+                        {facet.configuration.prefix}{option.label}
+                        <span class="solr-filter-count">{option.documentCount}</span>
+                    </a>
+                </li>
+            </f:then>
+            <f:else>
+                <li>
+                    <a rel="nofollow" class="solr-filter-link facet solr-ajaxified" href="{s:uri.facet.addFacetItem(facet: facet, facetItem: option)}">
+                        {facet.configuration.prefix}{option.label}
+                        <span class="solr-filter-count">{option.documentCount}</span>
+                    </a>
+                </li>
+            </f:else>
+        </f:if>
+    </f:for>
+    </ul>
+</div>
+</html>

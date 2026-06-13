@@ -1,0 +1,92 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"
+		xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+		xmlns:s="http://typo3.org/ns/ApacheSolrForTypo3/Solr/ViewHelpers/">
+
+<f:layout name="Fullwidth" />
+
+<f:section name="content">
+<div class="container">
+	<div class="solr-controls-panel">
+		<f:render partial="Search/Form" section="Form" arguments="{search:search, additionalFilters:additionalFilters, pluginNamespace: pluginNamespace, resultSet: resultSet}" />
+		<f:if condition="{resultSet.allResultCount}">
+			<div class="row solr-result-controls">
+				<div class="col-lg-8">
+					<f:if condition="{resultSet.usedSearchRequest.contextTypoScriptConfiguration.searchFaceting}">
+						<f:render partial="Result/Facets" section="UsedFacets" arguments="{resultSet:resultSet}" />
+					</f:if>
+				</div>
+				<div class="col-lg-4">
+					<f:if condition="{resultSet.usedSearchRequest.contextTypoScriptConfiguration.searchSorting}">
+						<f:render partial="Result/Sorting" section="Sorting" arguments="{resultSet:resultSet}" />
+					</f:if>
+				</div>
+			</div>
+		</f:if>
+	</div>
+	<f:if condition="{resultSet.allResultCount}">
+		<f:else>
+			<div class="alert alert-danger mt-3" role="alert">
+				<f:translate key="no_results_nothing_found" arguments="{0: resultSet.usedQuery.options.query}">Nothing found for "%s".</f:translate>
+				<f:if condition="{resultSet.hasSpellCheckingSuggestions}">
+					<f:then>
+						<f:translate key="didYouMean">Did you mean</f:translate>
+						<f:for each="{resultSet.spellCheckingSuggestions}" as="suggestion">
+							<f:link.page additionalParams="{tx_solr:{q:suggestion.suggestion}}">{suggestion.suggestion}</f:link.page>
+						</f:for>?
+					</f:then>
+				</f:if>
+			</div>
+		</f:else>
+		<f:then>
+			<div class="row solr-results-layout">
+				<div class="col-lg-3 solr-results-layout__facets">
+					<f:if condition="{resultSet.usedSearchRequest.contextTypoScriptConfiguration.searchFaceting}">
+						<f:render partial="Result/Facets" section="Facets" arguments="{resultSet:resultSet}" />
+					</f:if>
+				</div>
+				<div class="col-lg-9 solr-results-layout__results">
+					<div id="tx-solr-search">
+						<f:if condition="{resultSet.isAutoCorrected}">
+							<span class="searched-for">
+								<f:translate key="no_results_nothing_found" arguments="{0: resultSet.usedQuery.queryString}">Nothing found for "%s".</f:translate>
+								<f:translate key="no_results_search_for_original" arguments="{0: resultSet.correctedQueryString}">Search instead for "%s".</f:translate>
+							</span>
+						</f:if>
+
+						<f:if condition="{resultSet.hasSpellCheckingSuggestions}">
+							<f:then>
+								<div class="alert alert-info mt-3" role="alert">
+									<f:translate key="didYouMean">Did you mean</f:translate>
+									<f:for each="{resultSet.spellCheckingSuggestions}" as="suggestion">
+										<f:link.page additionalParams="{tx_solr:{q:suggestion.suggestion}}">{suggestion.suggestion}</f:link.page>
+									</f:for>
+									?
+								</div>
+							</f:then>
+						</f:if>
+
+						<f:if condition="{resultSet.hasSearched}">
+							<div data-start="{pagination.startRecordNumber}" class="results-list list-group">
+								<f:variable name="exactMatchFound" value="0" />
+								<f:if condition="{resultSet.usedQuery.options.query -> f:format.case(mode:'lower')} == {resultSet.searchResults.0.title -> f:format.case(mode:'lower')}">
+									<f:render partial="Result/Document" section="DocumentWrap" arguments="{resultSet:resultSet, document:resultSet.searchResults.0, exactMatchFound: 1}" />
+									<f:variable name="exactMatchFound" value="1" />
+								</f:if>
+								<f:for each="{resultSet.searchResults}" as="document" iteration="iterator">
+									<f:if condition="{exactMatchFound} && {iterator.isFirst}">
+										<f:else>
+											<f:render partial="Result/Document" section="DocumentWrap" arguments="{resultSet:resultSet, document:document}" />
+										</f:else>
+									</f:if>
+								</f:for>
+							</div>
+							<f:render partial="Result/Pagination" section="Pagination" arguments="{resultSet: resultSet, pagination: pagination, currentPage: currentPage}"/>
+						</f:if>
+					</div>
+				</div>
+			</div>
+		</f:then>
+	</f:if>
+</div>
+</f:section>
+</html>

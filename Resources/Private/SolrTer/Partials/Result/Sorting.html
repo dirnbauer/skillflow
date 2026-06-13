@@ -1,0 +1,53 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      xmlns:s="http://typo3.org/ns/ApacheSolrForTypo3/Solr/ViewHelpers">
+
+<f:section name="Sorting">
+    <f:if condition="{resultSet.sortings -> f:count()}">
+        <div id="tx-solr-sorting" class="d-none d-lg-block d-xl-block">
+            <div class="solr-filter-section">
+                <h2 class="solr-filter-heading"><f:translate key="sorting_sortBy">Sorting</f:translate></h2>
+                <ul class="solr-filter-list list-unstyled">
+                    <f:for each="{resultSet.sortings}" as="sorting">
+                        <f:if condition="{sorting.isResetOption}">
+                            <f:then>
+                                <li>
+                                    <f:if condition="{sorting.selected}">
+                                        <f:then>
+                                            <a rel="nofollow" href="{s:uri.sorting.removeSorting()}" class="solr-filter-link solr-filter-link-active solr-ajaxified">{sorting.label}</a>
+                                        </f:then>
+                                        <f:else>
+                                            <a rel="nofollow" href="{s:uri.sorting.removeSorting()}" class="solr-filter-link solr-ajaxified">{sorting.label}</a>
+                                        </f:else>
+                                    </f:if>
+                                </li>
+                            </f:then>
+                            <f:else>
+                                <f:if condition="{sorting.selected}">
+                                    <f:then>
+                                        <li>
+                                            <a rel="nofollow" href="{s:uri.sorting.setSorting(sortingName: sorting.name, sortingDirection: sorting.oppositeDirection)}" class="solr-filter-link solr-filter-link-active solr-ajaxified">
+                                                <f:if condition="{sorting.isAscDirection}">
+                                                    <f:then><i class="fa fa-arrow-up"></i></f:then>
+                                                    <f:else><i class="fa fa-arrow-down"></i></f:else>
+                                                </f:if>
+                                                <span>{sorting.label}</span>
+                                            </a>
+                                        </li>
+                                    </f:then>
+                                    <f:else>
+                                        <li>
+                                            <a rel="nofollow" href="{s:uri.sorting.setSorting(sortingName: sorting.name, sortingDirection: sorting.direction)}" class="solr-filter-link solr-ajaxified">{sorting.label}</a>
+                                        </li>
+                                    </f:else>
+                                </f:if>
+                            </f:else>
+                        </f:if>
+                    </f:for>
+                </ul>
+            </div>
+        </div>
+    </f:if>
+
+</f:section>
+</html>

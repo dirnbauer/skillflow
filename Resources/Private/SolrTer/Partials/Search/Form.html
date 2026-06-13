@@ -1,0 +1,20 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      xmlns:s="http://typo3.org/ns/ApacheSolrForTypo3/Solr/ViewHelpers">
+
+<f:section name="Form">
+
+    <div class="tx-solr-search-form">
+        <s:searchForm id="tx-solr-search-form-pi-results" class="" additionalFilters="{additionalFilters}">
+            <input type="hidden" name="L" value="{languageUid}" />
+            <input type="hidden" name="id" value="{pageUid}" />
+            <input type="text" class="form-control" placeholder="Search for skills, tags, category..." name="tx_solr[q]" value="{q}">
+            <button type="submit" class="btn btn-primary mb-0 mt-0 ms-1">
+                <span class="btn-icon" aria-hidden="true"><i class="fa fa-search"></i></span>
+                <span class="btn-text d-none d-sm-inline"><f:translate key="submit" default="Search" /></span>
+            </button>
+        </s:searchForm>
+    </div>
+
+</f:section>
+</html>

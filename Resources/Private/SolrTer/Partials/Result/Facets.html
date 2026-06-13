@@ -1,0 +1,65 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      xmlns:s="http://typo3.org/ns/ApacheSolrForTypo3/Solr/ViewHelpers">
+
+<f:section name="UsedFacets">
+    <f:if condition="{resultSet.facets.used -> f:count()}">
+        <div id="tx-solr-facets-in-use" class="solr-filter-section">
+            <h2 class="solr-filter-heading">Active filters</h2>
+            <ul class="facets solr-filter-list list-unstyled">
+                <f:for each="{resultSet.facets.used}" as="facet">
+                    <f:for each="{facet.allFacetItems.selected}" as="item">
+                        <li>
+                            <a rel="nofollow" href="{s:uri.facet.removeFacetItem(facet: facet, facetItem: item)}" class="solr-filter-link facet remove-facet-option solr-ajaxified">
+                                <i class="fa fa-times"></i>
+                                <span>{facet.configuration.prefix}{item.label}</span>
+                            </a>
+                        </li>
+                    </f:for>
+                </f:for>
+                <li>
+                    <a rel="nofollow" href="{s:uri.facet.removeAllFacets()}" class="solr-filter-clear solr-ajaxified">
+                        <i class="fa fa-times"></i>
+                        <span><f:translate key="faceting_removeAllFilters">Clear all</f:translate></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </f:if>
+</f:section>
+
+<f:section name="Facets">
+    <button class="btn btn-secondary solr-filter-toggle d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#tx-solr-faceting" aria-expanded="false" aria-controls="tx-solr-faceting">
+        <span class="btn-icon" aria-hidden="true"><i class="fa fa-filter"></i></span>
+        <span class="btn-text">Filters</span>
+    </button>
+    <div id="tx-solr-faceting" class="collapse d-lg-block">
+        <div class="solr-filter-sidebar">
+            <s:facet.area.group groupName="main" facets="{resultSet.facets.available}">
+                <div class="facet-area-main">
+                    <div class="solr-facets-available secondaryContentSection">
+                        <f:for each="{areaFacets}" as="facet">
+                            <f:variable name="hasVisibleFacetOptions" value="0" />
+                            <f:for each="{facet.options}" as="option">
+                                <f:if condition="{option.label}">
+                                    <f:if condition="{option.selected}">
+                                        <f:else>
+                                            <f:variable name="hasVisibleFacetOptions" value="1" />
+                                        </f:else>
+                                    </f:if>
+                                </f:if>
+                            </f:for>
+                            <f:if condition="{hasVisibleFacetOptions}">
+                                <div class="solr-filter-section">
+                                    <f:render partial="Facets/Options" arguments="{resultSet:resultSet, facet:facet}" />
+                                </div>
+                            </f:if>
+                        </f:for>
+                    </div>
+                </div>
+            </s:facet.area.group>
+        </div>
+    </div>
+
+</f:section>
+</html>

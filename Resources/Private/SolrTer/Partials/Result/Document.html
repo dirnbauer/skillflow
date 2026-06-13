@@ -1,0 +1,85 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"
+		xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+		xmlns:s="http://typo3.org/ns/ApacheSolrForTypo3/Solr/ViewHelpers">
+
+
+<f:section name="DocumentWrap">
+	<f:if condition="{document}">
+		<f:if condition="{exactMatchFound}">
+			<f:then>
+				<div class="card card-size-medium search-result-card border-2 border-primary" style="grid-column: span 2;" aria-labelledby="search-result-card-title-{document.type}-{document.uid}">
+					<f:render section="Document" arguments="{_all}" />
+				</div>
+			</f:then>
+			<f:else>
+				<div class="card card-size-medium search-result-card" aria-labelledby="search-result-card-title-{document.type}-{document.uid}">
+					<f:render section="Document" arguments="{_all}" />
+				</div>
+			</f:else>
+		</f:if>
+	</f:if>
+</f:section>
+
+<f:section name="Document">
+	<f:if condition="{document.isElevated}">
+		<div class="results-elevated-label">
+			<f:translate key="sponsored" />
+		</div>
+	</f:if>
+	<div class="card-body">
+        <div class="d-flex justify-content-between gap-3">
+            <div class="min-w-0">
+                <h3 class="card-title search-result-card__title mb-1" id="search-result-card-title-{document.type}-{document.uid}">
+                    <span class="d-flex min-w-0 flex-wrap align-items-center gap-2">
+                        <span class="min-w-0 search-result-card__title-text">{document.title}</span>
+                        <f:if condition="{exactMatchFound}">
+                            <span class="badge bg-primary-subtle text-primary">exact match</span>
+                        </f:if>
+                    </span>
+                </h3>
+                <f:if condition="{document.identifier_stringS} || {document.sourceType_stringS}">
+                    <div class="mb-3 small text-muted">
+                        <f:if condition="{document.identifier_stringS}">
+                            {document.identifier_stringS}
+                        </f:if>
+                        <f:if condition="{document.sourceType_stringS}">
+                            <f:if condition="{document.identifier_stringS}">
+                                /
+                            </f:if>
+                            by
+                            <f:format.crop maxCharacters="{f:if(condition:exactMatchFound, then: '100', else: '50')}">{document.sourceType_stringS}</f:format.crop>
+                        </f:if>
+                    </div>
+                </f:if>
+            </div>
+        </div>
+
+        <p class="mb-3">
+            <f:format.crop maxCharacters="{f:if(condition:exactMatchFound, then: '360', else: '220')}" respectWordBoundaries="true">{s:document.highlightResult(resultSet:resultSet, document:document, fieldName:'content')}</f:format.crop>
+        </p>
+
+	</div>
+	<div class="card-footer search-result-card__meta">
+		<f:if condition="{document.category_stringS}">
+			<span class="badge bg-primary">{document.category_stringS}</span>
+		</f:if>
+		<f:if condition="{document.tags_stringM}">
+			<f:for each="{document.tags_stringM}" as="tag" iteration="tagIterator">
+				<f:if condition="{tagIterator.cycle} <= 6">
+					<f:if condition="{tag}">
+						<span class="badge bg-light text-dark">{tag}</span>
+					</f:if>
+				</f:if>
+			</f:for>
+		</f:if>
+		<f:if condition="{document.version_stringS}">
+			<span>&bull;</span>
+			<span>v{document.version_stringS}</span>
+		</f:if>
+		<f:if condition="{document.license_stringS}">
+			<span>&bull;</span>
+			<span>{document.license_stringS}</span>
+		</f:if>
+	</div>
+</f:section>
+</html>
