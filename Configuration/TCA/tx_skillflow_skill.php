@@ -102,6 +102,7 @@ return [
                     ['label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:skill.source_type.manual', 'value' => 'manual'],
                     ['label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:skill.source_type.folder', 'value' => 'folder'],
                     ['label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:skill.source_type.repository', 'value' => 'repository'],
+                    ['label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:skill.source_type.rules', 'value' => 'rules'],
                 ],
                 'default' => 'manual',
             ],

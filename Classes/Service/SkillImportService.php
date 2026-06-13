@@ -135,6 +135,21 @@ final class SkillImportService
     }
 
     /**
+     * Persists a single already-parsed skill through the shared upsert
+     * pipeline (content_hash / last_synced / storagePid migration all kept
+     * intact). Lets other importers — e.g. RuleImportService, which reads its
+     * own files from outside the project path — reuse the exact same DB write
+     * path without duplicating the upsert logic.
+     *
+     * @return 'created'|'updated'|'unchanged'
+     */
+    public function importParsedSkill(ParsedSkill $skill, string $sourceType, int $repositoryUid, string $relativePath): string
+    {
+        [$status] = $this->upsert($skill, $sourceType, $repositoryUid, $relativePath);
+        return $status;
+    }
+
+    /**
      * @return string[] absolute paths of SKILL.md files (max depth 4)
      */
     private function findSkillFiles(string $directory): array
