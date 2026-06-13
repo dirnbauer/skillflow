@@ -1,0 +1,4 @@
+name: webconsulting/skillflow-solr
+label: 'Skillflow – Solr skills index & search'
+dependencies:
+  - apache-solr-for-typo3/solr

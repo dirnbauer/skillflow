@@ -19,5 +19,8 @@ mcpServersJson =
 # cat=import/enable/100; type=string; label=Skills folder: Folder with skill directories (each containing a SKILL.md), relative to the project root
 skillsFolder = skills
 
+# cat=import/enable/110; type=int+; label=Skills storage page: pid of the SysFolder that imported skills are stored in (0 = global/rootLevel). Set this to a SysFolder inside your Solr site so skills get indexed.
+storagePid = 0
+
 # cat=security/enable/100; type=boolean; label=Require local environment: Only allow skill execution when TYPO3 runs in Development context inside a DDEV project (IS_DDEV_PROJECT=true). Do NOT disable this on shared or production systems.
 requireLocalEnvironment = 1

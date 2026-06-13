@@ -1,0 +1,88 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+    xmlns:s="http://typo3.org/ns/ApacheSolrForTypo3/Solr/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<f:argument name="document" type="object"/>
+<f:argument name="resultSet" type="object"/>
+<f:argument name="settings" type="array" optional="true"/>
+<f:argument name="logging" type="array" optional="true"/>
+
+<f:section name="Document">
+    <article class="search-result results-entry d-solr-result-card d-solr-result-card--skill{f:if(condition: document.isElevated, then: ' results-elevated')}"
+        data-slot="card"
+        data-document-score="{document.score}"
+        data-document-id="{document.id}"
+        data-document-url="{document.url}"
+    >
+        <header class="d-solr-result-card__header">
+            <div class="d-solr-result-card__title-group">
+                <h3 class="d-solr-result-card__title">
+                    <f:if condition="{document.url}">
+                        <f:then>
+                            <a href="{s:uri.result.addSearchWordList(url: document.url, searchWords: resultSet.usedQuery.query)}">{document.title}</a>
+                        </f:then>
+                        <f:else>{document.title}</f:else>
+                    </f:if>
+                </h3>
+                <f:if condition="{document.identifier_stringS}">
+                    <p class="d-solr-result-card__url d-solr-result-card__identifier">
+                        <code>{document.identifier_stringS}</code>
+                    </p>
+                </f:if>
+            </div>
+
+            <div class="d-solr-result-card__badges d-solr-result-card__badges--header">
+                <f:if condition="{document.category_stringS}">
+                    <span class="d-solr-result-card__type d-solr-result-card__category" data-slot="badge">
+                        {document.category_stringS}
+                    </span>
+                </f:if>
+                <f:if condition="{document.sourceType_stringS}">
+                    <span class="d-solr-result-card__type d-solr-result-card__source" data-slot="badge">
+                        {document.sourceType_stringS}
+                    </span>
+                </f:if>
+            </div>
+        </header>
+
+        <div class="d-solr-result-card__body">
+            <f:if condition="{document.description}">
+                <f:then>
+                    <p class="result-content d-solr-result-card__content">
+                        {document.description -> f:format.crop(maxCharacters: 220, append: '…')}
+                    </p>
+                </f:then>
+                <f:else>
+                    <f:if condition="{document.content}">
+                        <p class="result-content d-solr-result-card__content">
+                            {document.content -> f:format.crop(maxCharacters: 220, append: '…')}
+                        </p>
+                    </f:if>
+                </f:else>
+            </f:if>
+
+            <f:if condition="{document.tags_stringM}">
+                <ul role="list" class="d-solr-result-card__tags">
+                    <f:for each="{document.tags_stringM}" as="tag" iteration="tagIteration">
+                        <f:if condition="{tagIteration.cycle} <= 6">
+                            <f:if condition="{tag}">
+                                <li class="d-solr-result-card__type d-solr-result-card__tag" data-slot="badge">{tag}</li>
+                            </f:if>
+                        </f:if>
+                    </f:for>
+                </ul>
+            </f:if>
+
+            <f:if condition="{settings.logging.debugOutput} || {logging.debugOutput}">
+                <f:variable name="documentScoreAnalyze"><f:render partial="Debug/Explain" section="Explain" arguments="{document: document, resultSet: resultSet}" /></f:variable>
+                <f:if condition="{documentScoreAnalyze}">
+                    <div class="d-solr-result-card__debug"><f:format.raw>{documentScoreAnalyze}</f:format.raw></div>
+                </f:if>
+            </f:if>
+        </div>
+    </article>
+</f:section>
+
+</html>
