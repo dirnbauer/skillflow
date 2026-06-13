@@ -135,12 +135,19 @@ plugin.tx_solr.search.results {
   }
 }
 
-# NOTE: "show all skills on the empty landing query" is configured PER PLUGIN
-# INSTANCE via the content element's FlexForm (search.initializeWithEmptyQuery +
-# search.showResultsOfInitialEmptyQuery), NOT globally here — setting these on
-# the global plugin.tx_solr.search path would also force every other Solr search
-# plugin on the site (general site search) to dump all results on its landing
-# page. The skills content element ships those FlexForm flags pre-set.
+# NOTE: "browse the whole catalogue on the empty landing query" is NOT enabled
+# globally here, because initializeWithEmptyQuery / allowEmptyQuery on the global
+# plugin.tx_solr.search path would also force the site's general Solr search to
+# dump all results. Enable it PER skill-listing page with a page-scoped TypoScript
+# condition in the consuming site / site package, e.g.:
+#
+#   [page["uid"] in [<your skill listing page uids>]]
+#   plugin.tx_solr.search {
+#       initializeWithEmptyQuery = 1
+#       showResultsOfInitialEmptyQuery = 1
+#       query.allowEmptyQuery = 1
+#   }
+#   [END]
 
 # -----------------------------------------------------------------------------
 # (5) Skill result template / partial / layout overrides
