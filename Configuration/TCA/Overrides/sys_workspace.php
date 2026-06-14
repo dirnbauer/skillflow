@@ -24,7 +24,7 @@ ExtensionManagementUtility::addTCAcolumns('sys_workspace', [
             'type' => 'select',
             'renderType' => 'selectSingle',
             'foreign_table' => 'sys_workspace_stage',
-            'foreign_table_where' => 'AND {#sys_workspace_stage}.{#parentid} = ###THIS_UID### AND {#sys_workspace_stage}.{#parenttable} = \'sys_workspace\'',
+            'foreign_table_where' => 'AND {#sys_workspace_stage}.{#parentid} = ###THIS_UID###',
             'items' => [
                 ['label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:workspace.auto_workflow_stage.none', 'value' => 0],
             ],
