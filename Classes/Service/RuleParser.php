@@ -12,7 +12,7 @@ use Webconsulting\Skillflow\Support\Typed;
 /**
  * Parses a single TYPO3 "agent rule" markdown file: YAML frontmatter
  * delimited by "---" lines (keys: id, title, category, severity,
- * appliesTo[], typo3, php, trigger), followed by a markdown body.
+ * typo3, php, trigger), followed by a markdown body.
  *
  * Maps the rule onto a {@see ParsedSkill} so it can be persisted through
  * the existing skill upsert pipeline with source_type='rules'. All rules

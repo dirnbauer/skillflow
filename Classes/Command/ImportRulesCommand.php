@@ -8,7 +8,6 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Webconsulting\Skillflow\Service\RuleImportService;
@@ -28,30 +27,20 @@ final class ImportRulesCommand extends Command
 
     protected function configure(): void
     {
-        $this
-            ->addArgument(
-                'path',
-                InputArgument::OPTIONAL,
-                'Absolute path to the rules/ directory (category subdirs with *.md rule files)'
-            )
-            ->addOption(
-                'path',
-                'p',
-                InputOption::VALUE_REQUIRED,
-                'Absolute path to the rules/ directory (overrides the positional argument)'
-            );
+        $this->addArgument(
+            'path',
+            InputArgument::OPTIONAL,
+            'Absolute path to the rules/ directory (category subdirs with *.md rule files)'
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        $path = Typed::string($input->getOption('path'));
+        $path = Typed::string($input->getArgument('path'));
         if ($path === '') {
-            $path = Typed::string($input->getArgument('path'));
-        }
-        if ($path === '') {
-            $io->error('No rules directory given. Pass it as an argument or via --path.');
+            $io->error('No rules directory given. Pass it as the first argument.');
             return Command::INVALID;
         }
 

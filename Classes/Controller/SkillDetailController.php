@@ -23,9 +23,10 @@ final class SkillDetailController extends ActionController
 
     public function showAction(int $skill = 0): ResponseInterface
     {
-        // The route enhancer (PersistedAliasMapper on the 'identifier' field)
-        // resolves the speaking URL segment to the record uid; fall back to
-        // findByIdentifier when a raw identifier string is passed instead.
+        // The 'SkillDetail' route enhancer uses a PersistedAliasMapper aspect on
+        // the 'identifier' field (tableName tx_skillflow_skill, routeFieldName
+        // identifier), so the speaking URL segment resolves to the record uid
+        // before Extbase passes it here as int $skill. There is no string fallback.
         $row = $skill > 0 ? $this->skillFinder->findSkillByUid($skill) : null;
 
         if ($row === null) {

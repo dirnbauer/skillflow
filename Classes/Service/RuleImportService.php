@@ -43,10 +43,28 @@ final class RuleImportService
             return $result;
         }
 
+        // Rule identifiers are the upsert match key (source_type='rules',
+        // repository=0), so two rule files that resolve to the same identifier
+        // would silently overwrite each other. The identifier is not namespaced
+        // by category and the DB write path bypasses TCA's unique eval, so guard
+        // here: a duplicate identifier from a *different* file is reported and
+        // skipped rather than clobbering the record already imported under it.
+        $identifierToPath = [];
         foreach ($this->findRuleFiles($realPath) as $ruleFile) {
             $relativePath = ltrim(substr($ruleFile, strlen($realPath)), '/');
             try {
                 $parsed = $this->ruleParser->parse((string)file_get_contents($ruleFile), $relativePath);
+                $firstPath = $identifierToPath[$parsed->identifier] ?? null;
+                if ($firstPath !== null && $firstPath !== $relativePath) {
+                    $result->errors[] = sprintf(
+                        '%s: duplicate rule identifier "%s" (already used by %s) — skipped to avoid overwriting',
+                        $relativePath,
+                        $parsed->identifier,
+                        $firstPath
+                    );
+                    continue;
+                }
+                $identifierToPath[$parsed->identifier] = $relativePath;
                 $status = $this->skillImportService->importParsedSkill($parsed, self::SOURCE_TYPE, 0, $relativePath);
                 $result->{$status}++;
             } catch (\Throwable $e) {
