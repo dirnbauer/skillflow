@@ -1,4 +1,4 @@
-# cat=runner/enable/100; type=options[Anthropic API=api,Claude Code CLI=cli]; label=Skill runner: "api" calls the Anthropic Messages API, "cli" executes the local Claude Code CLI (supports project MCP servers)
+# cat=runner/enable/100; type=options[Auto: prefer nr_llm, else Anthropic API=api,Anthropic API (env key)=anthropic,Claude Code CLI=cli]; label=Skill runner: "api" prefers the LLM connection configured in nr_llm (the "LLM" backend module) and falls back to the Anthropic Messages API env key; "anthropic" forces the env-key API; "cli" executes the local Claude Code CLI
 runner = api
 
 # cat=runner/enable/110; type=string; label=Model: Model id used by the API runner

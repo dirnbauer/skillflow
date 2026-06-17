@@ -12,6 +12,7 @@ final class RunnerFactory
         private readonly ExtensionConfiguration $extensionConfiguration,
         private readonly AnthropicApiRunner $anthropicApiRunner,
         private readonly ClaudeCliRunner $claudeCliRunner,
+        private readonly NrLlmRunner $nrLlmRunner,
     ) {
     }
 
@@ -22,6 +23,19 @@ final class RunnerFactory
         } catch (\Throwable) {
             $conf = [];
         }
-        return (($conf['runner'] ?? 'api') === 'cli') ? $this->claudeCliRunner : $this->anthropicApiRunner;
+
+        $runner = $conf['runner'] ?? 'api';
+        if ($runner === 'cli') {
+            return $this->claudeCliRunner;
+        }
+
+        // API mode: prefer the connection already configured in nr_llm (the "LLM"
+        // backend module) so no separate ANTHROPIC_API_KEY env var is required;
+        // fall back to the env-var Anthropic Messages API runner when nr_llm has
+        // no usable provider. Set runner=anthropic to force the env-var runner.
+        if ($runner !== 'anthropic' && $this->nrLlmRunner->isAvailable()) {
+            return $this->nrLlmRunner;
+        }
+        return $this->anthropicApiRunner;
     }
 }
