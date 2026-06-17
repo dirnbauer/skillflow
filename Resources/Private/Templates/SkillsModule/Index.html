@@ -111,6 +111,12 @@
                                 </f:if>
                             </div>
                         </div>
+                        <div class="skf-field skf-field--instructions">
+                            <label class="form-label" for="skillflow-instructions"><f:translate key="{ll}run.instructions"/></label>
+                            <textarea id="skillflow-instructions" name="instructions" rows="3" class="form-control"
+                                      placeholder="{f:translate(key:'LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:run.instructions.placeholder')}"></textarea>
+                            <span class="form-text skf-muted"><f:translate key="{ll}run.instructions.help"/></span>
+                        </div>
                     </form>
 
                     <f:if condition="{hasCurrentPage}">

@@ -179,6 +179,9 @@
       <trans-unit id="run.output" resname="run.output">
         <source>Report</source>
       </trans-unit>
+      <trans-unit id="run.instructions" resname="run.instructions">
+        <source>Per-run instructions</source>
+      </trans-unit>
       <trans-unit id="stage.skills" resname="stage.skills">
         <source>Skills for this stage</source>
       </trans-unit>

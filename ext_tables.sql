@@ -7,6 +7,7 @@ CREATE TABLE tx_skillflow_skill (
 );
 
 CREATE TABLE tx_skillflow_run (
+    instructions text,
     output mediumtext
 );
 

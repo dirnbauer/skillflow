@@ -65,6 +65,10 @@ return [
             'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:run.runner',
             'config' => ['type' => 'input', 'max' => 64, 'readOnly' => true],
         ],
+        'instructions' => [
+            'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:run.instructions',
+            'config' => ['type' => 'text', 'rows' => 4, 'readOnly' => true],
+        ],
         'output' => [
             'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:run.output',
             'config' => ['type' => 'text', 'rows' => 20, 'readOnly' => true],
@@ -72,7 +76,7 @@ return [
     ],
     'types' => [
         '0' => [
-            'showitem' => 'skill, status, runner, target_table, target_uid, workspace_uid, stage_uid, output',
+            'showitem' => 'skill, status, runner, target_table, target_uid, workspace_uid, stage_uid, instructions, output',
         ],
     ],
 ];

@@ -254,16 +254,19 @@ final class SkillsModuleController
         $body = Typed::stringKeyedArray($request->getParsedBody());
         $skillUid = Typed::int($body['skill'] ?? 0);
         $pageUid = Typed::int($body['page'] ?? 0);
+        $instructions = Typed::string($body['instructions'] ?? '');
         if ($skillUid <= 0 || $pageUid <= 0) {
             $moduleTemplate->addFlashMessage('Please select a skill and provide a page uid.', 'Missing input', ContextualFeedbackSeverity::WARNING);
             return;
         }
-        $this->executeAndReport($moduleTemplate, $skillUid, $pageUid);
+        $this->executeAndReport($moduleTemplate, $skillUid, $pageUid, $instructions);
     }
 
     private function runPageSkillsAction(ServerRequestInterface $request, ModuleTemplate $moduleTemplate): void
     {
-        $pageUid = Typed::int(Typed::stringKeyedArray($request->getParsedBody())['page'] ?? 0);
+        $body = Typed::stringKeyedArray($request->getParsedBody());
+        $pageUid = Typed::int($body['page'] ?? 0);
+        $instructions = Typed::string($body['instructions'] ?? '');
         $skills = $pageUid > 0 ? $this->skillFinder->findSkillsForPage($pageUid) : [];
         if ($skills === []) {
             $moduleTemplate->addFlashMessage(
@@ -274,17 +277,19 @@ final class SkillsModuleController
             return;
         }
         foreach ($skills as $skill) {
-            $this->executeAndReport($moduleTemplate, Typed::int($skill['uid']), $pageUid);
+            $this->executeAndReport($moduleTemplate, Typed::int($skill['uid']), $pageUid, $instructions);
         }
     }
 
-    private function executeAndReport(ModuleTemplate $moduleTemplate, int $skillUid, int $pageUid): void
+    private function executeAndReport(ModuleTemplate $moduleTemplate, int $skillUid, int $pageUid, string $instructions = ''): void
     {
         $result = $this->skillExecutionService->runSkillOnRecord(
             $skillUid,
             'pages',
             $pageUid,
-            (int)$this->getBackendUser()->workspace
+            (int)$this->getBackendUser()->workspace,
+            0,
+            $instructions
         );
         $skill = $this->skillFinder->findSkillByUid($skillUid);
         $moduleTemplate->addFlashMessage(

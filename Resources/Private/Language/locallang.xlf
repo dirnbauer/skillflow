@@ -74,6 +74,18 @@
       <trans-unit id="run.page" resname="run.page">
         <source>Page ID</source>
       </trans-unit>
+      <trans-unit id="run.instructions" resname="run.instructions">
+        <source>Per-run instructions (optional)</source>
+      </trans-unit>
+      <trans-unit id="run.instructions.placeholder" resname="run.instructions.placeholder">
+        <source>Extra context for this run — you can use {uid}, {table}, {title}, {pid}, {workspace}.</source>
+      </trans-unit>
+      <trans-unit id="run.instructions.help" resname="run.instructions.help">
+        <source>Placeholders are replaced with the target record's values when the skill starts: {uid}, {table}, {title}, {pid}, {workspace}.</source>
+      </trans-unit>
+      <trans-unit id="runDetail.instructions" resname="runDetail.instructions">
+        <source>Per-run instructions</source>
+      </trans-unit>
       <trans-unit id="run.skill" resname="run.skill">
         <source>Skill</source>
       </trans-unit>

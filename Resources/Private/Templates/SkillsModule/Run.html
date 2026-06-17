@@ -41,6 +41,11 @@
                 <dt><f:translate key="{ll}run.runner"/></dt><dd>{run.runner}</dd>
             </dl>
 
+            <f:if condition="{run.instructions}">
+                <h3><f:translate key="{ll}runDetail.instructions"/></h3>
+                <pre class="skf-report skf-instructions">{run.instructions}</pre>
+            </f:if>
+
             <h3><f:translate key="{ll}runDetail.report"/></h3>
             <pre class="skf-report">{run.output}</pre>
         </div>
