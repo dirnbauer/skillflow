@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webconsulting\Skillflow\Service;
 
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use Webconsulting\Skillflow\Support\Typed;
 
 /**
  * Resolves a small, fixed set of placeholder tokens and substitutes them into
@@ -25,14 +26,21 @@ final class ContextResolver
      */
     public function resolveTokens(string $table, int $uid, int $workspaceId): array
     {
-        $record = $uid > 0 ? (BackendUtility::getRecord($table, $uid) ?? []) : [];
-        $labelField = (string)($GLOBALS['TCA'][$table]['ctrl']['label'] ?? 'title');
+        $record = [];
+        if ($uid > 0) {
+            $fetched = BackendUtility::getRecord($table, $uid);
+            if (is_array($fetched)) {
+                $record = $fetched;
+            }
+        }
+
+        $labelField = $this->resolveLabelField($table);
 
         return [
             '{uid}' => (string)$uid,
             '{table}' => $table,
-            '{pid}' => (string)(int)($record['pid'] ?? 0),
-            '{title}' => (string)($record[$labelField] ?? ''),
+            '{pid}' => (string)Typed::int($record['pid'] ?? 0),
+            '{title}' => Typed::string($record[$labelField] ?? ''),
             '{workspace}' => (string)$workspaceId,
         ];
     }
@@ -43,5 +51,24 @@ final class ContextResolver
     public function apply(string $template, array $tokens): string
     {
         return strtr($template, $tokens);
+    }
+
+    private function resolveLabelField(string $table): string
+    {
+        $tca = $GLOBALS['TCA'] ?? null;
+        if (!is_array($tca)) {
+            return 'title';
+        }
+        $tableTca = $tca[$table] ?? null;
+        if (!is_array($tableTca)) {
+            return 'title';
+        }
+        $ctrl = $tableTca['ctrl'] ?? null;
+        if (!is_array($ctrl)) {
+            return 'title';
+        }
+        $label = $ctrl['label'] ?? null;
+
+        return is_string($label) && $label !== '' ? $label : 'title';
     }
 }

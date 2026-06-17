@@ -321,7 +321,11 @@ final class SkillsModuleController
 
     private function getLanguageService(): LanguageService
     {
-        return $GLOBALS['LANG'];
+        $languageService = $GLOBALS['LANG'] ?? null;
+        if (!$languageService instanceof LanguageService) {
+            throw new \RuntimeException('No language service available', 1760000051);
+        }
+        return $languageService;
     }
 
     private function lll(string $key): string

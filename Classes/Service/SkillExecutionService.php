@@ -9,6 +9,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use Webconsulting\Skillflow\Domain\SkillRunResult;
 use Webconsulting\Skillflow\Exception\ExecutionBlockedException;
 use Webconsulting\Skillflow\Runner\RunnerFactory;
+use Webconsulting\Skillflow\Support\Typed;
 
 /**
  * Orchestrates a single skill run: environment guard, content collection,
@@ -43,7 +44,7 @@ final class SkillExecutionService
             // Resolve {uid}/{table}/{title}/{pid}/{workspace} in the skill body and the
             // per-run instructions before anything reaches the LLM. Closed whitelist only.
             $tokens = $this->contextResolver->resolveTokens($table, $recordUid, $workspaceId);
-            $skill['body'] = $this->contextResolver->apply((string)($skill['body'] ?? ''), $tokens);
+            $skill['body'] = $this->contextResolver->apply(Typed::string($skill['body'] ?? ''), $tokens);
             $resolvedInstructions = $this->contextResolver->apply($instructions, $tokens);
 
             $content = $this->contentCollector->collect($table, $recordUid, $workspaceId);
