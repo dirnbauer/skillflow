@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Webconsulting\Skillflow\Service;
 
+use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use Webconsulting\Skillflow\Domain\ImportResult;
 use Webconsulting\Skillflow\Domain\ParsedSkill;
+use Webconsulting\Skillflow\Event\AfterSkillsSyncedEvent;
 use Webconsulting\Skillflow\Support\Typed;
 
 /**
@@ -57,6 +59,7 @@ final class SkillImportService
         private readonly SkillParser $skillParser,
         private readonly ConnectionPool $connectionPool,
         private readonly ExtensionConfiguration $extensionConfiguration,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -117,6 +120,7 @@ final class SkillImportService
             return $result;
         }
 
+        $syncedSkills = [];
         foreach ($this->findSkillFiles($realPath) as $skillFile) {
             $relativePath = ltrim(substr($skillFile, strlen($realPath)), '/');
             try {
@@ -124,6 +128,12 @@ final class SkillImportService
                 [$status, $skillUid] = $this->upsert($parsed, $sourceType, $repositoryUid, $relativePath);
                 $result->{$status}++;
                 $this->syncSupportingFiles($skillUid, dirname($skillFile), $result);
+                $syncedSkills[] = [
+                    'uid' => $skillUid,
+                    'identifier' => $parsed->identifier,
+                    'status' => $status,
+                    'contentHash' => $parsed->contentHash(),
+                ];
             } catch (\Throwable $e) {
                 $result->errors[] = $relativePath . ': ' . $e->getMessage();
             }
@@ -131,6 +141,7 @@ final class SkillImportService
         if ($result->created + $result->updated + $result->unchanged === 0 && $result->errors === []) {
             $result->errors[] = sprintf('No SKILL.md files found below "%s"', $absolutePath);
         }
+        $this->eventDispatcher->dispatch(new AfterSkillsSyncedEvent($sourceType, $repositoryUid, $result, $syncedSkills));
         return $result;
     }
 

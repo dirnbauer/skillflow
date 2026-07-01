@@ -8,7 +8,14 @@ CREATE TABLE tx_skillflow_skill (
 
 CREATE TABLE tx_skillflow_run (
     instructions text,
-    output mediumtext
+    output mediumtext,
+    result_json mediumtext,
+    verdict varchar(32) DEFAULT '' NOT NULL,
+    score smallint DEFAULT '-1' NOT NULL,
+    external_engine varchar(32) DEFAULT '' NOT NULL,
+    external_ref varchar(190) DEFAULT '' NOT NULL,
+    external_url text,
+    KEY external_lookup (external_engine, external_ref)
 );
 
 CREATE TABLE tx_skillflow_file (

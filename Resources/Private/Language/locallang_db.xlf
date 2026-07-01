@@ -173,6 +173,12 @@
       <trans-unit id="run.status.blocked" resname="run.status.blocked">
         <source>Blocked (environment guard or missing credentials)</source>
       </trans-unit>
+      <trans-unit id="run.status.pending" resname="run.status.pending">
+        <source>Pending (engine continues asynchronously)</source>
+      </trans-unit>
+      <trans-unit id="run.status.running" resname="run.status.running">
+        <source>Running</source>
+      </trans-unit>
       <trans-unit id="run.runner" resname="run.runner">
         <source>Runner</source>
       </trans-unit>
@@ -181,6 +187,24 @@
       </trans-unit>
       <trans-unit id="run.instructions" resname="run.instructions">
         <source>Per-run instructions</source>
+      </trans-unit>
+      <trans-unit id="run.verdict" resname="run.verdict">
+        <source>Verdict</source>
+      </trans-unit>
+      <trans-unit id="run.score" resname="run.score">
+        <source>Score (0-100, -1 = none)</source>
+      </trans-unit>
+      <trans-unit id="run.result_json" resname="run.result_json">
+        <source>Structured result (JSON)</source>
+      </trans-unit>
+      <trans-unit id="run.external_engine" resname="run.external_engine">
+        <source>External engine</source>
+      </trans-unit>
+      <trans-unit id="run.external_ref" resname="run.external_ref">
+        <source>External run reference</source>
+      </trans-unit>
+      <trans-unit id="run.external_url" resname="run.external_url">
+        <source>External run link</source>
       </trans-unit>
       <trans-unit id="stage.skills" resname="stage.skills">
         <source>Skills for this stage</source>

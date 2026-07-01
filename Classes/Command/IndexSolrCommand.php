@@ -16,6 +16,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use Webconsulting\Skillflow\Support\Typed;
 
 /**
  * Initializes and indexes the skillflow "skills" Solr index queue.
@@ -73,7 +74,7 @@ final class IndexSolrCommand extends Command
 
         $siteIdentifier = $input->getOption('site');
         $siteIdentifier = is_string($siteIdentifier) && $siteIdentifier !== '' ? $siteIdentifier : null;
-        $limit = max(1, (int)$input->getOption('limit'));
+        $limit = max(1, Typed::int($input->getOption('limit')));
 
         try {
             $sites = $this->resolveSites($siteIdentifier);

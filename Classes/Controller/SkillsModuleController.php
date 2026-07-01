@@ -17,6 +17,7 @@ use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use Webconsulting\Skillflow\Runner\EngineResolver;
 use Webconsulting\Skillflow\Service\EnvironmentGuard;
 use Webconsulting\Skillflow\Service\RepositoryImportService;
 use Webconsulting\Skillflow\Service\SkillExecutionService;
@@ -38,6 +39,7 @@ final class SkillsModuleController
         private readonly RepositoryImportService $repositoryImportService,
         private readonly SkillExecutionService $skillExecutionService,
         private readonly EnvironmentGuard $environmentGuard,
+        private readonly EngineResolver $engineResolver,
     ) {
     }
 
@@ -105,6 +107,7 @@ final class SkillsModuleController
         foreach ($skills as $skill) {
             $skillTitles[Typed::int($skill['uid'])] = Typed::string($skill['title']);
         }
+        $this->skillExecutionService->failStaleRuns();
         $runs = $this->skillFinder->findRecentRuns(25);
         foreach ($runs as &$run) {
             $run['skillTitle'] = $skillTitles[Typed::int($run['skill'])] ?? ('#' . Typed::int($run['skill']));
@@ -144,6 +147,7 @@ final class SkillsModuleController
             'assignedSkillsCount' => count($assignedSkills),
             'newSkillUri' => $newSkillUri,
             'newRepositoryUri' => $newRepositoryUri,
+            'engines' => array_keys($this->engineResolver->getRegisteredEngines()),
         ]);
         return $moduleTemplate->renderResponse('SkillsModule/Index');
     }
@@ -255,11 +259,12 @@ final class SkillsModuleController
         $skillUid = Typed::int($body['skill'] ?? 0);
         $pageUid = Typed::int($body['page'] ?? 0);
         $instructions = Typed::string($body['instructions'] ?? '');
+        $engine = Typed::string($body['engine'] ?? '');
         if ($skillUid <= 0 || $pageUid <= 0) {
             $moduleTemplate->addFlashMessage('Please select a skill and provide a page uid.', 'Missing input', ContextualFeedbackSeverity::WARNING);
             return;
         }
-        $this->executeAndReport($moduleTemplate, $skillUid, $pageUid, $instructions);
+        $this->executeAndReport($moduleTemplate, $skillUid, $pageUid, $instructions, $engine);
     }
 
     private function runPageSkillsAction(ServerRequestInterface $request, ModuleTemplate $moduleTemplate): void
@@ -267,6 +272,7 @@ final class SkillsModuleController
         $body = Typed::stringKeyedArray($request->getParsedBody());
         $pageUid = Typed::int($body['page'] ?? 0);
         $instructions = Typed::string($body['instructions'] ?? '');
+        $engine = Typed::string($body['engine'] ?? '');
         $skills = $pageUid > 0 ? $this->skillFinder->findSkillsForPage($pageUid) : [];
         if ($skills === []) {
             $moduleTemplate->addFlashMessage(
@@ -277,11 +283,11 @@ final class SkillsModuleController
             return;
         }
         foreach ($skills as $skill) {
-            $this->executeAndReport($moduleTemplate, Typed::int($skill['uid']), $pageUid, $instructions);
+            $this->executeAndReport($moduleTemplate, Typed::int($skill['uid']), $pageUid, $instructions, $engine);
         }
     }
 
-    private function executeAndReport(ModuleTemplate $moduleTemplate, int $skillUid, int $pageUid, string $instructions = ''): void
+    private function executeAndReport(ModuleTemplate $moduleTemplate, int $skillUid, int $pageUid, string $instructions = '', string $engine = ''): void
     {
         $result = $this->skillExecutionService->runSkillOnRecord(
             $skillUid,
@@ -289,13 +295,23 @@ final class SkillsModuleController
             $pageUid,
             (int)$this->getBackendUser()->workspace,
             0,
-            $instructions
+            $instructions,
+            $engine
         );
         $skill = $this->skillFinder->findSkillByUid($skillUid);
+        $severity = match (true) {
+            $result->isSuccess() => ContextualFeedbackSeverity::OK,
+            $result->status === 'pending' => ContextualFeedbackSeverity::INFO,
+            default => ContextualFeedbackSeverity::WARNING,
+        };
+        $message = $result->isSuccess() ? 'Report stored — see "Recent runs".' : mb_substr($result->output, 0, 500);
+        if ($result->verdict !== '') {
+            $message = 'Verdict: ' . $result->verdict . ($result->score >= 0 ? ' (' . $result->score . '/100)' : '') . ' — ' . $message;
+        }
         $moduleTemplate->addFlashMessage(
-            $result->isSuccess() ? 'Report stored — see "Recent runs".' : mb_substr($result->output, 0, 500),
+            $message,
             sprintf('Skill "%s" on page %d: %s', Typed::string($skill['title'] ?? null) ?: (string)$skillUid, $pageUid, $result->status),
-            $result->isSuccess() ? ContextualFeedbackSeverity::OK : ContextualFeedbackSeverity::WARNING
+            $severity
         );
     }
 

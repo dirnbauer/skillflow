@@ -56,6 +56,8 @@ return [
                     ['label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:run.status.success', 'value' => 'success'],
                     ['label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:run.status.failed', 'value' => 'failed'],
                     ['label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:run.status.blocked', 'value' => 'blocked'],
+                    ['label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:run.status.pending', 'value' => 'pending'],
+                    ['label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:run.status.running', 'value' => 'running'],
                 ],
                 'default' => 'success',
                 'readOnly' => true,
@@ -73,10 +75,34 @@ return [
             'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:run.output',
             'config' => ['type' => 'text', 'rows' => 20, 'readOnly' => true],
         ],
+        'verdict' => [
+            'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:run.verdict',
+            'config' => ['type' => 'input', 'max' => 32, 'readOnly' => true],
+        ],
+        'score' => [
+            'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:run.score',
+            'config' => ['type' => 'number', 'readOnly' => true],
+        ],
+        'result_json' => [
+            'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:run.result_json',
+            'config' => ['type' => 'text', 'rows' => 8, 'readOnly' => true],
+        ],
+        'external_engine' => [
+            'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:run.external_engine',
+            'config' => ['type' => 'input', 'max' => 32, 'readOnly' => true],
+        ],
+        'external_ref' => [
+            'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:run.external_ref',
+            'config' => ['type' => 'input', 'max' => 190, 'readOnly' => true],
+        ],
+        'external_url' => [
+            'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:run.external_url',
+            'config' => ['type' => 'input', 'readOnly' => true],
+        ],
     ],
     'types' => [
         '0' => [
-            'showitem' => 'skill, status, runner, target_table, target_uid, workspace_uid, stage_uid, instructions, output',
+            'showitem' => 'skill, status, runner, verdict, score, target_table, target_uid, workspace_uid, stage_uid, instructions, output, result_json, external_engine, external_ref, external_url',
         ],
     ],
 ];

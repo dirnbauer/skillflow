@@ -104,6 +104,15 @@
       <trans-unit id="run.runner" resname="run.runner">
         <source>Runner</source>
       </trans-unit>
+      <trans-unit id="run.engine" resname="run.engine">
+        <source>Engine</source>
+      </trans-unit>
+      <trans-unit id="run.engine.auto" resname="run.engine.auto">
+        <source>Auto (skill / default)</source>
+      </trans-unit>
+      <trans-unit id="run.engine.classic" resname="run.engine.classic">
+        <source>Quick (single-shot)</source>
+      </trans-unit>
       <trans-unit id="run.target.none.title" resname="run.target.none.title">
         <source>No page selected</source>
       </trans-unit>
@@ -134,6 +143,9 @@
       <trans-unit id="runs.col.status" resname="runs.col.status">
         <source>Status</source>
       </trans-unit>
+      <trans-unit id="runs.col.verdict" resname="runs.col.verdict">
+        <source>Verdict</source>
+      </trans-unit>
       <trans-unit id="runs.show" resname="runs.show">
         <source>Show report</source>
       </trans-unit>
@@ -151,6 +163,12 @@
       </trans-unit>
       <trans-unit id="runDetail.report" resname="runDetail.report">
         <source>Report</source>
+      </trans-unit>
+      <trans-unit id="runDetail.openEngine" resname="runDetail.openEngine">
+        <source>Open engine run</source>
+      </trans-unit>
+      <trans-unit id="runDetail.externalRef" resname="runDetail.externalRef">
+        <source>Engine run</source>
       </trans-unit>
     </body>
   </file>

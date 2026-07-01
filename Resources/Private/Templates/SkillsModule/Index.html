@@ -77,6 +77,18 @@
                                     </f:for>
                                 </select>
                             </div>
+                            <f:if condition="{engines}">
+                                <div class="skf-field skf-field--engine">
+                                    <label class="form-label" for="skillflow-engine"><f:translate key="{ll}run.engine"/></label>
+                                    <select id="skillflow-engine" name="engine" class="form-select">
+                                        <option value=""><f:translate key="{ll}run.engine.auto"/></option>
+                                        <option value="classic"><f:translate key="{ll}run.engine.classic"/></option>
+                                        <f:for each="{engines}" as="engineIdentifier">
+                                            <option value="{engineIdentifier}">{engineIdentifier}</option>
+                                        </f:for>
+                                    </select>
+                                </div>
+                            </f:if>
                             <div class="skf-actions">
                                 <f:if condition="{executionBlockReason}">
                                     <f:then>
@@ -168,6 +180,7 @@
                             <th><f:translate key="{ll}runs.col.target"/></th>
                             <th>WS</th>
                             <th><f:translate key="{ll}runs.col.status"/></th>
+                            <th><f:translate key="{ll}runs.col.verdict"/></th>
                             <th class="col-control"></th>
                         </tr>
                         </thead>
@@ -182,8 +195,15 @@
                                     <f:switch expression="{run.status}">
                                         <f:case value="success"><span class="badge badge-success">success</span></f:case>
                                         <f:case value="blocked"><span class="badge badge-warning">blocked</span></f:case>
+                                        <f:case value="pending"><span class="badge badge-info">pending</span></f:case>
+                                        <f:case value="running"><span class="badge badge-info">running</span></f:case>
                                         <f:defaultCase><span class="badge badge-danger">{run.status}</span></f:defaultCase>
                                     </f:switch>
+                                </td>
+                                <td>
+                                    <f:if condition="{run.verdict}">
+                                        <span class="badge badge-default">{run.verdict}<f:if condition="{run.score} > -1"> · {run.score}</f:if></span>
+                                    </f:if>
                                 </td>
                                 <td class="col-control">
                                     <a class="btn btn-default btn-sm" href="{run.showUri}">

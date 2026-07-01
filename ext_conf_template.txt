@@ -22,5 +22,11 @@ skillsFolder = skills
 # cat=import/enable/110; type=int+; label=Skills storage page: pid of the SysFolder that imported skills are stored in (0 = global/rootLevel). Set this to a SysFolder inside your Solr site so skills get indexed.
 storagePid = 0
 
+# cat=runner/enable/160; type=string; label=Default engine: Execution engine used when neither the run nor the skill (frontmatter key "engine") requests one. "classic" = the built-in single-shot chain above; other values match engines registered by other extensions (e.g. "flue").
+defaultEngine = classic
+
+# cat=runner/enable/170; type=boolean; label=Engine fallback: When the selected context-aware engine is unavailable, fall back to the classic chain instead of blocking the run.
+engineFallback = 1
+
 # cat=security/enable/100; type=boolean; label=Require local environment: Only allow skill execution when TYPO3 runs in Development context inside a DDEV project (IS_DDEV_PROJECT=true). Do NOT disable this on shared or production systems.
 requireLocalEnvironment = 1

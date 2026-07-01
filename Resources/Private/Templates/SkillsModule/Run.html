@@ -18,6 +18,12 @@
                 <f:translate key="{ll}runDetail.openTarget"/>
             </a>
         </f:if>
+        <f:if condition="{run.external_url}">
+            <a class="btn btn-default" href="{run.external_url}">
+                <core:icon identifier="actions-link" size="small"/>
+                <f:translate key="{ll}runDetail.openEngine"/> ({run.external_engine})
+            </a>
+        </f:if>
     </div>
 
     <div class="card skf-card">
@@ -28,8 +34,13 @@
                 <f:switch expression="{run.status}">
                     <f:case value="success"><span class="badge badge-success">success</span></f:case>
                     <f:case value="blocked"><span class="badge badge-warning">blocked</span></f:case>
+                    <f:case value="pending"><span class="badge badge-info">pending</span></f:case>
+                    <f:case value="running"><span class="badge badge-info">running</span></f:case>
                     <f:defaultCase><span class="badge badge-danger">{run.status}</span></f:defaultCase>
                 </f:switch>
+                <f:if condition="{run.verdict}">
+                    <span class="badge badge-default">{run.verdict}<f:if condition="{run.score} > -1"> · {run.score}/100</f:if></span>
+                </f:if>
             </h2>
         </div>
         <div class="card-body">
@@ -39,6 +50,9 @@
                 <dt><f:translate key="{ll}runs.col.target"/></dt><dd><code>{run.target_table}:{run.target_uid}</code></dd>
                 <dt>Workspace / Stage</dt><dd>{run.workspace_uid} / {run.stage_uid}</dd>
                 <dt><f:translate key="{ll}run.runner"/></dt><dd>{run.runner}</dd>
+                <f:if condition="{run.external_ref}">
+                    <dt><f:translate key="{ll}runDetail.externalRef"/></dt><dd><code>{run.external_ref}</code></dd>
+                </f:if>
             </dl>
 
             <f:if condition="{run.instructions}">
