@@ -27,7 +27,7 @@ use Webconsulting\Skillflow\Support\Typed;
  */
 final class SkillExecutionService
 {
-    /** Runs stuck in running/pending longer than this are failed lazily. */
+    /** Runs stuck in the transient 'running' state longer than this are failed lazily. */
     private const STALE_RUN_SECONDS = 1800;
 
     public function __construct(
@@ -118,8 +118,14 @@ final class SkillExecutionService
     }
 
     /**
-     * Lazily fail runs stuck in running/pending (PHP fatal mid-run, engine
-     * never settled). Called when the module lists runs; cheap no-op otherwise.
+     * Lazily fail runs stuck in the transient 'running' state (a PHP fatal
+     * between the two-phase insert and settle). Called when the module lists
+     * runs; cheap no-op otherwise.
+     *
+     * 'pending' is deliberately NOT swept: it is an async state an engine set
+     * on purpose ("continues on the sidecar"), settled later by the engine's
+     * mirror (RunStore::markSettled) or a reconcile pass — force-failing it on
+     * a timer would drop a legitimately slow run's real outcome.
      */
     public function failStaleRuns(int $maxAgeSeconds = self::STALE_RUN_SECONDS): int
     {
@@ -131,7 +137,7 @@ final class SkillExecutionService
             ->set('output', 'Run did not settle within ' . $maxAgeSeconds . ' seconds and was marked failed.')
             ->set('tstamp', time())
             ->where(
-                $queryBuilder->expr()->in('status', $queryBuilder->createNamedParameter(['running', 'pending'], \Doctrine\DBAL\ArrayParameterType::STRING)),
+                $queryBuilder->expr()->eq('status', $queryBuilder->createNamedParameter('running')),
                 $queryBuilder->expr()->lt('tstamp', $queryBuilder->createNamedParameter($threshold, \Doctrine\DBAL\ParameterType::INTEGER))
             )
             ->executeStatement();
