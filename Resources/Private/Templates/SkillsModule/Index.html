@@ -72,8 +72,11 @@
                             <div class="skf-field skf-field--skill">
                                 <label class="form-label" for="skillflow-skill"><f:translate key="{ll}run.skill"/></label>
                                 <select id="skillflow-skill" name="skill" class="form-select">
+                                    <f:comment>Quarantined (hidden) skills are not offered for running.</f:comment>
                                     <f:for each="{skills}" as="skill">
-                                        <option value="{skill.uid}">{skill.title}</option>
+                                        <f:if condition="{skill.hidden} == 0">
+                                            <option value="{skill.uid}">{skill.title}</option>
+                                        </f:if>
                                     </f:for>
                                 </select>
                             </div>

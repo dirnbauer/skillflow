@@ -130,10 +130,13 @@ final class SkillImportService
                 [$status, $skillUid] = $this->upsert($parsed, $sourceType, $repositoryUid, $relativePath);
                 $result->{$status}++;
                 $files = $this->syncSupportingFiles($skillUid, dirname($skillFile), $result);
-                // MANDATORY review checks (security + license) — advisory, never disables.
-                // Re-check on content change, and backfill skills that were never checked.
+                // MANDATORY review checks (security + license). Re-check on content
+                // change, and backfill skills that were never checked. A danger-level
+                // finding quarantines the skill (hidden = 1) — it is never deleted.
                 if ($status !== 'unchanged' || $this->needsCheck($skillUid)) {
-                    $this->runChecks($skillUid, $parsed->body, $files, $parsed->metadata);
+                    if ($this->runChecks($skillUid, $parsed->body, $files, $parsed->metadata) === 'danger') {
+                        $result->quarantined++;
+                    }
                 }
                 $syncedSkills[] = [
                     'uid' => $skillUid,
@@ -173,45 +176,73 @@ final class SkillImportService
 
     /**
      * Re-scan every skill from stored content (Skills module button / CLI),
-     * without re-importing the sources. Returns the number of skills checked.
+     * without re-importing the sources.
+     *
+     * @return array{checked: int, quarantined: int}
      */
-    public function recheckAllSkills(): int
+    public function recheckAllSkills(): array
     {
-        $connection = $this->connectionPool->getConnectionForTable('tx_skillflow_skill');
-        $skills = $connection->select(['uid', 'body', 'metadata'], 'tx_skillflow_skill', ['deleted' => 0])->fetchAllAssociative();
+        // Scan ALL non-deleted skills, INCLUDING hidden ones — a quarantined
+        // skill must still be re-evaluated so its report stays current. Restrict
+        // on deleted only (explicit QueryBuilder, all default restrictions removed).
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_skillflow_skill');
+        $queryBuilder->getRestrictions()->removeAll();
+        $skills = $queryBuilder
+            ->select('uid', 'body', 'metadata')
+            ->from('tx_skillflow_skill')
+            ->where($queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)))
+            ->executeQuery()
+            ->fetchAllAssociative();
         $checked = 0;
+        $quarantined = 0;
         foreach ($skills as $skill) {
             $skillUid = Typed::int($skill['uid']);
-            $this->runChecks(
+            $level = $this->runChecks(
                 $skillUid,
                 Typed::string($skill['body'] ?? ''),
                 $this->loadSkillFiles($skillUid),
                 Typed::stringKeyedArray(json_decode(Typed::string($skill['metadata'] ?? ''), true)),
             );
             $checked++;
+            if ($level === 'danger') {
+                $quarantined++;
+            }
         }
-        return $checked;
+        return ['checked' => $checked, 'quarantined' => $quarantined];
     }
 
     /**
+     * Runs the checks, persists the report, and QUARANTINES a danger-level skill
+     * by setting hidden = 1 — never deletes it. Quarantine is one-way: we only
+     * ever set hidden here, never clear it, so a clean re-scan does not override
+     * an admin's manual hide, and releasing a quarantined skill is a deliberate
+     * admin action (unhide) after they have reviewed the findings.
+     *
      * @param array<string, string> $files
      * @param array<string, mixed> $metadata
+     * @return string the check level (none|info|warning|danger)
      */
-    private function runChecks(int $skillUid, string $body, array $files, array $metadata): void
+    private function runChecks(int $skillUid, string $body, array $files, array $metadata): string
     {
         if ($skillUid <= 0) {
-            return;
+            return 'none';
         }
         $report = $this->skillCheckService->check($body, $files, $metadata);
+        $level = $report->level();
+        $fields = [
+            'check_level' => $level,
+            'check_report' => (string)json_encode($report->toArray(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+            'tstamp' => time(),
+        ];
+        if ($level === 'danger') {
+            $fields['hidden'] = 1;
+        }
         $this->connectionPool->getConnectionForTable('tx_skillflow_skill')->update(
             'tx_skillflow_skill',
-            [
-                'check_level' => $report->level(),
-                'check_report' => (string)json_encode($report->toArray(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
-                'tstamp' => time(),
-            ],
+            $fields,
             ['uid' => $skillUid],
         );
+        return $level;
     }
 
     private function needsCheck(int $skillUid): bool

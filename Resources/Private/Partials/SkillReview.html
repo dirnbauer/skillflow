@@ -29,8 +29,17 @@
                 <f:if condition="{review.hasCode}">
                     <span class="badge badge-info" title="{f:translate(key:'{ll}review.code.help')}"><f:translate key="{ll}review.badge.code"/></span>
                 </f:if>
+                <f:if condition="{review.quarantined}">
+                    <span class="badge badge-danger" title="{f:translate(key:'{ll}review.quarantined.help')}"><core:icon identifier="actions-lock" size="small"/> <f:translate key="{ll}review.badge.quarantined"/></span>
+                </f:if>
             </summary>
             <div class="skf-review-detail">
+                <f:if condition="{review.quarantined}">
+                    <div class="skf-review-quarantine">
+                        <core:icon identifier="actions-lock" size="small"/>
+                        <f:translate key="{ll}review.quarantined.note"/>
+                    </div>
+                </f:if>
                 <f:comment>License compatibility with TYPO3 (GPL-2.0-or-later) — warning only, and only actionable when the skill ships code.</f:comment>
                 <f:if condition="{review.license.status}">
                     <div class="skf-review-license">

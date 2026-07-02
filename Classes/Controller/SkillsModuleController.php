@@ -90,6 +90,8 @@ final class SkillsModuleController
             ]);
             $skill['descriptionShort'] = $this->crop(Typed::string($skill['description']), 120);
             $skill['review'] = $this->buildReviewView(Typed::string($skill['check_report'] ?? ''));
+            // A danger skill that is hidden was quarantined on import/scan.
+            $skill['review']['quarantined'] = $skill['review']['level'] === 'danger' && (bool)($skill['hidden'] ?? false);
             if ($skill['review']['unchecked']) {
                 $reviewSummary['unchecked']++;
             } elseif ($skill['review']['level'] === 'danger') {
@@ -237,12 +239,23 @@ final class SkillsModuleController
             $this->denied($moduleTemplate);
             return;
         }
-        $checked = $this->skillImportService->recheckAllSkills();
+        $result = $this->skillImportService->recheckAllSkills();
         $moduleTemplate->addFlashMessage(
-            sprintf('Re-scanned %d skill(s) for security patterns and license compatibility.', $checked),
+            sprintf('Re-scanned %d skill(s) for security patterns and license compatibility.', $result['checked']),
             'Review finished',
             ContextualFeedbackSeverity::OK
         );
+        if ($result['quarantined'] > 0) {
+            $moduleTemplate->addFlashMessage(
+                sprintf(
+                    '%d skill(s) with danger-level security findings were quarantined (hidden), not deleted. '
+                    . 'Review each below and unhide the ones you trust.',
+                    $result['quarantined']
+                ),
+                'Skills quarantined',
+                ContextualFeedbackSeverity::WARNING
+            );
+        }
     }
 
     private function scanFolderAction(ModuleTemplate $moduleTemplate): void

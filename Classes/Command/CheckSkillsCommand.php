@@ -31,8 +31,15 @@ final class CheckSkillsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $checked = $this->skillImportService->recheckAllSkills();
-        $io->success(sprintf('Reviewed %d skill(s). See the Skills module for per-skill findings.', $checked));
+        $result = $this->skillImportService->recheckAllSkills();
+        $io->success(sprintf('Reviewed %d skill(s). See the Skills module for per-skill findings.', $result['checked']));
+        if ($result['quarantined'] > 0) {
+            $io->warning(sprintf(
+                '%d skill(s) have danger-level security findings and were quarantined (hidden). '
+                . 'They were NOT deleted — review them in the Skills module and unhide any that are safe.',
+                $result['quarantined']
+            ));
+        }
         return Command::SUCCESS;
     }
 }

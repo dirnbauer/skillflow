@@ -223,3 +223,11 @@
     background: var(--typo3-surface-container-low, #f0f0f0);
     border-radius: 3px;
 }
+.skf-review-quarantine {
+    margin-bottom: .6rem;
+    padding: .4rem .55rem;
+    border-radius: 4px;
+    background: var(--typo3-color-danger-20, #fbe6e6);
+    border-left: 3px solid var(--typo3-color-danger, #c83c3c);
+    font-size: .85em;
+}

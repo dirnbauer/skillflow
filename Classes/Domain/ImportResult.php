@@ -11,6 +11,8 @@ final class ImportResult
     public int $unchanged = 0;
     public int $files = 0;
     public int $skippedFiles = 0;
+    /** Skills hidden on import because a danger-level security finding was matched (never deleted). */
+    public int $quarantined = 0;
 
     /** @var string[] */
     public array $errors = [];
@@ -23,6 +25,9 @@ final class ImportResult
             if ($this->skippedFiles > 0) {
                 $parts .= sprintf(' (%d skipped: binary or too large)', $this->skippedFiles);
             }
+        }
+        if ($this->quarantined > 0) {
+            $parts .= sprintf(', %d quarantined (hidden — security review needed)', $this->quarantined);
         }
         if ($this->errors !== []) {
             $parts .= sprintf(', %d errors: %s', count($this->errors), implode(' | ', $this->errors));

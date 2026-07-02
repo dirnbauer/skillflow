@@ -74,6 +74,15 @@
       <trans-unit id="review.badge.code" resname="review.badge.code">
         <source>code</source>
       </trans-unit>
+      <trans-unit id="review.badge.quarantined" resname="review.badge.quarantined">
+        <source>Quarantined</source>
+      </trans-unit>
+      <trans-unit id="review.quarantined.help" resname="review.quarantined.help">
+        <source>Hidden automatically because of a danger-level security finding. Not deleted — review the findings and unhide it (Access tab) if you trust it.</source>
+      </trans-unit>
+      <trans-unit id="review.quarantined.note" resname="review.quarantined.note">
+        <source>Quarantined: this skill was hidden automatically because of a danger-level finding below. It was NOT deleted. After reviewing, open the skill and clear "Disable" (Access tab) to release it.</source>
+      </trans-unit>
       <trans-unit id="review.code.help" resname="review.code.help">
         <source>This skill ships code examples — check the license before reusing them.</source>
       </trans-unit>
