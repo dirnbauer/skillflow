@@ -56,6 +56,7 @@ final class SkillsModuleController
                 'syncRepository' => $this->syncRepositoryAction($request, $moduleTemplate),
                 'run' => $this->runAction($request, $moduleTemplate),
                 'runPageSkills' => $this->runPageSkillsAction($request, $moduleTemplate),
+                'recheck' => $this->recheckAction($moduleTemplate),
                 default => null,
             };
         } elseif ($action === 'showRun') {
@@ -81,12 +82,21 @@ final class SkillsModuleController
             $currentPageUid > 0 ? ['id' => $currentPageUid] : []
         );
         $skills = $this->skillFinder->findAllSkills(true);
+        $reviewSummary = ['danger' => 0, 'warning' => 0, 'unchecked' => 0];
         foreach ($skills as &$skill) {
             $skill['editUri'] = (string)$this->uriBuilder->buildUriFromRoute('record_edit', [
                 'edit' => ['tx_skillflow_skill' => [Typed::int($skill['uid']) => 'edit']],
                 'returnUrl' => $moduleUri,
             ]);
             $skill['descriptionShort'] = $this->crop(Typed::string($skill['description']), 120);
+            $skill['review'] = $this->buildReviewView(Typed::string($skill['check_report'] ?? ''));
+            if ($skill['review']['unchecked']) {
+                $reviewSummary['unchecked']++;
+            } elseif ($skill['review']['level'] === 'danger') {
+                $reviewSummary['danger']++;
+            } elseif ($skill['review']['level'] === 'warning') {
+                $reviewSummary['warning']++;
+            }
         }
         unset($skill);
 
@@ -148,6 +158,7 @@ final class SkillsModuleController
             'newSkillUri' => $newSkillUri,
             'newRepositoryUri' => $newRepositoryUri,
             'engines' => array_keys($this->engineResolver->getRegisteredEngines()),
+            'reviewSummary' => $reviewSummary,
         ]);
         return $moduleTemplate->renderResponse('SkillsModule/Index');
     }
@@ -218,6 +229,20 @@ final class SkillsModuleController
             'targetPageUri' => $targetPageUri,
         ]);
         return $moduleTemplate->renderResponse('SkillsModule/Run');
+    }
+
+    private function recheckAction(ModuleTemplate $moduleTemplate): void
+    {
+        if (!$this->getBackendUser()->isAdmin()) {
+            $this->denied($moduleTemplate);
+            return;
+        }
+        $checked = $this->skillImportService->recheckAllSkills();
+        $moduleTemplate->addFlashMessage(
+            sprintf('Re-scanned %d skill(s) for security patterns and license compatibility.', $checked),
+            'Review finished',
+            ContextualFeedbackSeverity::OK
+        );
     }
 
     private function scanFolderAction(ModuleTemplate $moduleTemplate): void
@@ -319,6 +344,63 @@ final class SkillsModuleController
     {
         $text = trim($text);
         return mb_strlen($text) > $maxCharacters ? mb_substr($text, 0, $maxCharacters) . '…' : $text;
+    }
+
+    /**
+     * Decode the stored check_report JSON into a template-friendly view:
+     * the badge level, findings list, license assessment, and code flag.
+     *
+     * @return array{unchecked: bool, level: string, hasCode: bool, findingCount: int, findings: list<array<string, string>>, license: array<string, string>, licenseWarning: bool}
+     */
+    private function buildReviewView(string $checkReportJson): array
+    {
+        $empty = [
+            'unchecked' => true,
+            'level' => 'none',
+            'hasCode' => false,
+            'findingCount' => 0,
+            'findings' => [],
+            'license' => [],
+            'licenseWarning' => false,
+        ];
+        if (trim($checkReportJson) === '') {
+            return $empty;
+        }
+        $report = json_decode($checkReportJson, true);
+        if (!is_array($report)) {
+            return $empty;
+        }
+        $license = $this->stringifyMap(is_array($report['license'] ?? null) ? $report['license'] : []);
+        $findings = [];
+        foreach (is_array($report['findings'] ?? null) ? $report['findings'] : [] as $finding) {
+            if (is_array($finding)) {
+                $findings[] = $this->stringifyMap($finding);
+            }
+        }
+        $hasCode = (bool)($report['hasCode'] ?? false);
+        return [
+            'unchecked' => false,
+            'level' => Typed::string($report['level'] ?? 'none'),
+            'hasCode' => $hasCode,
+            'findingCount' => count($findings),
+            'findings' => $findings,
+            'license' => $license,
+            // The license only warrants a badge when there is code to reuse.
+            'licenseWarning' => $hasCode && ($license['status'] ?? 'compatible') !== 'compatible',
+        ];
+    }
+
+    /**
+     * @param array<array-key, mixed> $map
+     * @return array<string, string>
+     */
+    private function stringifyMap(array $map): array
+    {
+        $out = [];
+        foreach ($map as $key => $value) {
+            $out[(string)$key] = Typed::string($value);
+        }
+        return $out;
     }
 
     private function denied(ModuleTemplate $moduleTemplate): void

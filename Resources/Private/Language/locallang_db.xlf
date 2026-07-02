@@ -41,6 +41,15 @@
       <trans-unit id="tab.attachments" resname="tab.attachments">
         <source>Attachments</source>
       </trans-unit>
+      <trans-unit id="tab.review" resname="tab.review">
+        <source>Review</source>
+      </trans-unit>
+      <trans-unit id="skill.check_level" resname="skill.check_level">
+        <source>Review level (security + license scan)</source>
+      </trans-unit>
+      <trans-unit id="skill.check_report" resname="skill.check_report">
+        <source>Review report (JSON: security findings + license assessment)</source>
+      </trans-unit>
       <trans-unit id="tx_skillflow_file" resname="tx_skillflow_file">
         <source>Skill attachment</source>
       </trans-unit>

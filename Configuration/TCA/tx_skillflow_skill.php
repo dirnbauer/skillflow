@@ -134,6 +134,14 @@ return [
                 'type' => 'passthrough',
             ],
         ],
+        'check_level' => [
+            'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:skill.check_level',
+            'config' => ['type' => 'input', 'max' => 16, 'readOnly' => true],
+        ],
+        'check_report' => [
+            'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:skill.check_report',
+            'config' => ['type' => 'text', 'rows' => 10, 'readOnly' => true],
+        ],
         'last_synced' => [
             'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:skill.last_synced',
             'config' => [
@@ -153,6 +161,8 @@ return [
                     files,
                 --div--;LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:tab.source,
                     source_type, repository, relative_path, last_synced,
+                --div--;LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:tab.review,
+                    check_level, check_report,
                 --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:access,
                     hidden,
             ',

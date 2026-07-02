@@ -41,6 +41,63 @@
       <trans-unit id="skills.empty" resname="skills.empty">
         <source>No skills yet. Create one manually, import the local skills folder or add a repository.</source>
       </trans-unit>
+      <trans-unit id="review.col.review" resname="review.col.review">
+        <source>Review</source>
+      </trans-unit>
+      <trans-unit id="review.recheck" resname="review.recheck">
+        <source>Re-scan all</source>
+      </trans-unit>
+      <trans-unit id="review.recheck.help" resname="review.recheck.help">
+        <source>Re-run the security + license review on every stored skill (advisory, never disables a skill).</source>
+      </trans-unit>
+      <trans-unit id="review.summary.security" resname="review.summary.security">
+        <source>with security flags</source>
+      </trans-unit>
+      <trans-unit id="review.summary.review" resname="review.summary.review">
+        <source>to review</source>
+      </trans-unit>
+      <trans-unit id="review.summary.unchecked" resname="review.summary.unchecked">
+        <source>not scanned</source>
+      </trans-unit>
+      <trans-unit id="review.summary.hint" resname="review.summary.hint">
+        <source>— open a skill's Review cell to see what to check. Findings are advisory; nothing is disabled automatically.</source>
+      </trans-unit>
+      <trans-unit id="review.badge.security" resname="review.badge.security">
+        <source>Security</source>
+      </trans-unit>
+      <trans-unit id="review.badge.review" resname="review.badge.review">
+        <source>Review</source>
+      </trans-unit>
+      <trans-unit id="review.badge.ok" resname="review.badge.ok">
+        <source>OK</source>
+      </trans-unit>
+      <trans-unit id="review.badge.code" resname="review.badge.code">
+        <source>code</source>
+      </trans-unit>
+      <trans-unit id="review.code.help" resname="review.code.help">
+        <source>This skill ships code examples — check the license before reusing them.</source>
+      </trans-unit>
+      <trans-unit id="review.unchecked" resname="review.unchecked">
+        <source>not scanned</source>
+      </trans-unit>
+      <trans-unit id="review.unchecked.help" resname="review.unchecked.help">
+        <source>Not scanned yet — run "Re-scan all" or re-import.</source>
+      </trans-unit>
+      <trans-unit id="review.clean" resname="review.clean">
+        <source>No security patterns matched and the license is compatible.</source>
+      </trans-unit>
+      <trans-unit id="review.license.label" resname="review.license.label">
+        <source>License</source>
+      </trans-unit>
+      <trans-unit id="review.license.review" resname="review.license.review">
+        <source>check GPL-2.0 compatibility</source>
+      </trans-unit>
+      <trans-unit id="review.license.incompatible" resname="review.license.incompatible">
+        <source>likely incompatible with GPL-2.0</source>
+      </trans-unit>
+      <trans-unit id="review.license.unknown" resname="review.license.unknown">
+        <source>no license declared</source>
+      </trans-unit>
       <trans-unit id="repositories.headline" resname="repositories.headline">
         <source>Skill repositories</source>
       </trans-unit>

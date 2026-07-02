@@ -3,7 +3,10 @@
 #
 CREATE TABLE tx_skillflow_skill (
     body mediumtext,
-    content_hash varchar(40) DEFAULT '' NOT NULL
+    content_hash varchar(40) DEFAULT '' NOT NULL,
+    check_level varchar(16) DEFAULT '' NOT NULL,
+    check_report mediumtext,
+    KEY check_level (check_level)
 );
 
 CREATE TABLE tx_skillflow_run (

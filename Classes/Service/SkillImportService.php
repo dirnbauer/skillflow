@@ -12,6 +12,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use Webconsulting\Skillflow\Domain\ImportResult;
 use Webconsulting\Skillflow\Domain\ParsedSkill;
 use Webconsulting\Skillflow\Event\AfterSkillsSyncedEvent;
+use Webconsulting\Skillflow\Service\Security\SkillCheckService;
 use Webconsulting\Skillflow\Support\Typed;
 
 /**
@@ -60,6 +61,7 @@ final class SkillImportService
         private readonly ConnectionPool $connectionPool,
         private readonly ExtensionConfiguration $extensionConfiguration,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly SkillCheckService $skillCheckService,
     ) {
     }
 
@@ -127,7 +129,12 @@ final class SkillImportService
                 $parsed = $this->skillParser->parse((string)file_get_contents($skillFile), $relativePath);
                 [$status, $skillUid] = $this->upsert($parsed, $sourceType, $repositoryUid, $relativePath);
                 $result->{$status}++;
-                $this->syncSupportingFiles($skillUid, dirname($skillFile), $result);
+                $files = $this->syncSupportingFiles($skillUid, dirname($skillFile), $result);
+                // MANDATORY review checks (security + license) — advisory, never disables.
+                // Re-check on content change, and backfill skills that were never checked.
+                if ($status !== 'unchanged' || $this->needsCheck($skillUid)) {
+                    $this->runChecks($skillUid, $parsed->body, $files, $parsed->metadata);
+                }
                 $syncedSkills[] = [
                     'uid' => $skillUid,
                     'identifier' => $parsed->identifier,
@@ -156,8 +163,81 @@ final class SkillImportService
      */
     public function importParsedSkill(ParsedSkill $skill, string $sourceType, int $repositoryUid, string $relativePath): string
     {
-        [$status] = $this->upsert($skill, $sourceType, $repositoryUid, $relativePath);
+        [$status, $skillUid] = $this->upsert($skill, $sourceType, $repositoryUid, $relativePath);
+        // Rules carry no supporting files; still run the (body-only) review checks.
+        if ($status !== 'unchanged' || $this->needsCheck($skillUid)) {
+            $this->runChecks($skillUid, $skill->body, [], $skill->metadata);
+        }
         return $status;
+    }
+
+    /**
+     * Re-scan every skill from stored content (Skills module button / CLI),
+     * without re-importing the sources. Returns the number of skills checked.
+     */
+    public function recheckAllSkills(): int
+    {
+        $connection = $this->connectionPool->getConnectionForTable('tx_skillflow_skill');
+        $skills = $connection->select(['uid', 'body', 'metadata'], 'tx_skillflow_skill', ['deleted' => 0])->fetchAllAssociative();
+        $checked = 0;
+        foreach ($skills as $skill) {
+            $skillUid = Typed::int($skill['uid']);
+            $this->runChecks(
+                $skillUid,
+                Typed::string($skill['body'] ?? ''),
+                $this->loadSkillFiles($skillUid),
+                Typed::stringKeyedArray(json_decode(Typed::string($skill['metadata'] ?? ''), true)),
+            );
+            $checked++;
+        }
+        return $checked;
+    }
+
+    /**
+     * @param array<string, string> $files
+     * @param array<string, mixed> $metadata
+     */
+    private function runChecks(int $skillUid, string $body, array $files, array $metadata): void
+    {
+        if ($skillUid <= 0) {
+            return;
+        }
+        $report = $this->skillCheckService->check($body, $files, $metadata);
+        $this->connectionPool->getConnectionForTable('tx_skillflow_skill')->update(
+            'tx_skillflow_skill',
+            [
+                'check_level' => $report->level(),
+                'check_report' => (string)json_encode($report->toArray(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+                'tstamp' => time(),
+            ],
+            ['uid' => $skillUid],
+        );
+    }
+
+    private function needsCheck(int $skillUid): bool
+    {
+        if ($skillUid <= 0) {
+            return false;
+        }
+        $report = $this->connectionPool->getConnectionForTable('tx_skillflow_skill')
+            ->select(['check_report'], 'tx_skillflow_skill', ['uid' => $skillUid])
+            ->fetchOne();
+        return !is_string($report) || trim($report) === '';
+    }
+
+    /**
+     * @return array<string, string> relative path => content
+     */
+    private function loadSkillFiles(int $skillUid): array
+    {
+        $rows = $this->connectionPool->getConnectionForTable('tx_skillflow_file')
+            ->select(['relative_path', 'content'], 'tx_skillflow_file', ['skill' => $skillUid, 'deleted' => 0])
+            ->fetchAllAssociative();
+        $files = [];
+        foreach ($rows as $row) {
+            $files[Typed::string($row['relative_path'])] = Typed::string($row['content'] ?? '');
+        }
+        return $files;
     }
 
     /**
@@ -246,11 +326,14 @@ final class SkillImportService
      * Syncs the supporting files of one skill directory into
      * tx_skillflow_file: upsert by relative path (uids stay stable),
      * soft-delete attachments whose file disappeared from the source.
+     *
+     * @return array<string, string> the collected files (relative path => content),
+     *                               reused by the import-time security scan
      */
-    private function syncSupportingFiles(int $skillUid, string $skillDirectory, ImportResult $result): void
+    private function syncSupportingFiles(int $skillUid, string $skillDirectory, ImportResult $result): array
     {
         if ($skillUid <= 0) {
-            return;
+            return [];
         }
         $connection = $this->connectionPool->getConnectionForTable('tx_skillflow_file');
         $existing = [];
@@ -261,7 +344,8 @@ final class SkillImportService
 
         $now = time();
         $seenPaths = [];
-        foreach ($this->collectSupportingFiles($skillDirectory, $result) as $relativePath => $content) {
+        $collected = $this->collectSupportingFiles($skillDirectory, $result);
+        foreach ($collected as $relativePath => $content) {
             $seenPaths[$relativePath] = true;
             $hash = sha1($content);
             $row = $existing[$relativePath] ?? null;
@@ -294,6 +378,8 @@ final class SkillImportService
                 $connection->update('tx_skillflow_file', ['deleted' => 1, 'tstamp' => $now], ['uid' => Typed::int($row['uid'])]);
             }
         }
+
+        return $collected;
     }
 
     /**

@@ -181,3 +181,45 @@
 .skf-meta dd {
     margin: 0;
 }
+
+/* --- Skill review (security + license) ------------------------------- */
+.skf-toolbar { display: flex; gap: .5rem; flex-wrap: wrap; }
+.skf-review-summary { margin: 0 0 1rem; display: flex; gap: .4rem; align-items: center; flex-wrap: wrap; }
+.skf-review > summary { cursor: pointer; list-style: none; }
+.skf-review > summary::-webkit-details-marker { display: none; }
+.skf-review-summary-badges { display: inline-flex; gap: .3rem; align-items: center; }
+.skf-review-detail {
+    margin-top: .6rem;
+    padding: .6rem .75rem;
+    border-left: 3px solid var(--typo3-border-color, #d7d7d7);
+    background: var(--typo3-surface-container-low, #f6f6f6);
+    border-radius: 4px;
+    max-width: 46rem;
+}
+.skf-review-license { margin-bottom: .5rem; }
+.skf-review-check {
+    margin-top: .25rem;
+    font-size: .85em;
+    color: var(--typo3-text-color-variant, #6c6c6c);
+}
+.skf-review-findings { list-style: none; margin: .5rem 0 0; padding: 0; }
+.skf-finding {
+    padding: .4rem .5rem;
+    margin-bottom: .4rem;
+    border-radius: 4px;
+    background: var(--typo3-surface-container, #fff);
+    border: 1px solid var(--typo3-border-color, #e0e0e0);
+}
+.skf-finding--danger { border-left: 3px solid var(--typo3-color-danger, #c83c3c); }
+.skf-finding--warning { border-left: 3px solid var(--typo3-color-warning, #c8842c); }
+.skf-finding--info { border-left: 3px solid var(--typo3-color-info, #2c7dc8); }
+.skf-finding-loc { margin-left: .35rem; font-size: .8em; opacity: .8; }
+.skf-finding-evidence {
+    margin: .3rem 0;
+    padding: .3rem .45rem;
+    font-size: .8em;
+    white-space: pre-wrap;
+    word-break: break-word;
+    background: var(--typo3-surface-container-low, #f0f0f0);
+    border-radius: 3px;
+}

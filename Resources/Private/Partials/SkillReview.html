@@ -1,0 +1,80 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+<f:comment>
+    Per-skill security + license review, rendered in the Skills catalogue.
+    `review` is the decoded check_report view built by the controller. Advisory
+    only — nothing here disables a skill; it tells the reviewer what to check.
+</f:comment>
+<f:if condition="{review.unchecked}">
+    <f:then>
+        <span class="badge badge-default" title="{f:translate(key:'{ll}review.unchecked.help')}">
+            <f:translate key="{ll}review.unchecked"/>
+        </span>
+    </f:then>
+    <f:else>
+        <details class="skf-review">
+            <summary class="skf-review-summary-badges">
+                <f:switch expression="{review.level}">
+                    <f:case value="danger">
+                        <span class="badge badge-danger"><core:icon identifier="actions-exclamation" size="small"/> <f:translate key="{ll}review.badge.security"/> ({review.findingCount})</span>
+                    </f:case>
+                    <f:case value="warning">
+                        <span class="badge badge-warning"><f:translate key="{ll}review.badge.review"/></span>
+                    </f:case>
+                    <f:defaultCase>
+                        <span class="badge badge-success"><f:translate key="{ll}review.badge.ok"/></span>
+                    </f:defaultCase>
+                </f:switch>
+                <f:if condition="{review.hasCode}">
+                    <span class="badge badge-info" title="{f:translate(key:'{ll}review.code.help')}"><f:translate key="{ll}review.badge.code"/></span>
+                </f:if>
+            </summary>
+            <div class="skf-review-detail">
+                <f:comment>License compatibility with TYPO3 (GPL-2.0-or-later) — warning only, and only actionable when the skill ships code.</f:comment>
+                <f:if condition="{review.license.status}">
+                    <div class="skf-review-license">
+                        <strong><f:translate key="{ll}review.license.label"/>:</strong>
+                        <code>{review.license.normalized}</code>
+                        <f:if condition="{review.licenseWarning}">
+                            <f:then>
+                                <f:switch expression="{review.license.status}">
+                                    <f:case value="incompatible"><span class="badge badge-warning"><f:translate key="{ll}review.license.incompatible"/></span></f:case>
+                                    <f:case value="unknown"><span class="badge badge-warning"><f:translate key="{ll}review.license.unknown"/></span></f:case>
+                                    <f:defaultCase><span class="badge badge-warning"><f:translate key="{ll}review.license.review"/></span></f:defaultCase>
+                                </f:switch>
+                                <div class="skf-muted">{review.license.message}</div>
+                                <f:if condition="{review.license.whatToCheck}">
+                                    <div class="skf-review-check"><core:icon identifier="actions-info" size="small"/> {review.license.whatToCheck}</div>
+                                </f:if>
+                            </f:then>
+                            <f:else>
+                                <span class="skf-muted">{review.license.message}</span>
+                            </f:else>
+                        </f:if>
+                    </div>
+                </f:if>
+                <f:comment>Security findings — what a human should verify.</f:comment>
+                <f:if condition="{review.findings}">
+                    <ul class="skf-review-findings">
+                        <f:for each="{review.findings}" as="finding">
+                            <li class="skf-finding skf-finding--{finding.severity}">
+                                <span class="badge badge-{finding.severity}">{finding.severity}</span>
+                                <strong>{finding.category}</strong>
+                                <code class="skf-finding-loc">{finding.location}</code>
+                                <pre class="skf-finding-evidence">{finding.evidence}</pre>
+                                <div class="skf-review-check"><core:icon identifier="actions-info" size="small"/> {finding.whatToCheck}</div>
+                            </li>
+                        </f:for>
+                    </ul>
+                </f:if>
+                <f:if condition="{review.findingCount} == 0">
+                    <f:if condition="{review.licenseWarning} == 0">
+                        <p class="skf-muted mb-0"><f:translate key="{ll}review.clean"/></p>
+                    </f:if>
+                </f:if>
+            </div>
+        </details>
+    </f:else>
+</f:if>
+</html>
