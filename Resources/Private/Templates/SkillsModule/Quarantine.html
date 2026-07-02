@@ -1,0 +1,101 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+<f:layout name="Module"/>
+
+<f:section name="Content">
+<f:variable name="ll">LLL:EXT:skillflow/Resources/Private/Language/locallang.xlf:</f:variable>
+<div class="skf-module">
+
+    <div class="skf-actions">
+        <a class="btn btn-default" href="{moduleUri}">
+            <core:icon identifier="actions-arrow-left-alt" size="small"/>
+            <f:translate key="{ll}quarantine.back"/>
+        </a>
+    </div>
+
+    <div class="card skf-card">
+        <div class="card-header">
+            <h2 class="skf-card-title">
+                <core:icon identifier="actions-lock" size="small"/>
+                <f:translate key="{ll}quarantine.headline"/>
+                <span class="badge badge-danger">{skills -> f:count()}</span>
+            </h2>
+        </div>
+        <div class="card-body">
+            <p class="skf-muted"><f:translate key="{ll}quarantine.intro"/></p>
+
+            <f:if condition="{skills}">
+                <f:then>
+                    <div class="table-fit">
+                        <table class="table table-striped mb-0">
+                            <thead>
+                            <tr>
+                                <th><f:translate key="{ll}skills.col.title"/></th>
+                                <th><f:translate key="{ll}skills.col.source"/></th>
+                                <th><f:translate key="{ll}quarantine.col.reason"/></th>
+                                <th><f:translate key="{ll}review.col.review"/></th>
+                                <th class="col-control"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <f:for each="{skills}" as="skill">
+                                <tr>
+                                    <td>
+                                        <core:icon identifier="skillflow-skill" size="small"/>
+                                        <strong>{skill.title}</strong><br/>
+                                        <code>{skill.identifier}</code>
+                                        <div class="skf-muted">{skill.descriptionShort}</div>
+                                    </td>
+                                    <td><span class="badge badge-info">{skill.source_type}</span></td>
+                                    <td>
+                                        <f:if condition="{skill.review.quarantined}">
+                                            <f:then>
+                                                <span class="badge badge-danger"><f:translate key="{ll}quarantine.reason.auto"/></span>
+                                            </f:then>
+                                            <f:else>
+                                                <span class="badge badge-default"><f:translate key="{ll}quarantine.reason.manual"/></span>
+                                            </f:else>
+                                        </f:if>
+                                    </td>
+                                    <td>
+                                        <f:render partial="SkillReview" arguments="{review: skill.review, ll: ll}"/>
+                                    </td>
+                                    <td class="col-control">
+                                        <div class="btn-group">
+                                            <a class="btn btn-default btn-sm" href="{skill.editUri}" title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:edit')}">
+                                                <core:icon identifier="actions-open" size="small"/>
+                                            </a>
+                                            <f:if condition="{isAdmin}">
+                                                <form action="{quarantineUri}" method="post" class="d-inline"
+                                                      onsubmit="return confirm('{f:translate(key: \'{ll}quarantine.release.confirm\')}');">
+                                                    <input type="hidden" name="action" value="release"/>
+                                                    <input type="hidden" name="skill" value="{skill.uid}"/>
+                                                    <button type="submit" class="btn btn-warning btn-sm" title="{f:translate(key:'{ll}quarantine.release.help')}">
+                                                        <core:icon identifier="actions-unlock" size="small"/>
+                                                        <f:translate key="{ll}quarantine.release"/>
+                                                    </button>
+                                                </form>
+                                            </f:if>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </f:for>
+                            </tbody>
+                        </table>
+                    </div>
+                </f:then>
+                <f:else>
+                    <div class="callout callout-success">
+                        <div class="callout-content">
+                            <f:translate key="{ll}quarantine.empty"/>
+                        </div>
+                    </div>
+                </f:else>
+            </f:if>
+        </div>
+    </div>
+
+</div>
+</f:section>
+</html>

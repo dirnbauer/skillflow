@@ -58,6 +58,19 @@ final class SkillExecutionService
         $engineRequested = trim($engine);
         $context = $this->buildContext($table, $recordUid, $workspaceId, $stageUid, $resolvedInstructions, $engineRequested, $runUid);
         try {
+            // Hidden skills never execute — this is what makes the review
+            // quarantine (hidden = 1 on danger-level findings) an actual
+            // execution block, not just catalogue cosmetics. Central here so
+            // every entry point is covered: module form, CLI, stage auto-run,
+            // batch page runs and context-aware engines. Release = unhide.
+            if ((bool)($skill['hidden'] ?? false)) {
+                throw new ExecutionBlockedException(
+                    'Skill "' . Typed::string($skill['identifier'] ?? (string)$skillUid)
+                    . '" is hidden (quarantined or disabled) and will not run. '
+                    . 'Review its findings in the Skills module and unhide it to release.'
+                );
+            }
+
             // Resolve {uid}/{table}/{title}/{pid}/{workspace} in the skill body and the
             // per-run instructions before anything reaches the LLM. Closed whitelist only.
             $tokens = $this->contextResolver->resolveTokens($table, $recordUid, $workspaceId);

@@ -256,8 +256,13 @@
                 </div>
             </f:if>
             <f:comment>Review summary: what needs a human look.</f:comment>
-            <f:if condition="{reviewSummary.danger} > 0 || {reviewSummary.warning} > 0 || {reviewSummary.unchecked} > 0">
+            <f:if condition="{reviewSummary.danger} > 0 || {reviewSummary.warning} > 0 || {reviewSummary.unchecked} > 0 || {quarantinedCount} > 0">
                 <p class="skf-review-summary">
+                    <f:if condition="{quarantinedCount} > 0">
+                        <a href="{quarantineUri}" class="badge badge-danger" title="{f:translate(key:'{ll}quarantine.button')}">
+                            <core:icon identifier="actions-lock" size="small"/> {quarantinedCount} <f:translate key="{ll}review.summary.quarantined"/>
+                        </a>
+                    </f:if>
                     <f:if condition="{reviewSummary.danger} > 0"><span class="badge badge-danger">{reviewSummary.danger} <f:translate key="{ll}review.summary.security"/></span> </f:if>
                     <f:if condition="{reviewSummary.warning} > 0"><span class="badge badge-warning">{reviewSummary.warning} <f:translate key="{ll}review.summary.review"/></span> </f:if>
                     <f:if condition="{reviewSummary.unchecked} > 0"><span class="badge badge-default">{reviewSummary.unchecked} <f:translate key="{ll}review.summary.unchecked"/></span> </f:if>

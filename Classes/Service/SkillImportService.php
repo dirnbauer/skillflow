@@ -134,7 +134,8 @@ final class SkillImportService
                 // change, and backfill skills that were never checked. A danger-level
                 // finding quarantines the skill (hidden = 1) — it is never deleted.
                 if ($status !== 'unchanged' || $this->needsCheck($skillUid)) {
-                    if ($this->runChecks($skillUid, $parsed->body, $files, $parsed->metadata) === 'danger') {
+                    $check = $this->runChecks($skillUid, $parsed->body, $files, $parsed->metadata, $status !== 'unchanged');
+                    if ($check['quarantined']) {
                         $result->quarantined++;
                     }
                 }
@@ -169,7 +170,7 @@ final class SkillImportService
         [$status, $skillUid] = $this->upsert($skill, $sourceType, $repositoryUid, $relativePath);
         // Rules carry no supporting files; still run the (body-only) review checks.
         if ($status !== 'unchanged' || $this->needsCheck($skillUid)) {
-            $this->runChecks($skillUid, $skill->body, [], $skill->metadata);
+            $this->runChecks($skillUid, $skill->body, [], $skill->metadata, $status !== 'unchanged');
         }
         return $status;
     }
@@ -197,14 +198,16 @@ final class SkillImportService
         $quarantined = 0;
         foreach ($skills as $skill) {
             $skillUid = Typed::int($skill['uid']);
-            $level = $this->runChecks(
+            // Stored content, nothing changed — a released danger skill stays released.
+            $check = $this->runChecks(
                 $skillUid,
                 Typed::string($skill['body'] ?? ''),
                 $this->loadSkillFiles($skillUid),
                 Typed::stringKeyedArray(json_decode(Typed::string($skill['metadata'] ?? ''), true)),
+                false,
             );
             $checked++;
-            if ($level === 'danger') {
+            if ($check['quarantined']) {
                 $quarantined++;
             }
         }
@@ -214,19 +217,34 @@ final class SkillImportService
     /**
      * Runs the checks, persists the report, and QUARANTINES a danger-level skill
      * by setting hidden = 1 — never deletes it. Quarantine is one-way: we only
-     * ever set hidden here, never clear it, so a clean re-scan does not override
-     * an admin's manual hide, and releasing a quarantined skill is a deliberate
+     * ever set hidden here, never clear it, so a re-scan does not override an
+     * admin's manual hide, and releasing a quarantined skill is a deliberate
      * admin action (unhide) after they have reviewed the findings.
+     *
+     * A RELEASE STICKS: quarantine fires only when the skill ENTERS danger
+     * (previous level was not danger) or when its content changed (a changed
+     * skill needs a fresh review). A skill the admin released stays released
+     * across re-scans and cron syncs until its content actually changes.
      *
      * @param array<string, string> $files
      * @param array<string, mixed> $metadata
-     * @return string the check level (none|info|warning|danger)
+     * @return array{level: string, quarantined: bool} level: none|info|warning|danger
      */
-    private function runChecks(int $skillUid, string $body, array $files, array $metadata): string
+    private function runChecks(int $skillUid, string $body, array $files, array $metadata, bool $contentChanged = true): array
     {
         if ($skillUid <= 0) {
-            return 'none';
+            return ['level' => 'none', 'quarantined' => false];
         }
+        // Restriction-free lookup: Connection::select() applies the default
+        // enable-field restrictions, so a HIDDEN (quarantined) skill would read
+        // as "no previous level" and be re-quarantined on every scan — exactly
+        // the released-skill case this transition check exists to protect.
+        $previousQb = $this->connectionPool->getQueryBuilderForTable('tx_skillflow_skill');
+        $previousQb->getRestrictions()->removeAll();
+        $previousLevel = Typed::string($previousQb->select('check_level')->from('tx_skillflow_skill')
+            ->where($previousQb->expr()->eq('uid', $previousQb->createNamedParameter($skillUid, Connection::PARAM_INT)))
+            ->executeQuery()->fetchOne());
+
         $report = $this->skillCheckService->check($body, $files, $metadata);
         $level = $report->level();
         $fields = [
@@ -234,7 +252,8 @@ final class SkillImportService
             'check_report' => (string)json_encode($report->toArray(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
             'tstamp' => time(),
         ];
-        if ($level === 'danger') {
+        $quarantine = $level === 'danger' && ($contentChanged || $previousLevel !== 'danger');
+        if ($quarantine) {
             $fields['hidden'] = 1;
         }
         $this->connectionPool->getConnectionForTable('tx_skillflow_skill')->update(
@@ -242,7 +261,7 @@ final class SkillImportService
             $fields,
             ['uid' => $skillUid],
         );
-        return $level;
+        return ['level' => $level, 'quarantined' => $quarantine];
     }
 
     private function needsCheck(int $skillUid): bool
@@ -250,9 +269,13 @@ final class SkillImportService
         if ($skillUid <= 0) {
             return false;
         }
-        $report = $this->connectionPool->getConnectionForTable('tx_skillflow_skill')
-            ->select(['check_report'], 'tx_skillflow_skill', ['uid' => $skillUid])
-            ->fetchOne();
+        // Restriction-free: a hidden (quarantined) skill has a report too —
+        // Connection::select() would filter it out and force pointless re-checks.
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_skillflow_skill');
+        $queryBuilder->getRestrictions()->removeAll();
+        $report = $queryBuilder->select('check_report')->from('tx_skillflow_skill')
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($skillUid, Connection::PARAM_INT)))
+            ->executeQuery()->fetchOne();
         return !is_string($report) || trim($report) === '';
     }
 

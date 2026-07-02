@@ -59,6 +59,9 @@
       <trans-unit id="review.summary.unchecked" resname="review.summary.unchecked">
         <source>not scanned</source>
       </trans-unit>
+      <trans-unit id="review.summary.quarantined" resname="review.summary.quarantined">
+        <source>quarantined — click to review</source>
+      </trans-unit>
       <trans-unit id="review.summary.hint" resname="review.summary.hint">
         <source>— open a skill's Review cell to see what to check. Findings are advisory; nothing is disabled automatically.</source>
       </trans-unit>
@@ -81,7 +84,40 @@
         <source>Hidden automatically because of a danger-level security finding. Not deleted — review the findings and unhide it (Access tab) if you trust it.</source>
       </trans-unit>
       <trans-unit id="review.quarantined.note" resname="review.quarantined.note">
-        <source>Quarantined: this skill was hidden automatically because of a danger-level finding below. It was NOT deleted. After reviewing, open the skill and clear "Disable" (Access tab) to release it.</source>
+        <source>Quarantined: this skill was hidden automatically because of a danger-level finding below. It was NOT deleted. Release it from the Quarantine screen (or clear "Disable" on the Access tab) after reviewing.</source>
+      </trans-unit>
+      <trans-unit id="quarantine.button" resname="quarantine.button">
+        <source>Quarantine</source>
+      </trans-unit>
+      <trans-unit id="quarantine.headline" resname="quarantine.headline">
+        <source>Quarantined skills</source>
+      </trans-unit>
+      <trans-unit id="quarantine.back" resname="quarantine.back">
+        <source>Back to overview</source>
+      </trans-unit>
+      <trans-unit id="quarantine.intro" resname="quarantine.intro">
+        <source>These skills are hidden and will NOT run — either quarantined automatically by the security scan (danger-level finding) or disabled manually. Nothing here is deleted. Review each skill's findings, then release the ones you trust; released skills stay flagged in the catalogue so the findings remain visible.</source>
+      </trans-unit>
+      <trans-unit id="quarantine.col.reason" resname="quarantine.col.reason">
+        <source>Reason</source>
+      </trans-unit>
+      <trans-unit id="quarantine.reason.auto" resname="quarantine.reason.auto">
+        <source>Auto-quarantined (security)</source>
+      </trans-unit>
+      <trans-unit id="quarantine.reason.manual" resname="quarantine.reason.manual">
+        <source>Manually disabled</source>
+      </trans-unit>
+      <trans-unit id="quarantine.release" resname="quarantine.release">
+        <source>Release</source>
+      </trans-unit>
+      <trans-unit id="quarantine.release.help" resname="quarantine.release.help">
+        <source>Unhide this skill so it can run again. Do this only after reviewing its findings.</source>
+      </trans-unit>
+      <trans-unit id="quarantine.release.confirm" resname="quarantine.release.confirm">
+        <source>Release this skill? It becomes runnable again. Only release it after you have reviewed its security findings.</source>
+      </trans-unit>
+      <trans-unit id="quarantine.empty" resname="quarantine.empty">
+        <source>No quarantined skills — every imported skill passed the security scan, or has been reviewed and released.</source>
       </trans-unit>
       <trans-unit id="review.code.help" resname="review.code.help">
         <source>This skill ships code examples — check the license before reusing them.</source>

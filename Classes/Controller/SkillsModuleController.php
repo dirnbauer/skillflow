@@ -11,6 +11,7 @@ use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Localization\LanguageService;
@@ -57,10 +58,17 @@ final class SkillsModuleController
                 'run' => $this->runAction($request, $moduleTemplate),
                 'runPageSkills' => $this->runPageSkillsAction($request, $moduleTemplate),
                 'recheck' => $this->recheckAction($moduleTemplate),
+                'release' => $this->releaseAction($request, $moduleTemplate),
                 default => null,
             };
+            // Releasing happens on the quarantine screen — stay there.
+            if ($action === 'release') {
+                return $this->renderQuarantine($moduleTemplate);
+            }
         } elseif ($action === 'showRun') {
             return $this->renderRun($request, $moduleTemplate);
+        } elseif ($action === 'quarantine') {
+            return $this->renderQuarantine($moduleTemplate);
         }
 
         return $this->renderIndex($request, $moduleTemplate);
@@ -140,11 +148,16 @@ final class SkillsModuleController
             'returnUrl' => $moduleUri,
         ]);
 
+        $quarantineUri = (string)$this->uriBuilder->buildUriFromRoute('content_skillflow', ['action' => 'quarantine']);
+        $quarantinedCount = count($this->skillFinder->findHiddenSkills());
+
         $isAdmin = $this->getBackendUser()->isAdmin();
-        $this->registerDocHeaderButtons($moduleTemplate, $moduleUri, $newSkillUri, $newRepositoryUri, $currentPageUid, $isAdmin);
+        $this->registerDocHeaderButtons($moduleTemplate, $moduleUri, $newSkillUri, $newRepositoryUri, $currentPageUid, $isAdmin, $quarantineUri, $quarantinedCount);
 
         $moduleTemplate->assignMultiple([
             'moduleUri' => $moduleUri,
+            'quarantineUri' => $quarantineUri,
+            'quarantinedCount' => $quarantinedCount,
             'isAdmin' => $isAdmin,
             'executionBlockReason' => $this->environmentGuard->getBlockReason(),
             'skills' => $skills,
@@ -176,6 +189,8 @@ final class SkillsModuleController
         string $newRepositoryUri,
         int $currentPageUid,
         bool $isAdmin,
+        string $quarantineUri = '',
+        int $quarantinedCount = 0,
     ): void {
         $buttonBar = $moduleTemplate->getDocHeaderComponent()->getButtonBar();
         $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
@@ -194,6 +209,15 @@ final class SkillsModuleController
                 ->setShowLabelText(true)
                 ->setIcon($iconFactory->getIcon('actions-database', IconSize::SMALL));
             $buttonBar->addButton($newRepository, ButtonBar::BUTTON_POSITION_LEFT, 2);
+        }
+
+        if ($quarantineUri !== '') {
+            $quarantine = $buttonBar->makeLinkButton()
+                ->setHref($quarantineUri)
+                ->setTitle($this->lll('quarantine.button') . ($quarantinedCount > 0 ? ' (' . $quarantinedCount . ')' : ''))
+                ->setShowLabelText(true)
+                ->setIcon($iconFactory->getIcon('actions-lock', IconSize::SMALL));
+            $buttonBar->addButton($quarantine, ButtonBar::BUTTON_POSITION_LEFT, 3);
         }
 
         $reload = $buttonBar->makeLinkButton()
@@ -231,6 +255,79 @@ final class SkillsModuleController
             'targetPageUri' => $targetPageUri,
         ]);
         return $moduleTemplate->renderResponse('SkillsModule/Run');
+    }
+
+    /**
+     * The quarantine screen: every hidden skill (auto-quarantined on a
+     * danger-level finding, or manually disabled) with its full review
+     * report and a release (unhide) action. Generic — any skill that gets
+     * quarantined in the future shows up here automatically.
+     */
+    private function renderQuarantine(ModuleTemplate $moduleTemplate): ResponseInterface
+    {
+        GeneralUtility::makeInstance(PageRenderer::class)
+            ->addCssFile('EXT:skillflow/Resources/Public/Css/module.css');
+
+        $moduleUri = (string)$this->uriBuilder->buildUriFromRoute('content_skillflow');
+        $quarantineUri = (string)$this->uriBuilder->buildUriFromRoute('content_skillflow', ['action' => 'quarantine']);
+
+        $skills = $this->skillFinder->findHiddenSkills();
+        foreach ($skills as &$skill) {
+            $skill['editUri'] = (string)$this->uriBuilder->buildUriFromRoute('record_edit', [
+                'edit' => ['tx_skillflow_skill' => [Typed::int($skill['uid']) => 'edit']],
+                'returnUrl' => $quarantineUri,
+            ]);
+            $skill['descriptionShort'] = $this->crop(Typed::string($skill['description']), 160);
+            $skill['review'] = $this->buildReviewView(Typed::string($skill['check_report'] ?? ''));
+            $skill['review']['quarantined'] = $skill['review']['level'] === 'danger';
+        }
+        unset($skill);
+
+        $moduleTemplate->assignMultiple([
+            'moduleUri' => $moduleUri,
+            'quarantineUri' => $quarantineUri,
+            'isAdmin' => $this->getBackendUser()->isAdmin(),
+            'skills' => $skills,
+        ]);
+        return $moduleTemplate->renderResponse('SkillsModule/Quarantine');
+    }
+
+    /**
+     * Release a quarantined skill: unhide it via DataHandler (permissions +
+     * history apply, undo works). The skill record itself is never touched
+     * beyond the hidden flag — quarantine never deletes.
+     */
+    private function releaseAction(ServerRequestInterface $request, ModuleTemplate $moduleTemplate): void
+    {
+        if (!$this->getBackendUser()->isAdmin()) {
+            $this->denied($moduleTemplate);
+            return;
+        }
+        $skillUid = Typed::int(Typed::stringKeyedArray($request->getParsedBody())['skill'] ?? 0);
+        $skill = $skillUid > 0 ? $this->skillFinder->findSkillByUid($skillUid) : null;
+        if ($skill === null) {
+            $moduleTemplate->addFlashMessage('Skill ' . $skillUid . ' not found.', 'Not found', ContextualFeedbackSeverity::ERROR);
+            return;
+        }
+
+        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+        $dataHandler->start(['tx_skillflow_skill' => [$skillUid => ['hidden' => 0]]], []);
+        $dataHandler->process_datamap();
+        if ($dataHandler->errorLog !== []) {
+            $errors = array_map(static fn (mixed $error): string => Typed::string($error), $dataHandler->errorLog);
+            $moduleTemplate->addFlashMessage(implode(' | ', $errors), 'Release failed', ContextualFeedbackSeverity::ERROR);
+            return;
+        }
+
+        $moduleTemplate->addFlashMessage(
+            sprintf(
+                'Skill "%s" was released (unhidden) and can run again. It stays flagged "%s" in the catalogue so the findings remain visible.',
+                Typed::string($skill['title'] ?? '') ?: (string)$skillUid,
+                Typed::string($skill['check_level'] ?? '') ?: 'checked'
+            ),
+            'Skill released',
+            ContextualFeedbackSeverity::OK
+        );
     }
 
     private function recheckAction(ModuleTemplate $moduleTemplate): void

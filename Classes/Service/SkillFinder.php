@@ -39,6 +39,25 @@ final class SkillFinder
     }
 
     /**
+     * All hidden (quarantined or manually disabled) skills — the quarantine
+     * screen. Hidden skills never execute; releasing one = unhiding it.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function findHiddenSkills(): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_skillflow_skill');
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        return $queryBuilder
+            ->select('*')
+            ->from('tx_skillflow_skill')
+            ->where($queryBuilder->expr()->eq('hidden', $queryBuilder->createNamedParameter(1, \Doctrine\DBAL\ParameterType::INTEGER)))
+            ->orderBy('title')
+            ->executeQuery()
+            ->fetchAllAssociative();
+    }
+
+    /**
      * @return array<string, mixed>|null
      */
     public function findSkillByUid(int $uid): ?array
