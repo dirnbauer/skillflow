@@ -63,7 +63,7 @@
         <source>quarantined — click to review</source>
       </trans-unit>
       <trans-unit id="review.summary.hint" resname="review.summary.hint">
-        <source>— open a skill's Review cell to see what to check. Findings are advisory; nothing is disabled automatically.</source>
+        <source>Open a skill's Review cell to see what to check. Findings are advisory; nothing is disabled automatically.</source>
       </trans-unit>
       <trans-unit id="review.badge.security" resname="review.badge.security">
         <source>Security</source>

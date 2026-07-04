@@ -25,8 +25,12 @@
     font-weight: 600;
 }
 
+/* Status/verdict badges next to a heading: keep them clearly smaller than
+ * the heading text instead of scaling with it. */
 .skf-card-title .badge {
+    font-size: .7rem;
     font-weight: 600;
+    padding: .35em .7em;
 }
 
 .skf-card-header {
@@ -77,6 +81,13 @@
     gap: .5rem;
 }
 
+/* Leading button row (detail/quarantine views): tuck it closer to the
+ * docheader and give it extra breathing room before the first card. */
+.skf-module > .skf-actions:first-child {
+    margin-top: -.5rem;
+    margin-bottom: .5rem;
+}
+
 /* Selected-page target line */
 .skf-target {
     display: flex;
@@ -121,6 +132,56 @@
 .skf-muted {
     color: var(--typo3-text-color-variant, #8a8a8a);
     margin: 0;
+}
+
+/* ---- Badges ----
+ * Uniform height and centered icon + text. Icons are sized to 1em so a badge
+ * with an icon is exactly as tall as a text-only one. Pill shape keeps
+ * icon + text combinations looking tidy. */
+.skf-module .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .4em;
+    padding: .35em .65em;
+    line-height: 1;
+    font-weight: 600;
+    border-radius: 999px;
+    vertical-align: middle;
+    text-decoration: none;
+}
+
+.skf-module a.badge:hover,
+.skf-module a.badge:focus {
+    text-decoration: none;
+}
+
+.skf-module .badge .icon {
+    --icon-size: 1em;
+    width: 1em;
+    height: 1em;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.skf-module .badge .icon svg,
+.skf-module .badge .icon img {
+    width: 100%;
+    height: 100%;
+}
+
+/* Centre row content vertically — badges and buttons sit mid-row instead of
+ * hugging the top edge of tall cells. */
+.skf-module .table td {
+    vertical-align: middle;
+}
+
+/* Edit + release actions: forms inside the group break Bootstrap's segmented
+ * look anyway, so render them as evenly spaced, centred buttons. */
+.skf-module .col-control .btn-group {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: .35rem;
 }
 
 /* Collapsible secondary sections */
@@ -185,9 +246,32 @@
 /* --- Skill review (security + license) ------------------------------- */
 .skf-toolbar { display: flex; gap: .5rem; flex-wrap: wrap; }
 .skf-review-summary { margin: 0 0 1rem; display: flex; gap: .4rem; align-items: center; flex-wrap: wrap; }
+/* The advisory hint gets its own line below the badge row */
+.skf-review-summary .skf-muted {
+    flex-basis: 100%;
+    font-size: .9em;
+}
 .skf-review > summary { cursor: pointer; list-style: none; }
 .skf-review > summary::-webkit-details-marker { display: none; }
-.skf-review-summary-badges { display: inline-flex; gap: .3rem; align-items: center; }
+.skf-review-summary-badges {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .35rem;
+}
+
+/* Expand hint: the badge row is clickable, give it a caret like skf-section */
+.skf-review > summary::after {
+    content: "▸";
+    color: var(--typo3-text-color-variant, #8a8a8a);
+    font-size: .85em;
+    line-height: 1;
+    transition: transform .15s ease;
+}
+
+.skf-review[open] > summary::after {
+    transform: rotate(90deg);
+}
 .skf-review-detail {
     margin-top: .6rem;
     padding: .6rem .75rem;
