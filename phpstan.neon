@@ -6,6 +6,11 @@ parameters:
     phpVersion: 80200
     paths:
         - Classes
+    scanFiles:
+        # Symbol definitions for the optional nr_llm soft dependency (not in
+        # composer.json, absent from standalone analysis) so the class_exists()-
+        # guarded NrLlmRunner / NrLlmScanCredentials type-check.
+        - Resources/Private/PHPStan/nr_llm.stub
     tmpDir: .Build/phpstan
     treatPhpDocTypesAsCertain: false
     checkTooWideReturnTypesInProtectedAndPublicMethods: true

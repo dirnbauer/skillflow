@@ -40,7 +40,7 @@ skillspectorEnabled = 1
 # cat=security/enable/120; type=string; label=SkillSpector binary: Path or name of the skillspector binary. Install with "uv tool install git+https://github.com/NVIDIA/skillspector.git".
 skillspectorBinary = skillspector
 
-# cat=security/enable/130; type=boolean; label=SkillSpector LLM analysis: Also run SkillSpector's LLM-assisted semantic analysis (requires provider env vars such as SKILLSPECTOR_PROVIDER/ANTHROPIC_API_KEY and SENDS SKILL CONTENT to that provider). Off = static analysis only (--no-llm), fully local.
+# cat=security/enable/130; type=boolean; label=SkillSpector LLM analysis: Also run SkillSpector's LLM-assisted semantic analysis (filters false positives). Credentials are taken from the nr_llm "LLM" module's default connection (provider + vault key) when installed, else from ambient SKILLSPECTOR_* env vars; if neither resolves the scan stays static. SENDS SKILL CONTENT to that provider (e.g. OpenAI). Off = static analysis only (--no-llm), fully local.
 skillspectorUseLlm = 0
 
 # cat=security/enable/140; type=int+; label=SkillSpector timeout: Seconds before a SkillSpector scan is aborted (the report then notes the failure; the import itself never fails).

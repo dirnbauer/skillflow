@@ -93,9 +93,16 @@ That is all — the integration picks the binary up automatically:
   severity and install recommendation appear in the skill's review panel; individual issues join the findings list.
 - A **DO_NOT_INSTALL** verdict (or a CRITICAL issue) counts as danger level and **quarantines** the skill
   (hidden, never deleted — release is a deliberate admin action). **CAUTION** reads as warning.
-- By default the scan is static-only (`--no-llm`): no API key needed, nothing leaves the machine. SkillSpector's
-  LLM-assisted analysis can be enabled in the extension configuration (`skillspectorUseLlm`) — that sends skill
-  content to the configured provider (`SKILLSPECTOR_PROVIDER`, e.g. `anthropic` + `ANTHROPIC_API_KEY`).
+- By default the scan is static-only (`--no-llm`): no API key needed, nothing leaves the machine. Static analysis
+  is deliberately strict and, on a library of trusted first-party skills, is dominated by false positives
+  (`subprocess` in bundled helper scripts, `npx`/Docker refs without a pinned version in docs, a missing
+  `permissions` field). The LLM-assisted pass is what filters those.
+- Enable the LLM pass with `skillspectorUseLlm = 1`. Credentials are sourced automatically from the
+  [nr_llm](https://github.com/netresearch) *LLM* backend module's **default connection** (its provider, model and
+  vault-stored key) — reusing the same OpenAI/Anthropic setup the `nr_llm` runner uses, so no separate
+  `SKILLSPECTOR_*` env vars are needed. If nr_llm is absent, ambient `SKILLSPECTOR_PROVIDER` env vars are used; if
+  neither resolves, the scan stays static. **This sends skill content to that provider** (e.g. OpenAI) — fine for
+  public skills, mind it for anything sensitive.
 - Missing binary or failed scan? The built-in checks still run, the report notes the skipped scan, and the import
   never fails. Once the binary appears, the next sync re-scans automatically. Configuration lives in
   *Settings → Extension Configuration → skillflow → security* (`skillspectorEnabled`, `skillspectorBinary`,

@@ -35,8 +35,16 @@ final class SkillspectorScanner
 
     private const OUTPUT_SNIPPET_MAX = 300;
 
+    /**
+     * LLM-assisted scans make several model calls per skill, so the static
+     * default timeout is far too low — this is the floor applied when the LLM
+     * pass actually runs.
+     */
+    private const LLM_TIMEOUT_FLOOR = 600;
+
     public function __construct(
         private readonly ExtensionConfiguration $extensionConfiguration,
+        private readonly NrLlmScanCredentials $nrLlmScanCredentials,
     ) {
     }
 
@@ -77,16 +85,31 @@ final class SkillspectorScanner
         try {
             $skillDirectory = $this->materializeSkill($skill, $files);
             $command = [$binary, 'scan', $skillDirectory, '--format', 'json'];
-            if (!(bool)Typed::int($this->conf()['skillspectorUseLlm'] ?? 0)) {
+
+            // LLM pass: source the provider/key from nr_llm (the "LLM" module),
+            // falling back to any SKILLSPECTOR_PROVIDER already present in the
+            // environment. When neither yields a provider, degrade to a
+            // static-only scan rather than letting SkillSpector hang or fail on
+            // its keyless nv_build default.
+            $timeout = max(10, Typed::int($this->conf()['skillspectorTimeout'] ?? 120));
+            $env = null;
+            if ((bool)Typed::int($this->conf()['skillspectorUseLlm'] ?? 0)) {
+                $env = $this->nrLlmScanCredentials->resolve();
+                if ($env !== null || getenv('SKILLSPECTOR_PROVIDER') !== false) {
+                    $timeout = max($timeout, self::LLM_TIMEOUT_FLOOR);
+                } else {
+                    $command[] = '--no-llm';
+                }
+            } else {
                 $command[] = '--no-llm';
             }
 
             $process = new Process(
                 $command,
                 dirname($skillDirectory),
+                $env,
                 null,
-                null,
-                max(10, Typed::int($this->conf()['skillspectorTimeout'] ?? 120))
+                $timeout
             );
             $process->run();
 
