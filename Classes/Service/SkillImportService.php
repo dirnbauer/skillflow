@@ -130,11 +130,12 @@ final class SkillImportService
                 [$status, $skillUid] = $this->upsert($parsed, $sourceType, $repositoryUid, $relativePath);
                 $result->{$status}++;
                 $files = $this->syncSupportingFiles($skillUid, dirname($skillFile), $result);
-                // MANDATORY review checks (security + license). Re-check on content
-                // change, and backfill skills that were never checked. A danger-level
-                // finding quarantines the skill (hidden = 1) — it is never deleted.
+                // MANDATORY review checks (security + license + SkillSpector when
+                // installed). Re-check on content change, and backfill skills whose
+                // stored report is missing or stale. A danger-level finding
+                // quarantines the skill (hidden = 1) — it is never deleted.
                 if ($status !== 'unchanged' || $this->needsCheck($skillUid)) {
-                    $check = $this->runChecks($skillUid, $parsed->body, $files, $parsed->metadata, $status !== 'unchanged');
+                    $check = $this->runChecks($skillUid, $parsed, $files, $status !== 'unchanged');
                     if ($check['quarantined']) {
                         $result->quarantined++;
                     }
@@ -170,7 +171,7 @@ final class SkillImportService
         [$status, $skillUid] = $this->upsert($skill, $sourceType, $repositoryUid, $relativePath);
         // Rules carry no supporting files; still run the (body-only) review checks.
         if ($status !== 'unchanged' || $this->needsCheck($skillUid)) {
-            $this->runChecks($skillUid, $skill->body, [], $skill->metadata, $status !== 'unchanged');
+            $this->runChecks($skillUid, $skill, [], $status !== 'unchanged');
         }
         return $status;
     }
@@ -189,7 +190,7 @@ final class SkillImportService
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_skillflow_skill');
         $queryBuilder->getRestrictions()->removeAll();
         $skills = $queryBuilder
-            ->select('uid', 'body', 'metadata')
+            ->select('uid', 'identifier', 'title', 'description', 'body', 'allowed_tools', 'metadata')
             ->from('tx_skillflow_skill')
             ->where($queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)))
             ->executeQuery()
@@ -201,9 +202,15 @@ final class SkillImportService
             // Stored content, nothing changed — a released danger skill stays released.
             $check = $this->runChecks(
                 $skillUid,
-                Typed::string($skill['body'] ?? ''),
+                new ParsedSkill(
+                    identifier: Typed::string($skill['identifier'] ?? ''),
+                    name: Typed::string($skill['title'] ?? ''),
+                    description: Typed::string($skill['description'] ?? ''),
+                    body: Typed::string($skill['body'] ?? ''),
+                    allowedTools: Typed::string($skill['allowed_tools'] ?? ''),
+                    metadata: Typed::stringKeyedArray(json_decode(Typed::string($skill['metadata'] ?? ''), true)),
+                ),
                 $this->loadSkillFiles($skillUid),
-                Typed::stringKeyedArray(json_decode(Typed::string($skill['metadata'] ?? ''), true)),
                 false,
             );
             $checked++;
@@ -227,10 +234,9 @@ final class SkillImportService
      * across re-scans and cron syncs until its content actually changes.
      *
      * @param array<string, string> $files
-     * @param array<string, mixed> $metadata
      * @return array{level: string, quarantined: bool} level: none|info|warning|danger
      */
-    private function runChecks(int $skillUid, string $body, array $files, array $metadata, bool $contentChanged = true): array
+    private function runChecks(int $skillUid, ParsedSkill $skill, array $files, bool $contentChanged = true): array
     {
         if ($skillUid <= 0) {
             return ['level' => 'none', 'quarantined' => false];
@@ -245,7 +251,7 @@ final class SkillImportService
             ->where($previousQb->expr()->eq('uid', $previousQb->createNamedParameter($skillUid, Connection::PARAM_INT)))
             ->executeQuery()->fetchOne());
 
-        $report = $this->skillCheckService->check($body, $files, $metadata);
+        $report = $this->skillCheckService->check($skill, $files);
         $level = $report->level();
         $fields = [
             'check_level' => $level,
@@ -276,7 +282,9 @@ final class SkillImportService
         $report = $queryBuilder->select('check_report')->from('tx_skillflow_skill')
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($skillUid, Connection::PARAM_INT)))
             ->executeQuery()->fetchOne();
-        return !is_string($report) || trim($report) === '';
+        // Stale also covers reports that predate the SkillSpector integration
+        // or whose SkillSpector scan can be retried now that the binary exists.
+        return $this->skillCheckService->isReportStale(is_string($report) ? $report : '');
     }
 
     /**

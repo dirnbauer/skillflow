@@ -143,6 +143,30 @@
       <trans-unit id="review.license.unknown" resname="review.license.unknown">
         <source>no license declared</source>
       </trans-unit>
+      <trans-unit id="review.spector.label" resname="review.spector.label">
+        <source>SkillSpector</source>
+      </trans-unit>
+      <trans-unit id="review.spector.doNotInstall" resname="review.spector.doNotInstall">
+        <source>do not install</source>
+      </trans-unit>
+      <trans-unit id="review.spector.caution" resname="review.spector.caution">
+        <source>caution</source>
+      </trans-unit>
+      <trans-unit id="review.spector.safe" resname="review.spector.safe">
+        <source>safe</source>
+      </trans-unit>
+      <trans-unit id="review.spector.llm" resname="review.spector.llm">
+        <source>LLM</source>
+      </trans-unit>
+      <trans-unit id="review.spector.llm.help" resname="review.spector.llm.help">
+        <source>SkillSpector's LLM-assisted semantic analysis ran in addition to the static scan.</source>
+      </trans-unit>
+      <trans-unit id="review.spector.unavailable" resname="review.spector.unavailable">
+        <source>SkillSpector not installed — static NVIDIA scan skipped</source>
+      </trans-unit>
+      <trans-unit id="review.spector.error" resname="review.spector.error">
+        <source>SkillSpector scan failed</source>
+      </trans-unit>
       <trans-unit id="repositories.headline" resname="repositories.headline">
         <source>Skill repositories</source>
       </trans-unit>

@@ -15,11 +15,27 @@
     },
     "require-dev": {
         "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^11.5",
         "saschaegerer/phpstan-typo3": "^3.0.1"
     },
     "autoload": {
         "psr-4": {
             "Webconsulting\\Skillflow\\": "Classes/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Webconsulting\\Skillflow\\Tests\\": "Tests/"
+        }
+    },
+    "scripts": {
+        "analyse": "phpstan analyse",
+        "test": "phpunit"
+    },
+    "config": {
+        "allow-plugins": {
+            "typo3/class-alias-loader": true,
+            "typo3/cms-composer-installers": true
         }
     },
     "extra": {

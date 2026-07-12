@@ -40,6 +40,39 @@
                         <f:translate key="{ll}review.quarantined.note"/>
                     </div>
                 </f:if>
+                <f:comment>NVIDIA SkillSpector scan — aggregated risk score and install recommendation. Runs automatically when the binary is installed; a missing binary or a failed scan is shown as a muted note, never blocks.</f:comment>
+                <f:if condition="{review.skillspector.status}">
+                    <div class="skf-review-spector">
+                        <strong><f:translate key="{ll}review.spector.label"/>:</strong>
+                        <f:switch expression="{review.skillspector.status}">
+                            <f:case value="ok">
+                                <f:switch expression="{review.skillspector.recommendation}">
+                                    <f:case value="DO_NOT_INSTALL">
+                                        <span class="badge badge-danger"><core:icon identifier="actions-exclamation" size="small"/> {review.skillspector.score}/100 · {review.skillspector.severity} · <f:translate key="{ll}review.spector.doNotInstall"/></span>
+                                    </f:case>
+                                    <f:case value="CAUTION">
+                                        <span class="badge badge-warning">{review.skillspector.score}/100 · {review.skillspector.severity} · <f:translate key="{ll}review.spector.caution"/></span>
+                                    </f:case>
+                                    <f:defaultCase>
+                                        <span class="badge badge-success">{review.skillspector.score}/100 · <f:translate key="{ll}review.spector.safe"/></span>
+                                    </f:defaultCase>
+                                </f:switch>
+                                <f:if condition="{review.skillspector.llmUsed}">
+                                    <span class="badge badge-info" title="{f:translate(key:'{ll}review.spector.llm.help')}"><f:translate key="{ll}review.spector.llm"/></span>
+                                </f:if>
+                                <f:if condition="{review.skillspector.version}">
+                                    <span class="skf-muted">v{review.skillspector.version}</span>
+                                </f:if>
+                            </f:case>
+                            <f:case value="unavailable">
+                                <span class="skf-muted" title="{review.skillspector.note}"><f:translate key="{ll}review.spector.unavailable"/></span>
+                            </f:case>
+                            <f:defaultCase>
+                                <span class="badge badge-warning" title="{review.skillspector.note}"><f:translate key="{ll}review.spector.error"/></span>
+                            </f:defaultCase>
+                        </f:switch>
+                    </div>
+                </f:if>
                 <f:comment>License compatibility with TYPO3 (GPL-2.0-or-later) — warning only, and only actionable when the skill ships code.</f:comment>
                 <f:if condition="{review.license.status}">
                     <div class="skf-review-license">

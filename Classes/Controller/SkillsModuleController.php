@@ -458,9 +458,10 @@ final class SkillsModuleController
 
     /**
      * Decode the stored check_report JSON into a template-friendly view:
-     * the badge level, findings list, license assessment, and code flag.
+     * the badge level, findings list, license assessment, code flag, and the
+     * SkillSpector scan summary (empty array when the scan never ran).
      *
-     * @return array{unchecked: bool, level: string, hasCode: bool, findingCount: int, findings: list<array<string, string>>, license: array<string, string>, licenseWarning: bool}
+     * @return array{unchecked: bool, level: string, hasCode: bool, findingCount: int, findings: list<array<string, string>>, license: array<string, string>, licenseWarning: bool, skillspector: array<string, string>}
      */
     private function buildReviewView(string $checkReportJson): array
     {
@@ -472,6 +473,7 @@ final class SkillsModuleController
             'findings' => [],
             'license' => [],
             'licenseWarning' => false,
+            'skillspector' => [],
         ];
         if (trim($checkReportJson) === '') {
             return $empty;
@@ -497,6 +499,7 @@ final class SkillsModuleController
             'license' => $license,
             // The license only warrants a badge when there is code to reuse.
             'licenseWarning' => $hasCode && ($license['status'] ?? 'compatible') !== 'compatible',
+            'skillspector' => $this->stringifyMap(is_array($report['skillspector'] ?? null) ? $report['skillspector'] : []),
         ];
     }
 

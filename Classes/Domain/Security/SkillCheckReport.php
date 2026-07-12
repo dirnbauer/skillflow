@@ -24,6 +24,8 @@ final readonly class SkillCheckReport
         /** True when the skill ships code (supporting code files or fenced code in the body). */
         public bool $hasCode,
         public int $generatedAt,
+        /** NVIDIA SkillSpector scan summary; null when the scan is disabled in the extension configuration. */
+        public ?SkillspectorReport $skillspector = null,
     ) {
     }
 
@@ -32,6 +34,8 @@ final readonly class SkillCheckReport
      * License warnings never exceed 'warning' (they must not read as a hard block),
      * and only count when the skill ships CODE — an unknown/odd license on an
      * instruction-only skill has nothing to reuse, so it must not flag every row.
+     * A SkillSpector verdict sets a floor: DO_NOT_INSTALL reads as 'danger'
+     * (quarantine), CAUTION as 'warning' — even when no single finding says so.
      */
     public function level(): string
     {
@@ -44,6 +48,10 @@ final readonly class SkillCheckReport
         if ($this->hasCode && $this->license->isWarning() && (self::RANK['warning'] > (self::RANK[$level] ?? 0))) {
             $level = 'warning';
         }
+        $floor = $this->skillspector?->levelFloor() ?? 'none';
+        if ((self::RANK[$floor] ?? 0) > (self::RANK[$level] ?? 0)) {
+            $level = $floor;
+        }
         return $level;
     }
 
@@ -53,7 +61,7 @@ final readonly class SkillCheckReport
     }
 
     /**
-     * @return array{generatedAt: int, hasCode: bool, level: string, license: array<string, string>, findings: list<array<string, string>>}
+     * @return array{generatedAt: int, hasCode: bool, level: string, license: array<string, string>, findings: list<array<string, string>>, skillspector: array{status: string, score: int, severity: string, recommendation: string, version: string, llmUsed: bool, note: string}|null}
      */
     public function toArray(): array
     {
@@ -63,6 +71,7 @@ final readonly class SkillCheckReport
             'level' => $this->level(),
             'license' => $this->license->toArray(),
             'findings' => array_map(static fn (SkillCheckFinding $f): array => $f->toArray(), $this->findings),
+            'skillspector' => $this->skillspector?->toArray(),
         ];
     }
 }

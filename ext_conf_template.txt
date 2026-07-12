@@ -33,3 +33,15 @@ engineFallback = 1
 
 # cat=security/enable/100; type=boolean; label=Require local environment: Only allow skill execution when TYPO3 runs in Development context inside a DDEV project (IS_DDEV_PROJECT=true). Do NOT disable this on shared or production systems.
 requireLocalEnvironment = 1
+
+# cat=security/enable/110; type=boolean; label=SkillSpector scan: Run NVIDIA SkillSpector (github.com/NVIDIA/skillspector) on every imported and re-checked skill when the binary is available. A DO_NOT_INSTALL verdict quarantines the skill like any danger-level finding. When the binary is missing the built-in checks still run and the report notes the missing scan.
+skillspectorEnabled = 1
+
+# cat=security/enable/120; type=string; label=SkillSpector binary: Path or name of the skillspector binary. Install with "uv tool install git+https://github.com/NVIDIA/skillspector.git".
+skillspectorBinary = skillspector
+
+# cat=security/enable/130; type=boolean; label=SkillSpector LLM analysis: Also run SkillSpector's LLM-assisted semantic analysis (requires provider env vars such as SKILLSPECTOR_PROVIDER/ANTHROPIC_API_KEY and SENDS SKILL CONTENT to that provider). Off = static analysis only (--no-llm), fully local.
+skillspectorUseLlm = 0
+
+# cat=security/enable/140; type=int+; label=SkillSpector timeout: Seconds before a SkillSpector scan is aborted (the report then notes the failure; the import itself never fails).
+skillspectorTimeout = 120

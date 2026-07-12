@@ -74,6 +74,33 @@ Read this before using the extension.
    need list/module access plus read access to skills to run them. Reports are stored server-side
    (`tx_skillflow_run`) and shown in the module.
 
+### Review checks & NVIDIA SkillSpector
+
+Every imported or re-checked skill runs through mandatory review checks: a built-in pattern scan (prompt injection,
+dangerous code, credential leaks, exfiltration endpoints), a license-compatibility assessment against TYPO3's
+GPL-2.0-or-later — and, when the binary is installed, a scan with
+[NVIDIA SkillSpector](https://github.com/NVIDIA/skillspector), NVIDIA's security scanner for agent skills
+(68 detection patterns across 17 categories).
+
+```bash
+uv tool install git+https://github.com/NVIDIA/skillspector.git
+```
+
+That is all — the integration picks the binary up automatically:
+
+- On every import/sync and on *Re-scan all* (module button or `vendor/bin/typo3 skillflow:check`), each skill is
+  materialized into a transient folder and scanned with `skillspector scan --format json`. The risk score (0–100),
+  severity and install recommendation appear in the skill's review panel; individual issues join the findings list.
+- A **DO_NOT_INSTALL** verdict (or a CRITICAL issue) counts as danger level and **quarantines** the skill
+  (hidden, never deleted — release is a deliberate admin action). **CAUTION** reads as warning.
+- By default the scan is static-only (`--no-llm`): no API key needed, nothing leaves the machine. SkillSpector's
+  LLM-assisted analysis can be enabled in the extension configuration (`skillspectorUseLlm`) — that sends skill
+  content to the configured provider (`SKILLSPECTOR_PROVIDER`, e.g. `anthropic` + `ANTHROPIC_API_KEY`).
+- Missing binary or failed scan? The built-in checks still run, the report notes the skipped scan, and the import
+  never fails. Once the binary appears, the next sync re-scans automatically. Configuration lives in
+  *Settings → Extension Configuration → skillflow → security* (`skillspectorEnabled`, `skillspectorBinary`,
+  `skillspectorUseLlm`, `skillspectorTimeout`).
+
 ## Quick start
 
 ```bash

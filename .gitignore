@@ -3,3 +3,6 @@
 vendor/
 composer.lock
 .Build/
+# created by the TYPO3 composer plugin when installing dev deps in the extension root
+/public/
+/var/
