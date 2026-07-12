@@ -117,14 +117,28 @@ final readonly class SkillspectorReport
     }
 
     /**
-     * The minimum review level this scan justifies, merged into
-     * SkillCheckReport::level() ("highest wins"). Driven by the aggregate
-     * install recommendation — a failed/unavailable scan never raises it.
+     * The minimum review level this scan's AGGREGATE verdict justifies, merged
+     * into SkillCheckReport::level() ("highest wins"). Deliberately capped at
+     * 'warning': the install recommendation is advisory context, not a
+     * quarantine trigger.
+     *
+     * Rationale (measured on a trusted first-party corpus): SkillSpector's
+     * aggregate recommendation has high sensitivity but low specificity — a
+     * DO_NOT_INSTALL is routinely driven by a volume of *warning*-level
+     * documentation patterns (unpinned npx/Docker refs, subprocess in helper
+     * scripts) rather than a concrete threat. Quarantine (hiding a skill so it
+     * cannot run) must instead be gated on a danger-SEVERITY finding — an
+     * exposed secret, pipe-to-shell, exfiltration endpoint, or a CRITICAL
+     * SkillSpector issue — which the individual findings already contribute to
+     * level(). So DO_NOT_INSTALL and CAUTION both floor at 'warning' here; only
+     * a located danger finding reaches 'danger' and quarantines.
+     *
+     * A failed/unavailable scan never raises the level.
      */
     public function levelFloor(): string
     {
         return match ($this->recommendation) {
-            self::RECOMMENDATION_DO_NOT_INSTALL => SkillCheckFinding::SEVERITY_DANGER,
+            self::RECOMMENDATION_DO_NOT_INSTALL,
             self::RECOMMENDATION_CAUTION => SkillCheckFinding::SEVERITY_WARNING,
             default => 'none',
         };

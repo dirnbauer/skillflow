@@ -30,12 +30,19 @@ final readonly class SkillCheckReport
     }
 
     /**
-     * Highest severity across findings + the license warning, for the list badge.
-     * License warnings never exceed 'warning' (they must not read as a hard block),
-     * and only count when the skill ships CODE — an unknown/odd license on an
-     * instruction-only skill has nothing to reuse, so it must not flag every row.
-     * A SkillSpector verdict sets a floor: DO_NOT_INSTALL reads as 'danger'
-     * (quarantine), CAUTION as 'warning' — even when no single finding says so.
+     * Highest severity across findings + the license warning + the SkillSpector
+     * aggregate, for the list badge. A 'danger' result is what quarantines a
+     * skill (see SkillImportService), so only genuine danger reaches it:
+     *
+     *  - danger comes ONLY from a danger-SEVERITY finding (a located, concrete
+     *    pattern: exposed secret, pipe-to-shell, exfiltration endpoint, or a
+     *    CRITICAL SkillSpector issue);
+     *  - the license warning caps at 'warning' (never a hard block) and only
+     *    counts when the skill ships CODE — an odd license on instruction-only
+     *    content has nothing to reuse;
+     *  - the SkillSpector aggregate verdict (DO_NOT_INSTALL/CAUTION) caps at
+     *    'warning' too — advisory context, never a quarantine trigger on its
+     *    own (see SkillspectorReport::levelFloor).
      */
     public function level(): string
     {
@@ -61,7 +68,39 @@ final readonly class SkillCheckReport
     }
 
     /**
-     * @return array{generatedAt: int, hasCode: bool, level: string, license: array<string, string>, findings: list<array<string, string>>, skillspector: array{status: string, score: int, severity: string, recommendation: string, version: string, llmUsed: bool, note: string}|null}
+     * The danger-severity findings — the concrete evidence that justifies a
+     * quarantine. Empty for a skill that is not quarantine-worthy, so the
+     * module can state exactly WHY a skill was hidden (or that it was not).
+     *
+     * @return list<SkillCheckFinding>
+     */
+    public function dangerFindings(): array
+    {
+        return array_values(array_filter(
+            $this->findings,
+            static fn (SkillCheckFinding $f): bool => $f->severity === SkillCheckFinding::SEVERITY_DANGER,
+        ));
+    }
+
+    /**
+     * Finding counts per severity, so the review reads as evidence
+     * (n danger / n warning / n info) rather than a single opaque verdict.
+     *
+     * @return array{danger: int, warning: int, info: int}
+     */
+    public function severityCounts(): array
+    {
+        $counts = ['danger' => 0, 'warning' => 0, 'info' => 0];
+        foreach ($this->findings as $finding) {
+            if (isset($counts[$finding->severity])) {
+                $counts[$finding->severity]++;
+            }
+        }
+        return $counts;
+    }
+
+    /**
+     * @return array{generatedAt: int, hasCode: bool, level: string, severityCounts: array{danger: int, warning: int, info: int}, license: array<string, string>, findings: list<array<string, string>>, skillspector: array{status: string, score: int, severity: string, recommendation: string, version: string, llmUsed: bool, note: string}|null}
      */
     public function toArray(): array
     {
@@ -69,6 +108,7 @@ final readonly class SkillCheckReport
             'generatedAt' => $this->generatedAt,
             'hasCode' => $this->hasCode,
             'level' => $this->level(),
+            'severityCounts' => $this->severityCounts(),
             'license' => $this->license->toArray(),
             'findings' => array_map(static fn (SkillCheckFinding $f): array => $f->toArray(), $this->findings),
             'skillspector' => $this->skillspector?->toArray(),

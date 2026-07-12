@@ -38,11 +38,35 @@ final class SkillCheckReportTest extends TestCase
         self::assertSame('none', $report->level());
     }
 
-    public function testDoNotInstallVerdictRaisesTheLevelToDangerWithoutAnySingleFinding(): void
+    public function testDoNotInstallWithoutADangerFindingIsWarningNotDanger(): void
     {
-        $report = new SkillCheckReport([], self::compatibleLicense(), false, 1_000, self::spector('DO_NOT_INSTALL'));
+        // The severity-gated criterion: an aggregate DO_NOT_INSTALL driven by
+        // warning-level findings is advisory (warning) and must NOT quarantine.
+        $report = new SkillCheckReport(
+            [self::finding('warning'), self::finding('warning')],
+            self::compatibleLicense(),
+            false,
+            1_000,
+            self::spector('DO_NOT_INSTALL'),
+        );
+
+        self::assertSame('warning', $report->level());
+        self::assertSame([], $report->dangerFindings());
+    }
+
+    public function testDangerSeverityFindingReachesDangerAndIsTheQuarantineEvidence(): void
+    {
+        $danger = self::finding('danger');
+        $report = new SkillCheckReport(
+            [self::finding('warning'), $danger],
+            self::compatibleLicense(),
+            false,
+            1_000,
+            self::spector('DO_NOT_INSTALL'),
+        );
 
         self::assertSame('danger', $report->level());
+        self::assertSame([$danger], $report->dangerFindings());
     }
 
     public function testCautionVerdictRaisesTheLevelToWarning(): void
@@ -64,6 +88,31 @@ final class SkillCheckReportTest extends TestCase
         $report = new SkillCheckReport([], self::compatibleLicense(), false, 1_000, SkillspectorReport::error('boom'));
 
         self::assertSame('none', $report->level());
+    }
+
+    public function testSeverityCountsTallyEachSeverity(): void
+    {
+        $report = new SkillCheckReport(
+            [self::finding('danger'), self::finding('warning'), self::finding('warning'), self::finding('info')],
+            self::compatibleLicense(),
+            false,
+            1_000,
+        );
+
+        self::assertSame(['danger' => 1, 'warning' => 2, 'info' => 1], $report->severityCounts());
+        self::assertCount(1, $report->dangerFindings());
+    }
+
+    public function testToArrayCarriesSeverityCounts(): void
+    {
+        $report = new SkillCheckReport(
+            [self::finding('danger'), self::finding('info')],
+            self::compatibleLicense(),
+            false,
+            1_000,
+        );
+
+        self::assertSame(['danger' => 1, 'warning' => 0, 'info' => 1], $report->toArray()['severityCounts']);
     }
 
     public function testToArrayIncludesTheSkillspectorSummary(): void

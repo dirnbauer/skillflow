@@ -86,6 +86,18 @@
       <trans-unit id="review.quarantined.note" resname="review.quarantined.note">
         <source>Quarantined: this skill was hidden automatically because of a danger-level finding below. It was NOT deleted. Release it from the Quarantine screen (or clear "Disable" on the Access tab) after reviewing.</source>
       </trans-unit>
+      <trans-unit id="review.quarantined.reason" resname="review.quarantined.reason">
+        <source>Quarantined — hidden because of danger-level evidence:</source>
+      </trans-unit>
+      <trans-unit id="review.severity.help" resname="review.severity.help">
+        <source>Finding counts by severity. Only a danger-level finding quarantines a skill; warning/info are advisory.</source>
+      </trans-unit>
+      <trans-unit id="review.spector.advisory" resname="review.spector.advisory">
+        <source>advisory</source>
+      </trans-unit>
+      <trans-unit id="review.spector.advisory.help" resname="review.spector.advisory.help">
+        <source>SkillSpector's aggregate verdict is advisory. It raises the review to "warning" but does not by itself quarantine — only a concrete danger-level finding does.</source>
+      </trans-unit>
       <trans-unit id="quarantine.button" resname="quarantine.button">
         <source>Quarantine</source>
       </trans-unit>

@@ -457,11 +457,12 @@ final class SkillsModuleController
     }
 
     /**
-     * Decode the stored check_report JSON into a template-friendly view:
-     * the badge level, findings list, license assessment, code flag, and the
-     * SkillSpector scan summary (empty array when the scan never ran).
+     * Decode the stored check_report JSON into a template-friendly view: the
+     * badge level, findings list (with the danger-severity subset called out as
+     * the quarantine evidence), the per-severity counts, license assessment,
+     * code flag, and the SkillSpector scan summary (empty when it never ran).
      *
-     * @return array{unchecked: bool, level: string, hasCode: bool, findingCount: int, findings: list<array<string, string>>, license: array<string, string>, licenseWarning: bool, skillspector: array<string, string>}
+     * @return array{unchecked: bool, level: string, hasCode: bool, findingCount: int, findings: list<array<string, string>>, dangerFindings: list<array<string, string>>, severityCounts: array{danger: int, warning: int, info: int}, license: array<string, string>, licenseWarning: bool, skillspector: array<string, string>}
      */
     private function buildReviewView(string $checkReportJson): array
     {
@@ -471,6 +472,8 @@ final class SkillsModuleController
             'hasCode' => false,
             'findingCount' => 0,
             'findings' => [],
+            'dangerFindings' => [],
+            'severityCounts' => ['danger' => 0, 'warning' => 0, 'info' => 0],
             'license' => [],
             'licenseWarning' => false,
             'skillspector' => [],
@@ -484,10 +487,26 @@ final class SkillsModuleController
         }
         $license = $this->stringifyMap(is_array($report['license'] ?? null) ? $report['license'] : []);
         $findings = [];
+        $dangerFindings = [];
         foreach (is_array($report['findings'] ?? null) ? $report['findings'] : [] as $finding) {
             if (is_array($finding)) {
-                $findings[] = $this->stringifyMap($finding);
+                $row = $this->stringifyMap($finding);
+                $findings[] = $row;
+                if (($row['severity'] ?? '') === 'danger') {
+                    $dangerFindings[] = $row;
+                }
             }
+        }
+        // Prefer the stored severityCounts; recompute from findings for reports
+        // written before this field existed.
+        $storedCounts = is_array($report['severityCounts'] ?? null) ? $report['severityCounts'] : [];
+        $severityCounts = [
+            'danger' => Typed::int($storedCounts['danger'] ?? count($dangerFindings)),
+            'warning' => Typed::int($storedCounts['warning'] ?? 0),
+            'info' => Typed::int($storedCounts['info'] ?? 0),
+        ];
+        if (($report['severityCounts'] ?? null) === null) {
+            $severityCounts = $this->countSeverities($findings);
         }
         $hasCode = (bool)($report['hasCode'] ?? false);
         return [
@@ -496,11 +515,29 @@ final class SkillsModuleController
             'hasCode' => $hasCode,
             'findingCount' => count($findings),
             'findings' => $findings,
+            'dangerFindings' => $dangerFindings,
+            'severityCounts' => $severityCounts,
             'license' => $license,
             // The license only warrants a badge when there is code to reuse.
             'licenseWarning' => $hasCode && ($license['status'] ?? 'compatible') !== 'compatible',
             'skillspector' => $this->stringifyMap(is_array($report['skillspector'] ?? null) ? $report['skillspector'] : []),
         ];
+    }
+
+    /**
+     * @param list<array<string, string>> $findings
+     * @return array{danger: int, warning: int, info: int}
+     */
+    private function countSeverities(array $findings): array
+    {
+        $counts = ['danger' => 0, 'warning' => 0, 'info' => 0];
+        foreach ($findings as $finding) {
+            $severity = $finding['severity'] ?? '';
+            if (isset($counts[$severity])) {
+                $counts[$severity]++;
+            }
+        }
+        return $counts;
     }
 
     /**

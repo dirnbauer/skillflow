@@ -76,12 +76,16 @@ final class SkillspectorReportTest extends TestCase
     }
 
     /**
+     * The AGGREGATE recommendation is advisory: it caps at 'warning' and never
+     * quarantines on its own. Only a located danger-severity finding reaches
+     * 'danger' (covered in SkillCheckReportTest).
+     *
      * @return array<string, array{0: string, 1: string}>
      */
     public static function recommendationFloors(): array
     {
         return [
-            'DO_NOT_INSTALL quarantines' => ['DO_NOT_INSTALL', 'danger'],
+            'DO_NOT_INSTALL is advisory (warning, not danger)' => ['DO_NOT_INSTALL', 'warning'],
             'CAUTION warns' => ['CAUTION', 'warning'],
             'SAFE stays none' => ['SAFE', 'none'],
             'unknown stays none' => ['SOMETHING_NEW', 'none'],
@@ -94,6 +98,18 @@ final class SkillspectorReportTest extends TestCase
         $report = SkillspectorReport::fromScanOutput(self::scanJson([], $recommendation));
 
         self::assertSame($expected, $report->levelFloor());
+    }
+
+    public function testDoNotInstallNeverQuarantinesOnItsOwn(): void
+    {
+        // Aggregate DO_NOT_INSTALL with only warning-level issues must not reach 'danger'.
+        $report = SkillspectorReport::fromScanOutput(self::scanJson([
+            ['id' => 'RP1', 'category' => 'MCP Rug Pull', 'severity' => 'HIGH'],
+            ['id' => 'RP2', 'category' => 'MCP Rug Pull', 'severity' => 'MEDIUM'],
+        ], 'DO_NOT_INSTALL'));
+
+        self::assertSame('warning', $report->levelFloor());
+        self::assertNotSame('danger', $report->levelFloor());
     }
 
     /**

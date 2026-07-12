@@ -32,12 +32,29 @@
                 <f:if condition="{review.quarantined}">
                     <span class="badge badge-danger" title="{f:translate(key:'{ll}review.quarantined.help')}"><core:icon identifier="actions-lock" size="small"/> <f:translate key="{ll}review.badge.quarantined"/></span>
                 </f:if>
+                <f:if condition="{review.findingCount} > 0">
+                    <span class="skf-sev-counts skf-muted" title="{f:translate(key:'{ll}review.severity.help')}">{review.severityCounts.danger}&#160;danger&#8202;·&#8202;{review.severityCounts.warning}&#160;warning&#8202;·&#8202;{review.severityCounts.info}&#160;info</span>
+                </f:if>
             </summary>
             <div class="skf-review-detail">
+                <f:comment>
+                    Quarantine evidence: a skill is hidden ONLY when a concrete danger-severity
+                    finding is present. List those findings so the reviewer sees exactly why.
+                </f:comment>
                 <f:if condition="{review.quarantined}">
                     <div class="skf-review-quarantine">
-                        <core:icon identifier="actions-lock" size="small"/>
-                        <f:translate key="{ll}review.quarantined.note"/>
+                        <div class="skf-review-quarantine-head">
+                            <core:icon identifier="actions-lock" size="small"/>
+                            <strong><f:translate key="{ll}review.quarantined.reason"/></strong>
+                        </div>
+                        <f:if condition="{review.dangerFindings}">
+                            <ul class="skf-review-danger">
+                                <f:for each="{review.dangerFindings}" as="finding">
+                                    <li><span class="badge badge-danger">danger</span> <strong>{finding.category}</strong> <code class="skf-finding-loc">{finding.location}</code></li>
+                                </f:for>
+                            </ul>
+                        </f:if>
+                        <div class="skf-muted"><f:translate key="{ll}review.quarantined.note"/></div>
                     </div>
                 </f:if>
                 <f:comment>NVIDIA SkillSpector scan — aggregated risk score and install recommendation. Runs automatically when the binary is installed; a missing binary or a failed scan is shown as a muted note, never blocks.</f:comment>
@@ -48,10 +65,12 @@
                             <f:case value="ok">
                                 <f:switch expression="{review.skillspector.recommendation}">
                                     <f:case value="DO_NOT_INSTALL">
-                                        <span class="badge badge-danger"><core:icon identifier="actions-exclamation" size="small"/> {review.skillspector.score}/100 · {review.skillspector.severity} · <f:translate key="{ll}review.spector.doNotInstall"/></span>
+                                        <span class="badge badge-warning">{review.skillspector.score}/100 · {review.skillspector.severity} · <f:translate key="{ll}review.spector.doNotInstall"/></span>
+                                        <span class="skf-muted" title="{f:translate(key:'{ll}review.spector.advisory.help')}"><f:translate key="{ll}review.spector.advisory"/></span>
                                     </f:case>
                                     <f:case value="CAUTION">
                                         <span class="badge badge-warning">{review.skillspector.score}/100 · {review.skillspector.severity} · <f:translate key="{ll}review.spector.caution"/></span>
+                                        <span class="skf-muted" title="{f:translate(key:'{ll}review.spector.advisory.help')}"><f:translate key="{ll}review.spector.advisory"/></span>
                                     </f:case>
                                     <f:defaultCase>
                                         <span class="badge badge-success">{review.skillspector.score}/100 · <f:translate key="{ll}review.spector.safe"/></span>

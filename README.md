@@ -91,8 +91,14 @@ That is all — the integration picks the binary up automatically:
 - On every import/sync and on *Re-scan all* (module button or `vendor/bin/typo3 skillflow:check`), each skill is
   materialized into a transient folder and scanned with `skillspector scan --format json`. The risk score (0–100),
   severity and install recommendation appear in the skill's review panel; individual issues join the findings list.
-- A **DO_NOT_INSTALL** verdict (or a CRITICAL issue) counts as danger level and **quarantines** the skill
-  (hidden, never deleted — release is a deliberate admin action). **CAUTION** reads as warning.
+- **Quarantine is severity-gated, not score-gated.** A skill is quarantined (hidden, never deleted — release is a
+  deliberate admin action) **only when a concrete danger-severity finding is present**: an exposed secret,
+  pipe-to-shell, exfiltration endpoint, or a *CRITICAL* SkillSpector issue. The aggregate verdict
+  (**DO_NOT_INSTALL**/**CAUTION**) is advisory — it raises the review badge to *warning* but does not quarantine on
+  its own. This is deliberate: on a library of trusted skills SkillSpector's aggregate `DO_NOT_INSTALL` is dominated
+  by warning-level documentation patterns, so gating quarantine on danger-severity findings keeps sensitivity to
+  real threats while cutting the false-positive lock-outs. The review panel shows the exact danger finding(s) that
+  triggered a quarantine and a per-severity count (n danger / n warning / n info).
 - By default the scan is static-only (`--no-llm`): no API key needed, nothing leaves the machine. Static analysis
   is deliberately strict and, on a library of trusted first-party skills, is dominated by false positives
   (`subprocess` in bundled helper scripts, `npx`/Docker refs without a pinned version in docs, a missing
