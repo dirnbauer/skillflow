@@ -35,9 +35,22 @@ final class SkillSecurityScanner
     private const RULES = [
         // --- Dangerous code in examples ------------------------------------
         [
-            'id' => 'destructive_fs', 'severity' => 'danger', 'category' => 'Destructive command', 'scope' => 'all',
-            'pattern' => '~\brm\s+-[a-z]*r[a-z]*f\b|\bmkfs\.[a-z0-9]+\b|\bdd\s+if=/dev/|\bchmod\s+-R\s*0?777\b|>\s*/dev/sd[a-z]~i',
-            'check' => 'Confirm the destructive command is illustrative only and cannot run against a real path or device.',
+            // DANGER is reserved for context-INDEPENDENTLY catastrophic, irreversible
+            // operations: wiping the filesystem root or the user's home, disabling the
+            // root guard, formatting a filesystem, or writing to a raw block device.
+            // A generic `rm -rf <temp/build/relative path>` is NOT here — that is
+            // overwhelmingly benign cleanup and is the warning-level rule below.
+            'id' => 'destructive_catastrophic', 'severity' => 'danger', 'category' => 'Catastrophic filesystem/device command', 'scope' => 'all',
+            'pattern' => '~\brm\s+(?:-[a-zA-Z]+\s+)+(?:--no-preserve-root\s+)?(?:/|/\*|\~|\~/|\$\{?HOME\}?)(?:\s|$)|\brm\s+[^\n;|&]*--no-preserve-root|\bmkfs\.[a-z0-9]+\b|\bdd\s+if=/dev/[a-z]|>\s*/dev/sd[a-z]~i',
+            'check' => 'Catastrophic, irreversible operation (root/home wipe, --no-preserve-root, disk format, raw-device write). Verify it is illustrative only and can never execute against a real path or device.',
+        ],
+        [
+            // Context-DEPENDENT destructive commands: dangerous against a real/system
+            // path, harmless against a temp/build dir. Advisory (warning) — it asks the
+            // reviewer to confirm the target, and never quarantines on its own.
+            'id' => 'destructive_fs', 'severity' => 'warning', 'category' => 'Destructive command', 'scope' => 'all',
+            'pattern' => '~\brm\s+-[a-z]*r[a-z]*f[a-z]*\b|\bchmod\s+-R\s*0?777\b~i',
+            'check' => 'Destructive/over-permissive command (rm -rf, chmod 777). Confirm the target is always a temp/build/relative path — never a real or system location — and that it is illustrative when shown in docs.',
         ],
         [
             'id' => 'fork_bomb', 'severity' => 'danger', 'category' => 'Fork bomb', 'scope' => 'all',
