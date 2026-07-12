@@ -16,10 +16,13 @@ use Webconsulting\Skillflow\Support\Typed;
 
 /**
  * Runs a skill through the local Claude Code CLI in non-interactive print
- * mode. Because the CLI runs with the project root as working directory it
- * can use MCP servers configured in the project's .mcp.json - but only tools
- * explicitly whitelisted in the skill's "allowed-tools" frontmatter are
- * permitted; everything else is denied in print mode.
+ * mode. When the "mcpConfigJson" setting is set (e.g. to the TYPO3 abilities
+ * MCP server), it is written to a transient config and passed via
+ * --mcp-config --strict-mcp-config, so the skill can act through the governed
+ * abilities registry — but only tools explicitly whitelisted in the skill's
+ * "allowed-tools" frontmatter are permitted; everything else is denied in
+ * print mode. Whitelist e.g. "mcp__typo3__ability_system_site-info" (one
+ * ability) or "mcp__typo3" (every tool that server exposes).
  *
  * Supporting files (tx_skillflow_file) are materialized into a transient
  * skill directory before the run, so the model can progressively load
@@ -48,6 +51,7 @@ final class ClaudeCliRunner implements SkillRunnerInterface
         $allowedTools = trim(Typed::string($skill['allowed_tools'] ?? null));
 
         $skillDirectory = '';
+        $mcpConfigFile = $this->writeMcpConfig();
         $userPrompt = $this->promptBuilder->buildUserPrompt($content);
         try {
             if ($files !== []) {
@@ -73,6 +77,13 @@ final class ClaudeCliRunner implements SkillRunnerInterface
             if ($allowedTools !== '') {
                 $command[] = '--allowedTools';
                 $command[] = $allowedTools;
+            }
+            if ($mcpConfigFile !== '') {
+                // Restrict to exactly the configured servers (the abilities
+                // MCP server), ignoring any user/global .mcp.json.
+                $command[] = '--mcp-config';
+                $command[] = $mcpConfigFile;
+                $command[] = '--strict-mcp-config';
             }
 
             $process = new Process(
@@ -105,7 +116,41 @@ final class ClaudeCliRunner implements SkillRunnerInterface
             if ($skillDirectory !== '' && is_dir(dirname($skillDirectory))) {
                 GeneralUtility::rmdir(dirname($skillDirectory), true);
             }
+            if ($mcpConfigFile !== '' && is_file($mcpConfigFile)) {
+                @unlink($mcpConfigFile);
+            }
         }
+    }
+
+    /**
+     * Materializes the "mcpConfigJson" setting into a transient Claude Code
+     * MCP config file (e.g. registering the TYPO3 abilities MCP server), so a
+     * skill run can call abilities as governed MCP tools. Returns '' when the
+     * setting is empty.
+     */
+    private function writeMcpConfig(): string
+    {
+        try {
+            $conf = Typed::stringKeyedArray($this->extensionConfiguration->get('skillflow'));
+        } catch (\Throwable) {
+            $conf = [];
+        }
+        $mcpConfigJson = trim(Typed::string($conf['mcpConfigJson'] ?? null));
+        if ($mcpConfigJson === '') {
+            return '';
+        }
+
+        $decoded = json_decode($mcpConfigJson, true);
+        if (!is_array($decoded)) {
+            throw new ExecutionBlockedException('Extension setting "mcpConfigJson" is not valid JSON.', 1760000044);
+        }
+
+        $directory = Environment::getVarPath() . '/transient/skillflow';
+        GeneralUtility::mkdir_deep($directory);
+        $file = $directory . '/mcp-' . bin2hex(random_bytes(8)) . '.json';
+        file_put_contents($file, (string)json_encode($decoded, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+
+        return $file;
     }
 
     /**

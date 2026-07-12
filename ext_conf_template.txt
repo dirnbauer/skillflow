@@ -16,6 +16,9 @@ maxTokens = 2048
 # cat=runner/enable/150; type=string; label=MCP servers JSON (api runner, optional): JSON array for the Anthropic MCP connector (remote MCP servers). Leave empty to disable.
 mcpServersJson =
 
+# cat=runner/enable/155; type=string; label=MCP config JSON (claude-cli runner, optional): Claude Code .mcp.json content, e.g. {"mcpServers":{"typo3":{"command":"vendor/bin/typo3","args":["mcp:server"]}}} to let skills call the abilities registry as MCP tools. Whitelist the tools per skill via allowed-tools. Leave empty to disable.
+mcpConfigJson =
+
 # cat=import/enable/100; type=string; label=Skills folder: Folder with skill directories (each containing a SKILL.md), relative to the project root
 skillsFolder = skills
 
