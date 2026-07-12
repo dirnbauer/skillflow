@@ -329,16 +329,24 @@ final class SkillImportService
     {
         $connection = $this->connectionPool->getConnectionForTable('tx_skillflow_skill');
         $targetPid = $this->getConfiguredStoragePid();
-        $existing = $connection->select(
-            ['uid', 'pid', 'content_hash'],
-            'tx_skillflow_skill',
-            [
-                'identifier' => $skill->identifier,
-                'source_type' => $sourceType,
-                'repository' => $repositoryUid,
-                'deleted' => 0,
-            ]
-        )->fetchAssociative();
+        // Restriction-free existence check: a QUARANTINED (hidden = 1) skill must
+        // still be matched here. Connection::select() applies the default
+        // enable-field restrictions and would NOT return a hidden row, so the
+        // upsert would treat every quarantined skill as new and INSERT a fresh
+        // duplicate on each sync — one per run, forever. Match by identity only.
+        $existingQb = $this->connectionPool->getQueryBuilderForTable('tx_skillflow_skill');
+        $existingQb->getRestrictions()->removeAll();
+        $existing = $existingQb
+            ->select('uid', 'pid', 'content_hash')
+            ->from('tx_skillflow_skill')
+            ->where(
+                $existingQb->expr()->eq('identifier', $existingQb->createNamedParameter($skill->identifier)),
+                $existingQb->expr()->eq('source_type', $existingQb->createNamedParameter($sourceType)),
+                $existingQb->expr()->eq('repository', $existingQb->createNamedParameter($repositoryUid, Connection::PARAM_INT)),
+                $existingQb->expr()->eq('deleted', $existingQb->createNamedParameter(0, Connection::PARAM_INT)),
+            )
+            ->executeQuery()
+            ->fetchAssociative();
 
         $now = time();
         $fields = [
