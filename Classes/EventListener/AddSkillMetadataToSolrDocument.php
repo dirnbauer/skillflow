@@ -6,17 +6,10 @@ namespace Webconsulting\Skillflow\EventListener;
 
 use ApacheSolrForTypo3\Solr\Event\Indexing\BeforeDocumentIsProcessedForIndexingEvent;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
+use Webconsulting\Skillflow\Solr\SkillDocumentFields;
 
 /**
- * Copies values from the skill record's JSON "metadata" column into the
- * Solr document as dynamic facet fields while the index queue item for a
- * tx_skillflow_skill record is being processed.
- *
- * Listener-set dynamic fields (single scalars): category_stringS,
- * license_stringS, version_stringS. Multi-value: tags_stringM.
- *
- * The "source_type" column is a real DB field mapped via TypoScript, so it
- * is intentionally not touched here.
+ * Adds front-matter values that cannot be mapped directly with TypoScript.
  */
 #[AsEventListener(
     identifier: 'skillflow/solr-metadata',
@@ -24,7 +17,12 @@ use TYPO3\CMS\Core\Attribute\AsEventListener;
 )]
 final class AddSkillMetadataToSolrDocument
 {
-    private const SKILL_TABLE = 'tx_skillflow_skill';
+    private const SKILL_TABLE = 'tx_nrllm_skill';
+
+    public function __construct(
+        private readonly SkillDocumentFields $skillDocumentFields,
+    ) {
+    }
 
     public function __invoke(BeforeDocumentIsProcessedForIndexingEvent $event): void
     {
@@ -34,34 +32,20 @@ final class AddSkillMetadataToSolrDocument
         }
 
         $record = $item->getRecord();
-        if (!is_array($record) || !isset($record['metadata'])) {
-            return;
-        }
-
-        $rawMetadata = $record['metadata'];
-        if (!is_string($rawMetadata) || $rawMetadata === '') {
-            return;
-        }
-
-        $metadata = json_decode($rawMetadata, true);
-        if (!is_array($metadata)) {
+        if (!is_array($record)) {
             return;
         }
 
         $document = $event->getDocument();
-
-        foreach (['category' => 'category_stringS', 'license' => 'license_stringS', 'version' => 'version_stringS'] as $metadataKey => $solrField) {
-            if (isset($metadata[$metadataKey]) && is_scalar($metadata[$metadataKey])) {
-                $document->setField($solrField, (string)$metadata[$metadataKey]);
-            }
-        }
-
-        if (isset($metadata['tags']) && is_array($metadata['tags'])) {
-            foreach ($metadata['tags'] as $tag) {
-                if (is_scalar($tag) && (string)$tag !== '') {
-                    $document->addField('tags_stringM', (string)$tag);
+        foreach ($this->skillDocumentFields->fromRecord($record) as $fieldName => $value) {
+            if (is_array($value)) {
+                foreach ($value as $itemValue) {
+                    $document->addField($fieldName, $itemValue);
                 }
+                continue;
             }
+
+            $document->setField($fieldName, $value);
         }
     }
 }

@@ -1,13 +1,13 @@
 #
 # Skillflow – Solr skills index & search
 #
-# Registers the index queue for tx_skillflow_skill records, the facets,
+# Registers the index queue for tx_nrllm_skill records, the facets,
 # sorting and result-template path overrides for the EXT:skillflow skill
 # documents. Depends on the base "apache-solr-for-typo3/solr" set.
 #
 # NOTE: category/tags/version/license are NOT mapped here on purpose – they
 # are written into the Solr document by the PSR-14 indexing listener from the
-# JSON metadata column. Only the fields backed by real TCA columns are mapped.
+# nr_llm raw_frontmatter column. Only the fields backed by real columns are mapped.
 #
 
 # -----------------------------------------------------------------------------
@@ -17,14 +17,15 @@ plugin.tx_solr.index.queue {
 
   skills = 1
   skills {
-    type = tx_skillflow_skill
+    type = tx_nrllm_skill
+    additionalWhereClause = enabled = 1 AND orphaned = 0
 
     # Points the queue at the SysFolder(s) that hold the skill records.
     # Set via the constant exposed in constants.typoscript.
     additionalPageIds = {$plugin.tx_solr.index.queue.skills.additionalPageIds}
 
     fields {
-      title = title
+      title = name
       description = description
 
       content = SOLR_CONTENT
@@ -45,16 +46,21 @@ plugin.tx_solr.index.queue {
       }
 
       identifier_stringS = identifier
-      sourceType_stringS = source_type
-      sortTitle_stringS = title
+      sortTitle_stringS = name
+      trustLevel_stringS = trust_level
+      supportStatus_stringS = support_status
 
-      allowedTools_stringM = SOLR_MULTIVALUE
-      allowedTools_stringM {
-        field = allowed_tools
-        separator = ,
-        removeEmptyValues = 1
-        removeDuplicateValues = 1
+      url = TEXT
+      url {
+        typolink.parameter = {$plugin.tx_solr.index.queue.skills.detailPageId}
+        typolink.additionalParams = &tx_skillflow_skilldetail[action]=show&tx_skillflow_skilldetail[controller]=SkillDetail&tx_skillflow_skilldetail[skill]={field:uid}&L={field:__solr_index_language}
+        typolink.additionalParams.insertData = 1
+        typolink.returnLast = url
+        typolink.useCacheHash = 1
       }
+
+      rootline = {$plugin.tx_solr.index.queue.skills.detailPageId}
+
     }
   }
 
@@ -91,6 +97,14 @@ plugin.tx_solr.search.faceting {
     license {
       label = License
       field = license_stringS
+    }
+    trust {
+      label = Trust
+      field = trustLevel_stringS
+    }
+    support {
+      label = Support
+      field = supportStatus_stringS
     }
     type {
       label = Content type

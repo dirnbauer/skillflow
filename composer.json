@@ -4,6 +4,7 @@
     "type": "typo3-cms-extension",
     "license": "GPL-2.0-or-later",
     "require": {
+        "apache-solr-for-typo3/solr": "^14.0@beta",
         "php": "^8.2",
         "league/commonmark": "^2.7",
         "netresearch/nr-llm": "^0.25",
