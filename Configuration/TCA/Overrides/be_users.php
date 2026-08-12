@@ -6,10 +6,10 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 defined('TYPO3') or die();
 
-ExtensionManagementUtility::addTCAcolumns('pages', [
+ExtensionManagementUtility::addTCAcolumns('be_users', [
     'tx_skillflow_nrllm_skills' => [
-        'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:pages.skills',
-        'description' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:pages.skills.description',
+        'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:users.skills',
+        'description' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:users.skills.description',
         'config' => [
             'type' => 'select',
             'renderType' => 'selectMultipleSideBySide',
@@ -21,6 +21,6 @@ ExtensionManagementUtility::addTCAcolumns('pages', [
 ]);
 
 ExtensionManagementUtility::addToAllTCAtypes(
-    'pages',
-    '--div--;LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:tab.skills, tx_skillflow_nrllm_skills'
+    'be_users',
+    '--div--;LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:tab.skills, tx_skillflow_nrllm_skills',
 );

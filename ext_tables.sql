@@ -1,12 +1,13 @@
-#
-# Only columns that need a larger type than the TCA-generated default.
-#
-CREATE TABLE tx_skillflow_skill (
-    body mediumtext,
-    content_hash varchar(40) DEFAULT '' NOT NULL,
-    check_level varchar(16) DEFAULT '' NOT NULL,
-    check_report mediumtext,
-    KEY check_level (check_level)
+CREATE TABLE pages (
+    tx_skillflow_nrllm_skills varchar(255) DEFAULT '' NOT NULL
+);
+
+CREATE TABLE be_users (
+    tx_skillflow_nrllm_skills varchar(255) DEFAULT '' NOT NULL
+);
+
+CREATE TABLE sys_workspace_stage (
+    tx_skillflow_nrllm_skills varchar(255) DEFAULT '' NOT NULL
 );
 
 CREATE TABLE tx_skillflow_run (
@@ -19,11 +20,4 @@ CREATE TABLE tx_skillflow_run (
     external_ref varchar(190) DEFAULT '' NOT NULL,
     external_url text,
     KEY external_lookup (external_engine, external_ref)
-);
-
-CREATE TABLE tx_skillflow_file (
-    skill int(11) unsigned DEFAULT '0' NOT NULL,
-    content mediumtext,
-    content_hash varchar(40) DEFAULT '' NOT NULL,
-    KEY skill (skill)
 );

@@ -1,12 +1,12 @@
 {
     "name": "webconsulting/skillflow",
-    "description": "Agent Skills for TYPO3 - manage Anthropic-style skills, import them from folders or git repositories, attach them to workspace stages and pages, and run them against content (SEO, tone, QA). Local/DDEV installs only.",
+    "description": "Workflow assignments and runs for nr_llm skills on TYPO3 pages, users, and workspace stages.",
     "type": "typo3-cms-extension",
     "license": "GPL-2.0-or-later",
     "require": {
         "php": "^8.2",
-        "ext-zip": "*",
         "league/commonmark": "^2.7",
+        "netresearch/nr-llm": "^0.25",
         "symfony/process": "^7.0",
         "symfony/yaml": "^7.0",
         "typo3/cms-backend": "^14.3",

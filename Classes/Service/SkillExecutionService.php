@@ -97,7 +97,10 @@ final class SkillExecutionService
                 throw new ExecutionBlockedException($resolution->blockReason);
             }
 
-            $files = $this->skillFinder->findFilesForSkill($skillUid);
+            // nr_llm 0.25 intentionally imports SKILL.md prose only. It does
+            // not materialize referenced scripts/assets, so Skillflow never
+            // maintains a second attachment store.
+            $files = [];
             if ($resolution->contextRunner !== null) {
                 $content = $resolution->contextRunner->wantsCollectedContent()
                     ? $this->collectContent($table, $recordUid, $workspaceId, $resolvedInstructions)

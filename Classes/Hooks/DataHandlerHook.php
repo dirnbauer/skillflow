@@ -68,7 +68,7 @@ final class DataHandlerHook
                 $stageUid
             );
             $this->notify(
-                sprintf('Skill "%s" (%s) for %s:%d', Typed::string($skill['title']), $result->status, $table, (int)$id),
+                sprintf('Skill "%s" (%s) for %s:%d', Typed::string($skill['name'] ?? $skill['title'] ?? ''), $result->status, $table, (int)$id),
                 $result->isSuccess()
                     ? 'Report stored - see the Skills backend module.'
                     : $result->output,

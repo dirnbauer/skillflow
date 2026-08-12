@@ -25,7 +25,7 @@ return [
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
-                'foreign_table' => 'tx_skillflow_skill',
+                'foreign_table' => 'tx_nrllm_skill',
                 'items' => [['label' => '', 'value' => 0]],
                 'default' => 0,
                 'readOnly' => true,
