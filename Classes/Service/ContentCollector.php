@@ -8,6 +8,7 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\WorkspaceRestriction;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use Webconsulting\Skillflow\Support\Typed;
 
@@ -23,6 +24,7 @@ final class ContentCollector
 
     public function __construct(
         private readonly ConnectionPool $connectionPool,
+        private readonly TcaSchemaFactory $schemaFactory,
     ) {
     }
 
@@ -32,7 +34,7 @@ final class ContentCollector
         if ($record === null) {
             throw new \RuntimeException(sprintf('Record %s:%d not found', $table, $uid), 1760000020);
         }
-        if ($workspaceId > 0 && BackendUtility::isTableWorkspaceEnabled($table)) {
+        if ($workspaceId > 0 && $this->schemaFactory->get($table)->isWorkspaceAware()) {
             BackendUtility::workspaceOL($table, $record, $workspaceId, true);
             if (!is_array($record)) {
                 throw new \RuntimeException(sprintf('Record %s:%d is not visible in workspace %d', $table, $uid, $workspaceId), 1760000021);
@@ -60,17 +62,12 @@ final class ContentCollector
      */
     private function renderFields(string $table, array $record): string
     {
-        $textColumns = [];
-        foreach ($this->tcaColumns($table) as $column => $columnConfig) {
-            $config = is_array($columnConfig) && is_array($columnConfig['config'] ?? null) ? $columnConfig['config'] : [];
-            $type = Typed::string($config['type'] ?? null);
-            if (in_array($type, ['input', 'text', 'slug', 'email'], true)) {
-                $textColumns[] = $column;
-            }
-        }
-
         $lines = [];
-        foreach ($textColumns as $column) {
+        foreach ($this->schemaFactory->get($table)->getFields() as $field) {
+            if (!in_array($field->getType(), ['input', 'text', 'slug', 'email'], true)) {
+                continue;
+            }
+            $column = $field->getName();
             $value = trim(strip_tags(Typed::string($record[$column] ?? null)));
             if ($value === '') {
                 continue;
@@ -114,17 +111,5 @@ final class ContentCollector
             $lines[] = '';
         }
         return $lines === [] ? '_(no content elements)_' : implode("\n", $lines);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function tcaColumns(string $table): array
-    {
-        $tca = $GLOBALS['TCA'] ?? null;
-        if (!is_array($tca) || !is_array($tca[$table] ?? null)) {
-            return [];
-        }
-        return Typed::stringKeyedArray($tca[$table]['columns'] ?? null);
     }
 }

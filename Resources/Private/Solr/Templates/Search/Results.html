@@ -19,12 +19,10 @@
                 <f:render partial="Search/Form" section="Form" arguments="{search: search, additionalFilters: additionalFilters, pluginNamespace: pluginNamespace, resultSet: resultSet}" />
             </div>
 
-            <f:if condition="{resultSet.hasSearched}">
-                <f:if condition="{resultSet.usedSearchRequest.contextTypoScriptConfiguration.searchSorting}">
-                    <div class="d-solr-search__sort">
-                        <f:render partial="Result/Sorting" section="Sorting" arguments="{resultSet: resultSet}" />
-                    </div>
-                </f:if>
+            <f:if condition="{resultSet.hasSearched} && {resultSet.usedSearchRequest.contextTypoScriptConfiguration.searchSorting}">
+                <div class="d-solr-search__sort">
+                    <f:render partial="Result/Sorting" section="Sorting" arguments="{resultSet: resultSet}" />
+                </div>
             </f:if>
         </div>
 
@@ -33,12 +31,10 @@
         </f:if>
 
         <s:debug.query>
-            <f:if condition="{parsedQuery}">
-                <div class="d-solr-status-card" role="status" data-slot="card">
-                    <strong class="block font-semibold"><f:translate key="solr.debug.parsedQuery" domain="desiderio.labels">Parsed Query:</f:translate></strong>
-                    <span class="text-muted-foreground">{parsedQuery}</span>
-                </div>
-            </f:if>
+            <div class="d-solr-status-card" role="status" data-slot="card">
+                <strong class="block font-semibold">Parsed Query:</strong>
+                <span class="text-muted-foreground">{parsedQuery}</span>
+            </div>
         </s:debug.query>
 
         <f:if condition="{resultSet.hasSearched}">
@@ -46,14 +42,14 @@
                 <f:if condition="{resultSet.isAutoCorrected}">
                     <f:then>
                         <p>
-                            <f:translate key="solr.noResultsNothingFound" domain="desiderio.labels" arguments="{query: resultSet.initialQueryString}">Nothing found for "{query}".</f:translate>
-                            <f:translate key="solr.noResultsShowingSuggestion" domain="desiderio.labels" arguments="{query: resultSet.correctedQueryString}">Showing results for "{query}".</f:translate>
+                            <f:translate key="no_results_nothing_found" extensionName="solr" arguments="{0: resultSet.initialQueryString}" />
+                            <f:translate key="no_results_showing_results_suggestion" extensionName="solr" arguments="{0: resultSet.correctedQueryString}" />
                         </p>
                     </f:then>
                     <f:else>
                         <f:if condition="{resultSet.usedQuery.rawSearchTerm}">
                             <p>
-                                <f:translate key="solr.resultsSearchedFor" domain="desiderio.labels" arguments="{query: resultSet.usedQuery.rawSearchTerm}">Searched for "{query}".</f:translate>
+                                <f:translate key="results_searched_for" extensionName="solr" arguments="{0: resultSet.usedQuery.rawSearchTerm}" />
                             </p>
                         </f:if>
                     </f:else>
@@ -61,56 +57,36 @@
 
                 <f:if condition="{resultSet.hasSpellCheckingSuggestions}">
                     <p>
-                        <f:translate key="solr.didYouMean" domain="desiderio.labels">Did you mean</f:translate>
+                        <f:translate key="didYouMean" extensionName="solr" />
                         <f:for each="{resultSet.spellCheckingSuggestions}" as="suggestion">
-                            <f:link.page additionalParams="{q: suggestion.suggestion}" class="font-medium text-primary underline underline-offset-4">{suggestion.suggestion}</f:link.page>
+                            <f:link.page additionalParams="{q: suggestion.fullQuery}" class="font-medium text-primary underline underline-offset-4">{suggestion.fullQuery}</f:link.page>
                         </f:for>?
                     </p>
                 </f:if>
 
-                <f:if condition="{resultSet.allResultCount} == 0">
-                    <f:if condition="{resultSet.isAutoCorrected}">
-                        <f:else>
-                            <div class="d-solr-status-card d-solr-no-results" role="status" data-slot="card">
-                                <strong class="block font-semibold">
-                                    <f:translate key="solr.noResultsNothingFound" domain="desiderio.labels" arguments="{query: resultSet.usedQuery.rawSearchTerm}">Nothing found for "{query}".</f:translate>
-                                </strong>
-                                <span class="text-muted-foreground">
-                                    <f:translate key="solr.noResultsHint" domain="desiderio.labels">Try a different or more general search term.</f:translate>
-                                </span>
-                            </div>
-                        </f:else>
-                    </f:if>
+                <f:if condition="!{resultSet.allResultCount} && !{resultSet.isAutoCorrected}">
+                    <div class="d-solr-status-card d-solr-no-results" role="status" data-slot="card">
+                        <strong class="block font-semibold">
+                            <f:translate key="no_results_nothing_found" extensionName="solr" arguments="{0: resultSet.usedQuery.rawSearchTerm}" />
+                        </strong>
+                        <span class="text-muted-foreground">Try a different or more general search term.</span>
+                    </div>
                 </f:if>
 
                 <f:if condition="{resultSet.allResultCount}">
                     <p>
-                        <f:translate key="solr.resultsFound" domain="desiderio.labels" arguments="{count: resultSet.allResultCount}">Found {count} results.</f:translate>
+                        <f:if condition="{resultSet.allResultCount} == 1">
+                            <f:then><f:translate key="results_found.singular" extensionName="solr" arguments="{0: resultSet.usedSearch.queryTime}" /></f:then>
+                            <f:else><f:translate key="results_found" extensionName="solr" arguments="{0: resultSet.allResultCount, 1: resultSet.usedSearch.queryTime}" /></f:else>
+                        </f:if>
                         <f:if condition="{pagination.lastPageNumber} > 1">
                             <s:pageBrowserRange>
-                                <f:if condition="{from} == {to}">
-                                    <f:then>
-                                        <f:if condition="{to} == {total}">
-                                            <f:then>
-                                                <f:translate key="solr.resultsRangeLast" domain="desiderio.labels">Showing the last result.</f:translate>
-                                            </f:then>
-                                            <f:else>
-                                                <f:translate key="solr.resultsRangeSingle" domain="desiderio.labels" arguments="{from: from}">Showing result {from}.</f:translate>
-                                            </f:else>
-                                        </f:if>
-                                    </f:then>
-                                    <f:else>
-                                        <f:translate key="solr.resultsRange" domain="desiderio.labels" arguments="{from: from, to: to, total: total}">Showing results {from} to {to} of {total}.</f:translate>
-                                    </f:else>
-                                </f:if>
+                                <f:translate key="results_range" extensionName="solr" arguments="{0: from, 1: to, 2: total}" />
                             </s:pageBrowserRange>
                         </f:if>
                     </p>
                 </f:if>
             </div>
-        </f:if>
-
-        <f:if condition="{resultSet.hasSearched}">
             <f:if condition="{resultSet.searchresults.hasGroups}">
                 <f:then>
                     <div class="d-solr-results-group-list">
@@ -136,7 +112,7 @@
                     </div>
                 </f:then>
                 <f:else if="{resultSet.allResultCount}">
-                    <h2 class="sr-only"><f:translate key="solr.results.heading" domain="desiderio.labels">Search results</f:translate></h2>
+                    <h2 class="sr-only"><f:translate key="plugin_results" extensionName="solr" /></h2>
                     <div class="d-solr-results-toolbar">
                         <f:if condition="{pagination.lastPageNumber} > 1">
                             <f:render partial="Result/Pagination" section="Pagination" arguments="{resultSet: resultSet, pagination: pagination, currentPage: currentPage}"/>
@@ -161,10 +137,8 @@
 
 <f:section name="extra">
     <div id="tx-solr-search-functions" class="space-y-6">
-        <f:if condition="{resultSet.hasSearched}">
-            <f:if condition="{resultSet.usedSearchRequest.contextTypoScriptConfiguration.searchFaceting}">
-                <f:render partial="Result/Facets" section="Facets" arguments="{resultSet: resultSet}" />
-            </f:if>
+        <f:if condition="{resultSet.hasSearched} && {resultSet.usedSearchRequest.contextTypoScriptConfiguration.searchFaceting}">
+            <f:render partial="Result/Facets" section="Facets" arguments="{resultSet: resultSet}" />
         </f:if>
 
         <f:if condition="{resultSet.usedSearchRequest.contextTypoScriptConfiguration.searchFrequentSearches}">

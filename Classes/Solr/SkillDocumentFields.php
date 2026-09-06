@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace Webconsulting\Skillflow\Solr;
 
-use Symfony\Component\Yaml\Yaml;
+use Webconsulting\Skillflow\Support\Typed;
 
 /** Maps nr_llm's materialized SKILL.md fields to Solr dynamic fields. */
 final class SkillDocumentFields
 {
     /**
      * @param array<string, mixed> $record
+     * @param array<string, mixed> $source
      * @return array<string, string|list<string>>
      */
-    public function fromRecord(array $record): array
+    public function fromRecord(array $record, array $source = []): array
     {
-        $frontmatter = $this->decodeFrontmatter($record['raw_frontmatter'] ?? null);
+        $frontmatter = Typed::stringKeyedArray(json_decode(Typed::string($record['raw_frontmatter'] ?? ''), true));
         $metadata = is_array($frontmatter['metadata'] ?? null) ? $frontmatter['metadata'] : [];
         $fields = [];
 
         foreach ([
-            'category' => 'category_stringS',
             'license' => 'license_stringS',
             'version' => 'version_stringS',
         ] as $key => $field) {
@@ -30,7 +30,14 @@ final class SkillDocumentFields
             }
         }
 
-        $tags = $this->normalizeList($frontmatter['tags'] ?? $metadata['tags'] ?? null);
+        $category = $this->normalizeScalar($record['tx_skillflow_search_category'] ?? null)
+            ?? $this->normalizeScalar($frontmatter['category'] ?? $metadata['category'] ?? null);
+        if ($category !== null) {
+            $fields['category_stringS'] = $category;
+        }
+
+        $tags = $this->normalizeList($record['tx_skillflow_search_tags'] ?? null)
+            ?: $this->normalizeList($frontmatter['tags'] ?? $metadata['tags'] ?? null);
         if ($tags !== []) {
             $fields['tags_stringM'] = $tags;
         }
@@ -40,35 +47,18 @@ final class SkillDocumentFields
             $fields['allowedTools_stringM'] = $allowedTools;
         }
 
-        $source = $this->normalizeScalar($record['source'] ?? null);
-        if ($source !== null) {
-            $fields['sourceUid_stringS'] = $source;
+        $sourceUid = $this->normalizeScalar($record['source'] ?? null);
+        if ($sourceUid !== null) {
+            $fields['sourceUid_stringS'] = $sourceUid;
         }
-        $fields['sourceType_stringS'] = 'nr_llm';
+        foreach (['type' => 'sourceType_stringS', 'title' => 'sourceTitle_stringS'] as $key => $field) {
+            $value = $this->normalizeScalar($source[$key] ?? null);
+            if ($value !== null) {
+                $fields[$field] = $value;
+            }
+        }
 
         return $fields;
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function decodeFrontmatter(mixed $raw): array
-    {
-        if (!is_string($raw) || trim($raw) === '') {
-            return [];
-        }
-
-        $decoded = json_decode($raw, true);
-        if (is_array($decoded)) {
-            return $decoded;
-        }
-
-        try {
-            $decoded = Yaml::parse($raw);
-            return is_array($decoded) ? $decoded : [];
-        } catch (\Throwable) {
-            return [];
-        }
     }
 
     private function normalizeScalar(mixed $value): ?string

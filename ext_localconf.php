@@ -17,5 +17,4 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['proc
     'SkillDetail',
     [\Webconsulting\Skillflow\Controller\SkillDetailController::class => 'show'],
     [],
-    \TYPO3\CMS\Extbase\Utility\ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT,
 );

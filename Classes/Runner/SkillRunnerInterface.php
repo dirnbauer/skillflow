@@ -11,8 +11,8 @@ interface SkillRunnerInterface
     /**
      * Executes a skill against collected record content and returns the report.
      *
-     * @param array<string, mixed> $skill tx_skillflow_skill row
-     * @param array<int, array<string, mixed>> $files tx_skillflow_file rows (relative_path, content)
+     * @param array<string, mixed> $skill normalized tx_nrllm_skill row
+     * @param array<int, array<string, mixed>> $files Retained for compatibility; built-in runners use prose only.
      */
     public function run(array $skill, string $content, array $files = []): SkillRunResult;
 

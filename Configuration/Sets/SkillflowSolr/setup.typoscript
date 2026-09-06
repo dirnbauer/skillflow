@@ -7,7 +7,7 @@
 #
 # NOTE: category/tags/version/license are NOT mapped here on purpose – they
 # are written into the Solr document by the PSR-14 indexing listener from the
-# nr_llm raw_frontmatter column. Only the fields backed by real columns are mapped.
+# nr_llm raw_frontmatter column and optional catalogue overrides.
 #
 
 # -----------------------------------------------------------------------------
@@ -18,10 +18,11 @@ plugin.tx_solr.index.queue {
   skills = 1
   skills {
     type = tx_nrllm_skill
+    initialization = Webconsulting\Skillflow\Solr\SkillsRecordInitializer
     additionalWhereClause = enabled = 1 AND orphaned = 0
 
-    # Points the queue at the SysFolder(s) that hold the skill records.
-    # Set via the constant exposed in constants.typoscript.
+    # The initializer includes nr_llm's root records (pid=0). Extra storage
+    # folders can be added with the constant exposed in constants.typoscript.
     additionalPageIds = {$plugin.tx_solr.index.queue.skills.additionalPageIds}
 
     fields {
@@ -56,7 +57,6 @@ plugin.tx_solr.index.queue {
         typolink.additionalParams = &tx_skillflow_skilldetail[action]=show&tx_skillflow_skilldetail[controller]=SkillDetail&tx_skillflow_skilldetail[skill]={field:uid}&L={field:__solr_index_language}
         typolink.additionalParams.insertData = 1
         typolink.returnLast = url
-        typolink.useCacheHash = 1
       }
 
       rootline = {$plugin.tx_solr.index.queue.skills.detailPageId}
@@ -88,7 +88,7 @@ plugin.tx_solr.search.faceting {
     }
     source {
       label = Source
-      field = sourceType_stringS
+      field = sourceTitle_stringS
     }
     tools {
       label = Allowed tools
@@ -169,7 +169,6 @@ plugin.tx_solr.search.results {
 plugin.tx_solr.view {
   templateRootPaths.200 = EXT:skillflow/Resources/Private/Solr/Templates/
   partialRootPaths.200 = EXT:skillflow/Resources/Private/Solr/Partials/
-  layoutRootPaths.200 = EXT:skillflow/Resources/Private/Solr/Layouts/
 }
 
 # -----------------------------------------------------------------------------

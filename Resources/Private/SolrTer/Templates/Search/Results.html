@@ -12,7 +12,7 @@
 			<div class="row solr-result-controls">
 				<div class="col-lg-8">
 					<f:if condition="{resultSet.usedSearchRequest.contextTypoScriptConfiguration.searchFaceting}">
-						<f:render partial="Result/Facets" section="UsedFacets" arguments="{resultSet:resultSet}" />
+						<f:render partial="Result/FacetsActive" section="FacetsActive" arguments="{resultSet:resultSet}" />
 					</f:if>
 				</div>
 				<div class="col-lg-4">
@@ -26,12 +26,12 @@
 	<f:if condition="{resultSet.allResultCount}">
 		<f:else>
 			<div class="alert alert-danger mt-3" role="alert">
-				<f:translate key="no_results_nothing_found" arguments="{0: resultSet.usedQuery.options.query}">Nothing found for "%s".</f:translate>
+				<f:translate key="no_results_nothing_found" extensionName="solr" arguments="{0: resultSet.usedQuery.rawSearchTerm}" />
 				<f:if condition="{resultSet.hasSpellCheckingSuggestions}">
 					<f:then>
-						<f:translate key="didYouMean">Did you mean</f:translate>
+						<f:translate key="didYouMean" extensionName="solr" />
 						<f:for each="{resultSet.spellCheckingSuggestions}" as="suggestion">
-							<f:link.page additionalParams="{tx_solr:{q:suggestion.suggestion}}">{suggestion.suggestion}</f:link.page>
+							<f:link.page additionalParams="{q: suggestion.fullQuery}">{suggestion.fullQuery}</f:link.page>
 						</f:for>?
 					</f:then>
 				</f:if>
@@ -48,17 +48,17 @@
 					<div id="tx-solr-search">
 						<f:if condition="{resultSet.isAutoCorrected}">
 							<span class="searched-for">
-								<f:translate key="no_results_nothing_found" arguments="{0: resultSet.usedQuery.queryString}">Nothing found for "%s".</f:translate>
-								<f:translate key="no_results_search_for_original" arguments="{0: resultSet.correctedQueryString}">Search instead for "%s".</f:translate>
+								<f:translate key="no_results_nothing_found" extensionName="solr" arguments="{0: resultSet.initialQueryString}" />
+								<f:translate key="no_results_showing_results_suggestion" extensionName="solr" arguments="{0: resultSet.correctedQueryString}" />
 							</span>
 						</f:if>
 
 						<f:if condition="{resultSet.hasSpellCheckingSuggestions}">
 							<f:then>
 								<div class="alert alert-info mt-3" role="alert">
-									<f:translate key="didYouMean">Did you mean</f:translate>
+									<f:translate key="didYouMean" extensionName="solr" />
 									<f:for each="{resultSet.spellCheckingSuggestions}" as="suggestion">
-										<f:link.page additionalParams="{tx_solr:{q:suggestion.suggestion}}">{suggestion.suggestion}</f:link.page>
+										<f:link.page additionalParams="{q: suggestion.fullQuery}">{suggestion.fullQuery}</f:link.page>
 									</f:for>
 									?
 								</div>
@@ -67,13 +67,11 @@
 
 						<f:if condition="{resultSet.hasSearched}">
 							<div data-start="{pagination.startRecordNumber}" class="results-list list-group">
-								<f:variable name="exactMatchFound" value="0" />
-								<f:if condition="{resultSet.usedQuery.options.query -> f:format.case(mode:'lower')} == {resultSet.searchResults.0.title -> f:format.case(mode:'lower')}">
-									<f:render partial="Result/Document" section="DocumentWrap" arguments="{resultSet:resultSet, document:resultSet.searchResults.0, exactMatchFound: 1}" />
-									<f:variable name="exactMatchFound" value="1" />
-								</f:if>
 								<f:for each="{resultSet.searchResults}" as="document" iteration="iterator">
-									<f:if condition="{exactMatchFound} && {iterator.isFirst}">
+									<f:if condition="{iterator.isFirst} && {resultSet.usedQuery.rawSearchTerm -> f:format.case(mode:'lower')} == {document.title -> f:format.case(mode:'lower')}">
+										<f:then>
+											<f:render partial="Result/Document" section="DocumentWrap" arguments="{resultSet:resultSet, document:document, exactMatchFound: 1}" />
+										</f:then>
 										<f:else>
 											<f:render partial="Result/Document" section="DocumentWrap" arguments="{resultSet:resultSet, document:document}" />
 										</f:else>

@@ -6,51 +6,39 @@ namespace Webconsulting\Skillflow\Controller;
 
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
-use Webconsulting\Skillflow\Service\MarkdownRenderer;
 use Webconsulting\Skillflow\Service\SkillFinder;
 use Webconsulting\Skillflow\Support\Typed;
 
-/**
- * Frontend plugin "Skill detail": render a single skill by its identifier.
- */
+/** Frontend catalogue detail for an active nr_llm skill. */
 final class SkillDetailController extends ActionController
 {
-    public function __construct(
-        private readonly SkillFinder $skillFinder,
-        private readonly MarkdownRenderer $markdownRenderer,
-    ) {
+    public function __construct(private readonly SkillFinder $skillFinder)
+    {
     }
 
     public function showAction(int $skill = 0): ResponseInterface
     {
-        // The 'SkillDetail' route enhancer uses a PersistedAliasMapper aspect on
-        // the 'identifier' field (tableName tx_skillflow_skill, routeFieldName
-        // identifier), so the speaking URL segment resolves to the record uid
-        // before Extbase passes it here as int $skill. There is no string fallback.
-        $row = $skill > 0 ? $this->skillFinder->findSkillByUid($skill) : null;
+        // The route enhancer maps the nr_llm skill name to its record uid.
+        $row = $this->skillFinder->findSkillByUid($skill, false);
 
         if ($row === null) {
-            $this->view->assign('notFound', true);
-            $this->view->assign('identifier', (string)$skill);
-            return $this->htmlResponse();
+            $this->view->assignMultiple(['notFound' => true, 'identifier' => (string)$skill]);
+            return $this->htmlResponse()->withStatus(404);
         }
 
-        $metadata = Typed::string($row['metadata'] ?? '');
-        $meta = [];
-        if ($metadata !== '') {
-            $decoded = json_decode($metadata, true);
-            if (is_array($decoded)) {
-                $meta = $decoded;
-            }
+        $frontmatter = Typed::stringKeyedArray(json_decode(Typed::string($row['metadata'] ?? ''), true));
+        $meta = $frontmatter + Typed::stringKeyedArray($frontmatter['metadata'] ?? null);
+        $category = trim(Typed::string($row['tx_skillflow_search_category'] ?? ''));
+        if ($category !== '') {
+            $meta['category'] = $category;
         }
-
-        $this->view->assignMultiple([
-            'skill' => $row,
-            'meta' => $meta,
-            'files' => $this->skillFinder->findFilesForSkill(Typed::int($row['uid'] ?? 0)),
-            'bodyHtml' => $this->markdownRenderer->toHtml(Typed::string($row['body'] ?? '')),
-        ]);
-
+        $tags = trim(Typed::string($row['tx_skillflow_search_tags'] ?? '')) ?: ($meta['tags'] ?? []);
+        $tagValues = is_string($tags) ? explode(',', $tags) : (is_array($tags) ? $tags : []);
+        $meta['tags'] = array_values(array_filter(
+            array_map(static fn (mixed $tag): string => trim(Typed::string($tag)), $tagValues),
+            static fn (string $tag): bool => $tag !== '',
+        ));
+        $this->view->assignMultiple(['skill' => $row, 'meta' => $meta]);
         return $this->htmlResponse();
     }
 }

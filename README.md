@@ -1,147 +1,107 @@
-# skillflow — Agent Skills for TYPO3 Workspaces
+# Skillflow — skills in TYPO3 review workflows
 
-Brings [Anthropic-style agent skills](https://docs.claude.com/en/docs/agents-and-tools/agent-skills) (folders with a
-`SKILL.md`: YAML frontmatter `name`/`description` + markdown instructions) into the TYPO3 backend and wires them into
-the workspace review workflow.
+Skillflow connects nr_llm-managed skills to TYPO3 pages, backend users and
+workspace review stages. It stores assignments and run reports; nr_llm owns
+skill sources, imports, activation and lifecycle state.
 
-**⚠️ Local installations only.** Skill execution is hard-gated to local DDEV development installations — see
-[Security](#security).
+[TYPO3 Lab](https://typo3-lab.webconsulting.at) ·
+[Source](https://github.com/dirnbauer/skillflow) ·
+[Issues](https://github.com/dirnbauer/skillflow/issues)
 
-## Features
+## Requirements
 
-- **Skill records** (`tx_skillflow_skill`): editable in the backend with the SKILL.md structure — name, identifier,
-  description, markdown body (code editor), `allowed-tools`, extra frontmatter as JSON.
-- **Supporting files** (`tx_skillflow_file`): everything next to the SKILL.md (`references/`, `scripts/`, templates)
-  is imported as attachment records (text files up to 256 KB; binaries are skipped and counted) and editable under
-  the skill's *Attachments* tab. Re-sync updates them in place and soft-deletes attachments whose source file
-  disappeared. At run time the CLI runner materializes the full skill folder into `var/transient/` (and auto-allows
-  `Read`) so progressive disclosure works as the skill author intended; the API runner inlines referenced files into
-  the system prompt under a size budget.
-- **Folder import**: scans a configurable project folder (default `<project>/skills/`, each subfolder containing a
-  `SKILL.md`) and imports/updates skills.
-- **Repository import**: point a repository record at a GitHub/GitLab/Gitea URL (or a direct `.zip`). Sync downloads
-  the archive, imports all skills and **updates existing ones in place** — uids stay stable, so workspace-stage and
-  page assignments survive re-syncs. Private repos: store the *name* of an env var holding the token
-  (e.g. `GITHUB_TOKEN`); the token itself never touches the database.
-- **Backend module** *Content → Skills*: list/edit skills, manage repositories, trigger imports, run skills on pages,
-  inspect run reports.
-- **Workspace integration**:
-  - Assign skills to any custom workspace stage (*Skills* tab on the stage record). With *auto-run* enabled, the
-    skills review a record whenever it is sent to that stage; the report is stored and a notification is shown.
-  - Per workspace: *auto workflow for new elements* — new records created in the workspace are automatically sent to
-    a configured stage, so every new element immediately enters the review workflow (and its skills).
-- **Page skills**: assign QM skills (SEO, tone of voice, content QA, …) to a page (*Skills* tab in page properties)
-  and run them from the module against the page **in your current workspace** (draft content is reviewed via
-  workspace overlays).
-- **CLI**: `vendor/bin/typo3 skillflow:sync` (cron-able) refreshes the folder and all repositories.
+- TYPO3 **14.3.6+ on the 14.x line**, PHP **8.4+**.
+- `netresearch/nr-llm` **0.34.x**, EXT:solr **14.0.1+**.
+- For search: a Solr server/configset matching the
+  [EXT:solr version matrix](https://docs.typo3.org/p/apache-solr-for-typo3/solr/main/en-us/Appendix/VersionMatrix.html).
 
-## Runners & MCP
+## Install and use
 
-Configured in *Settings → Extension Configuration → skillflow*:
+```bash
+composer require webconsulting/skillflow:dev-main
+vendor/bin/typo3 extension:setup
+vendor/bin/typo3 cache:flush
+```
 
-| Runner | How it works | MCP support |
+1. Add and synchronize sources in **AI → Authoring → Skills** (nr_llm).
+   Review and enable skills there before assigning them.
+2. Assign skills in the **Skills** tab of page properties, backend users or
+   custom workspace stages. Enable stage auto-run when required.
+3. Open **Content → Skills**, select a page and run a skill or the
+   page's assigned skills. Reports contain status, output and engine details.
+
+```bash
+vendor/bin/typo3 skillflow:run <skill-uid-or-identifier> <page-uid>
+```
+
+Workspace reviews collect draft content in the selected workspace. Runs are
+unversioned audit records. Hidden, disabled and orphaned skills cannot run or
+appear in public detail views. Editors can only run skills on readable pages
+in their web mounts and view accessible reports in their current workspace.
+
+## Execution and configuration
+
+Configure the extension in TYPO3's extension settings:
+
+| Setting | Default | Purpose |
 |---|---|---|
-| `api` (default) | Anthropic Messages API; the skill body becomes the system prompt. Key read from env var (`ANTHROPIC_API_KEY` by default). | Yes — **remote** MCP servers via the Anthropic MCP connector: put a JSON array into `mcpServersJson`. |
-| `cli` | Executes the local Claude Code CLI in print mode with the project root as cwd. | Yes — **local** MCP servers from the project's `.mcp.json` are available, but only tools whitelisted in the skill's `allowed-tools` frontmatter are permitted; everything else is denied in print mode. |
+| `runner` | `api` | Prefer nr_llm's configured provider; fall back to Anthropic. `anthropic` forces Anthropic; `cli` selects Claude Code. |
+| `model` | `claude-sonnet-4-6` | Model for the direct Anthropic runner. |
+| `apiKeyEnvVar` | `ANTHROPIC_API_KEY` | Environment variable containing the direct Anthropic key. |
+| `maxTokens` | `2048` | Output token budget for API runners. |
+| `claudeBinary` | `claude` | Claude Code executable. |
+| `mcpServersJson` | empty | Remote MCP servers for the direct Anthropic runner. |
+| `mcpConfigJson` | empty | MCP configuration for Claude Code. |
+| `defaultEngine` | `classic` | Built-in runner chain or a registered context engine. |
+| `engineFallback` | `1` | Allow fallback when a context engine is unavailable. |
+| `requireLocalEnvironment` | `1` | Require Development context inside DDEV. |
 
-So: yes, skills can use MCP — remote servers through the API connector, local servers through the CLI runner. The
-`allowed-tools` frontmatter is the per-skill permission boundary for the CLI runner.
+Keep execution local. Model calls transmit editorial content to the configured
+provider; the CLI can use allowed tools. Reports remain advisory. Store
+provider credentials in nr_llm's vault or environment variables, never in skill
+records. Supporting files are not imported or materialized by Skillflow; this
+integration supplies skill prose.
 
-## Security
+See [Execution engines](Documentation/ExecutionEngines.md) for interfaces and
+events, and [Upgrading](Documentation/Upgrade.md) before updating an older site.
 
-Read this before using the extension.
+## Search catalogue
 
-1. **Local-only execution (enforced).** Skill runs send editorial content to an AI model and (with the CLI runner)
-   execute a local binary that can use tools. Execution is therefore blocked unless **both** are true:
-   - TYPO3 application context is `Development`, and
-   - the process runs inside DDEV (`IS_DDEV_PROJECT=true`).
-
-   The check sits in `EnvironmentGuard` and is enforced on every run (module, stage auto-run, CLI). The
-   `requireLocalEnvironment` toggle exists for lab experiments only — **never disable it on shared, staging or
-   production systems.** Editing/importing skills is allowed everywhere; only *execution* is gated.
-2. **Credentials.** No API keys or repo tokens are stored in the database or in records. The extension only stores
-   the *names* of environment variables (`apiKeyEnvVar`, repository `token_env_var`). Put the actual secrets into
-   your local DDEV env (e.g. `.ddev/config.local.yaml` → `web_environment`), which stays out of git.
-3. **Treat skills like code.** A skill is a prompt that steers an AI over your content; with the CLI runner it can
-   also invoke whitelisted tools. Review skills from third-party repositories before importing, prefer pinned
-   branches/tags, and keep `allowed-tools` minimal. Repository sync only happens when an admin triggers it.
-4. **Prompt injection.** Record content is wrapped as data and the system prompt instructs the model to treat it as
-   data, but prompt injection can never be fully excluded — another reason execution is restricted to local
-   installations and reports are *suggestions*, never auto-applied changes.
-5. **Data egress.** With the `api` runner, record content leaves the machine (Anthropic API). On a local lab with
-   demo content that is fine; do not point this at confidential data.
-6. **Permissions.** Repositories are `adminOnly`; folder/repo imports in the module are admin-gated. Editors only
-   need list/module access plus read access to skills to run them. Reports are stored server-side
-   (`tx_skillflow_run`) and shown in the module.
-
-### Review checks & NVIDIA SkillSpector
-
-Every imported or re-checked skill runs through mandatory review checks: a built-in pattern scan (prompt injection,
-dangerous code, credential leaks, exfiltration endpoints), a license-compatibility assessment against TYPO3's
-GPL-2.0-or-later — and, when the binary is installed, a scan with
-[NVIDIA SkillSpector](https://github.com/NVIDIA/skillspector), NVIDIA's security scanner for agent skills
-(68 detection patterns across 17 categories).
+Include the `webconsulting/skillflow-solr` site set. Set
+`plugin.tx_solr.index.queue.skills.detailPageId` to a page containing
+`skillflow_skilldetail`. Configure
+`plugin.tx_solr.index.queue.skills.additionalPageIds` for storage folders
+outside the site. Root records (PID `0`) are always included. The detail plugin
+accepts an nr_llm skill UID.
 
 ```bash
-uv tool install git+https://github.com/NVIDIA/skillspector.git
+vendor/bin/typo3 skillflow:solr:index --site=<site-identifier>
 ```
 
-That is all — the integration picks the binary up automatically:
+The command processes only the `skills` queue. Increase `--limit` if it reports
+pending records. Category/tags use editable catalogue fields on nr_llm records,
+falling back to frontmatter; license/version come from frontmatter. Source,
+allowed-tool, trust and support facets are available. Filter search listings
+by `type:tx_nrllm_skill`, and use `tx_nrllm_skill` in detail route enhancers.
 
-- On every import/sync and on *Re-scan all* (module button or `vendor/bin/typo3 skillflow:check`), each skill is
-  materialized into a transient folder and scanned with `skillspector scan --format json`. The risk score (0–100),
-  severity and install recommendation appear in the skill's review panel; individual issues join the findings list.
-- **Quarantine is severity-gated, not score-gated.** A skill is quarantined (hidden, never deleted — release is a
-  deliberate admin action) **only when a concrete danger-severity finding is present**: an exposed secret,
-  pipe-to-shell, exfiltration endpoint, or a *CRITICAL* SkillSpector issue. The aggregate verdict
-  (**DO_NOT_INSTALL**/**CAUTION**) is advisory — it raises the review badge to *warning* but does not quarantine on
-  its own. This is deliberate: on a library of trusted skills SkillSpector's aggregate `DO_NOT_INSTALL` is dominated
-  by warning-level documentation patterns, so gating quarantine on danger-severity findings keeps sensitivity to
-  real threats while cutting the false-positive lock-outs. The review panel shows the exact danger finding(s) that
-  triggered a quarantine and a per-severity count (n danger / n warning / n info).
-- By default the scan is static-only (`--no-llm`): no API key needed, nothing leaves the machine. Static analysis
-  is deliberately strict and, on a library of trusted first-party skills, is dominated by false positives
-  (`subprocess` in bundled helper scripts, `npx`/Docker refs without a pinned version in docs, a missing
-  `permissions` field). The LLM-assisted pass is what filters those.
-- Enable the LLM pass with `skillspectorUseLlm = 1`. Credentials are sourced automatically from the
-  [nr_llm](https://github.com/netresearch) *LLM* backend module's **default connection** (its provider, model and
-  vault-stored key) — reusing the same OpenAI/Anthropic setup the `nr_llm` runner uses, so no separate
-  `SKILLSPECTOR_*` env vars are needed. If nr_llm is absent, ambient `SKILLSPECTOR_PROVIDER` env vars are used; if
-  neither resolves, the scan stays static. **This sends skill content to that provider** (e.g. OpenAI) — fine for
-  public skills, mind it for anything sensitive.
-- Missing binary or failed scan? The built-in checks still run, the report notes the skipped scan, and the import
-  never fails. Once the binary appears, the next sync re-scans automatically. Configuration lives in
-  *Settings → Extension Configuration → skillflow → security* (`skillspectorEnabled`, `skillspectorBinary`,
-  `skillspectorUseLlm`, `skillspectorTimeout`).
-
-## Quick start
+## Local development
 
 ```bash
-composer require webconsulting/skillflow:@dev
-ddev exec vendor/bin/typo3 extension:setup
-# put your key into the DDEV web environment:
-#   .ddev/config.local.yaml: web_environment: ["ANTHROPIC_API_KEY=sk-ant-..."]
-ddev restart
-ddev exec vendor/bin/typo3 skillflow:sync     # imports <project>/skills/*
+ddev start
+ddev composer install
+ddev exec Build/Scripts/runTests.sh -s unit -p 8.4
+ddev exec Build/Scripts/runTests.sh -s functional -p 8.4
+ddev composer analyse
+ddev composer lint
+ddev composer rector
+ddev composer fractor
+ddev composer audit
 ```
 
-Then, in the backend:
+Functional tests use an isolated SQLite database. Create the disposable browser
+test site with `ddev setup-site`, then open
+`https://skillflow.ddev.site/typo3/` (admin / `Joh316!!`). Generated files stay
+under `.Build/`; DDEV owns the local database.
 
-1. *Content → Skills*: check the green "local installation" banner, see imported skills.
-2. Edit a workspace → custom stage → *Skills* tab: assign skills + enable auto-run.
-3. Workspace record → *Skills* tab: enable auto-workflow for new elements and pick the stage.
-4. Page properties → *Skills* tab: assign SEO/tone/QA skills; run them from the module.
-
-## Skill format
-
-```markdown
----
-name: seo-optimizer
-description: Reviews page titles, meta descriptions and headings for SEO.
-allowed-tools: Read, Grep
----
-
-# SEO Optimizer
-
-When reviewing content, check ...
-```
+[Website information](Documentation/Website.md) contains the current Lab copy
+and project links. The public website may require HTTP authentication.

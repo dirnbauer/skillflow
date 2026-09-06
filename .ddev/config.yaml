@@ -1,0 +1,10 @@
+name: skillflow
+type: typo3
+docroot: .Build/site/public
+php_version: "8.4"
+webserver_type: nginx-fpm
+database:
+  type: mariadb
+  version: "10.11"
+web_environment:
+  - TYPO3_CONTEXT=Development

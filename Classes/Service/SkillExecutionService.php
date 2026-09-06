@@ -58,18 +58,15 @@ final class SkillExecutionService
         $engineRequested = trim($engine);
         $context = $this->buildContext($table, $recordUid, $workspaceId, $stageUid, $resolvedInstructions, $engineRequested, $runUid);
         try {
-            // Hidden skills never execute — this is what makes the review
-            // quarantine (hidden = 1 on danger-level findings) an actual
-            // execution block, not just catalogue cosmetics. Central here so
-            // every entry point is covered: module form, CLI, stage auto-run,
-            // batch page runs and context-aware engines. Release = unhide.
-            if ((bool)($skill['hidden'] ?? false)) {
+            // nr_llm owns availability. Enforce it at every execution entry point.
+            if ((bool)($skill['hidden'] ?? false) || !(bool)($skill['enabled'] ?? false) || (bool)($skill['orphaned'] ?? false)) {
                 throw new ExecutionBlockedException(
                     'Skill "' . Typed::string($skill['identifier'] ?? (string)$skillUid)
-                    . '" is hidden (quarantined or disabled) and will not run. '
-                    . 'Review its findings in the Skills module and unhide it to release.'
+                    . '" is hidden, disabled, or orphaned in nr_llm and will not run.'
                 );
             }
+
+            $this->environmentGuard->assertExecutionAllowed();
 
             // Resolve {uid}/{table}/{title}/{pid}/{workspace} in the skill body and the
             // per-run instructions before anything reaches the LLM. Closed whitelist only.
@@ -89,27 +86,21 @@ final class SkillExecutionService
                 $context = $this->buildContext($table, $recordUid, $workspaceId, $stageUid, $resolvedInstructions, $engineRequested, $runUid);
             }
 
-            $this->environmentGuard->assertExecutionAllowed();
-
             $resolution = $this->engineResolver->resolve($skill, $context);
             $engineRequested = $resolution->engineRequested;
             if ($resolution->blockReason !== '') {
                 throw new ExecutionBlockedException($resolution->blockReason);
             }
 
-            // nr_llm 0.25 intentionally imports SKILL.md prose only. It does
-            // not materialize referenced scripts/assets, so Skillflow never
-            // maintains a second attachment store.
-            $files = [];
             if ($resolution->contextRunner !== null) {
                 $content = $resolution->contextRunner->wantsCollectedContent()
                     ? $this->collectContent($table, $recordUid, $workspaceId, $resolvedInstructions)
                     : '';
-                $result = $resolution->contextRunner->runInContext($skill, $context, $content, $files);
+                $result = $resolution->contextRunner->runInContext($skill, $context, $content);
             } else {
                 $runner = $this->runnerFactory->create();
                 $content = $this->collectContent($table, $recordUid, $workspaceId, $resolvedInstructions);
-                $result = $runner->run($skill, $content, $files);
+                $result = $runner->run($skill, $content);
             }
         } catch (ExecutionBlockedException $e) {
             $result = new SkillRunResult('blocked', $e->getMessage(), 'none');
@@ -122,14 +113,18 @@ final class SkillExecutionService
         // Phase 2: settle the row (a 'pending' result keeps it open — the
         // engine's extension mirrors the final outcome in later).
         $this->settleRun($runUid, $result, $resolvedInstructions);
-        $this->eventDispatcher->dispatch(new AfterSkillRunEvent(
-            $skill,
-            $context,
-            $result,
-            $runUid,
-            $engineRequested === '' ? EngineResolver::CLASSIC : $engineRequested,
-            $result->runner
-        ));
+        try {
+            $this->eventDispatcher->dispatch(new AfterSkillRunEvent(
+                $skill,
+                $context,
+                $result,
+                $runUid,
+                $engineRequested === '' ? EngineResolver::CLASSIC : $engineRequested,
+                $result->runner
+            ));
+        } catch (\Throwable $e) {
+            $this->logger->error('Skill run completion listener failed', ['run' => $runUid, 'exception' => $e]);
+        }
         return $result;
     }
 

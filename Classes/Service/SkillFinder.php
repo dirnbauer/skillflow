@@ -6,7 +6,6 @@ namespace Webconsulting\Skillflow\Service;
 
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
-use Symfony\Component\Yaml\Yaml;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
@@ -48,9 +47,27 @@ final class SkillFinder
     /**
      * @return array<string, mixed>|null
      */
-    public function findSkillByUid(int $uid): ?array
+    public function findSkillByUid(int $uid, bool $includeUnavailable = true): ?array
     {
         if ($uid <= 0) {
+            return null;
+        }
+
+        $queryBuilder = $this->skillQuery($includeUnavailable);
+        $row = $queryBuilder
+            ->select('*')
+            ->from(self::SKILL_TABLE)
+            ->andWhere($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, ParameterType::INTEGER)))
+            ->executeQuery()
+            ->fetchAssociative();
+
+        return $row === false ? null : $this->normalizeRow($row);
+    }
+
+    /** @return array<string, mixed>|null */
+    public function findSkillByIdentifier(string $identifier): ?array
+    {
+        if ($identifier === '') {
             return null;
         }
 
@@ -58,7 +75,8 @@ final class SkillFinder
         $row = $queryBuilder
             ->select('*')
             ->from(self::SKILL_TABLE)
-            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, ParameterType::INTEGER)))
+            ->where($queryBuilder->expr()->eq('identifier', $queryBuilder->createNamedParameter($identifier)))
+            ->setMaxResults(1)
             ->executeQuery()
             ->fetchAssociative();
 
@@ -79,7 +97,7 @@ final class SkillFinder
         $rows = $queryBuilder
             ->select('*')
             ->from(self::SKILL_TABLE)
-            ->where($queryBuilder->expr()->in('uid', $queryBuilder->createNamedParameter($uids, ArrayParameterType::INTEGER)))
+            ->andWhere($queryBuilder->expr()->in('uid', $queryBuilder->createNamedParameter($uids, ArrayParameterType::INTEGER)))
             ->orderBy('name')
             ->executeQuery()
             ->fetchAllAssociative();
@@ -145,7 +163,7 @@ final class SkillFinder
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
 
         return $queryBuilder
-            ->select('*')
+            ->select('uid', 'crdate', 'skill', 'target_table', 'target_uid', 'workspace_uid', 'status', 'runner')
             ->from('tx_skillflow_run')
             ->orderBy('crdate', 'DESC')
             ->setMaxResults($limit)
@@ -232,33 +250,17 @@ final class SkillFinder
      */
     private function normalizeRow(array $row): array
     {
-        $frontmatter = $this->parseFrontmatter(Typed::string($row['raw_frontmatter'] ?? ''));
         $row['title'] = Typed::string($row['name'] ?? '');
-        $row['metadata'] = json_encode($frontmatter, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '{}';
+        $row['public_identifier'] = Typed::string($row['name'] ?? '');
+        $row['metadata'] = Typed::string($row['raw_frontmatter'] ?? '');
         $row['source_type'] = 'nr_llm';
+        // nr_llm persists JSON; the public runner contract uses a comma-separated list.
+        $row['allowed_tools_json'] = Typed::string($row['allowed_tools'] ?? '');
+        $allowedTools = json_decode($row['allowed_tools_json'], true);
+        $row['allowed_tools'] = is_array($allowedTools)
+            ? implode(',', array_filter($allowedTools, is_string(...)))
+            : '';
 
         return $row;
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function parseFrontmatter(string $raw): array
-    {
-        if (trim($raw) === '') {
-            return [];
-        }
-
-        $json = json_decode($raw, true);
-        if (is_array($json)) {
-            return $json;
-        }
-
-        try {
-            $yaml = Yaml::parse($raw);
-            return is_array($yaml) ? $yaml : [];
-        } catch (\Throwable) {
-            return [];
-        }
     }
 }

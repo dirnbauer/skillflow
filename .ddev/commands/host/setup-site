@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+## Description: Create the disposable Skillflow browser test site
+## Usage: setup-site
+set -euo pipefail
+cd "$DDEV_APPROOT"
+[[ "$DDEV_SITENAME" == skillflow ]] || exit 1
+ddev composer install
+mkdir -p .Build/site/config/sites/main .Build/site/config/system
+cp Build/Fixtures/Site/composer.json .Build/site/composer.json
+ddev exec composer install --working-dir=.Build/site --no-interaction
+if [[ ! -f .Build/site/config/system/settings.php ]]; then
+    ddev snapshot --name "before-setup-$(date +%Y%m%d%H%M%S)"
+    ddev typo3 setup --driver=mysqli --host=db --dbname=db --username=db --password=db \
+        --admin-username=admin --admin-user-password='Joh316!!' --admin-email=admin@example.test \
+        --project-name=Skillflow --create-site=https://skillflow.ddev.site/ --server-type=other --no-interaction
+fi
+cp Build/Fixtures/Site/additional.php .Build/site/config/system/additional.php
+cp Build/Fixtures/Site/config.yaml .Build/site/config/sites/main/config.yaml
+ddev snapshot --name "before-fixtures-$(date +%Y%m%d%H%M%S)"
+ddev typo3 extension:setup
+ddev mysql < Build/Fixtures/Site/seed.sql
+ddev solrctl apply
+ddev typo3 cache:flush
+ddev typo3 skillflow:solr:index --site=main

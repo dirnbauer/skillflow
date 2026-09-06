@@ -15,7 +15,7 @@ use Webconsulting\Skillflow\Domain\SkillRunResult;
 final class AfterSkillRunEvent
 {
     /**
-     * @param array<string, mixed> $skill tx_skillflow_skill row
+     * @param array<string, mixed> $skill normalized tx_nrllm_skill row
      */
     public function __construct(
         public readonly array $skill,

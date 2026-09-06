@@ -8,7 +8,6 @@ use ApacheSolrForTypo3\Solr\Domain\Index\IndexService;
 use ApacheSolrForTypo3\Solr\Domain\Index\Queue\QueueInitializationService;
 use ApacheSolrForTypo3\Solr\Domain\Site\Site;
 use ApacheSolrForTypo3\Solr\Domain\Site\SiteRepository;
-use ApacheSolrForTypo3\Solr\IndexQueue\Queue;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,6 +15,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use Webconsulting\Skillflow\Solr\SkillsIndexQueue;
 use Webconsulting\Skillflow\Support\Typed;
 
 /** Rebuilds and processes Skillflow's "skills" Solr index queue. */
@@ -25,11 +25,10 @@ use Webconsulting\Skillflow\Support\Typed;
 )]
 final class IndexSolrCommand extends Command
 {
-    private const INDEXING_CONFIGURATION = 'skills';
-
     public function __construct(
         private readonly SiteRepository $siteRepository,
         private readonly QueueInitializationService $queueInitializationService,
+        private readonly SkillsIndexQueue $queue,
     ) {
         parent::__construct();
     }
@@ -77,10 +76,8 @@ final class IndexSolrCommand extends Command
         }
 
         $hasErrors = false;
-        $queue = GeneralUtility::makeInstance(Queue::class);
-
         foreach ($sites as $site) {
-            if (!$this->indexSite($site, $queue, $limit, $io)) {
+            if (!$this->indexSite($site, $limit, $io)) {
                 $hasErrors = true;
             }
         }
@@ -94,7 +91,7 @@ final class IndexSolrCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function indexSite(Site $site, Queue $queue, int $limit, SymfonyStyle $io): bool
+    private function indexSite(Site $site, int $limit, SymfonyStyle $io): bool
     {
         $io->section(sprintf(
             'Site: %s (%s, root page %d)',
@@ -104,11 +101,11 @@ final class IndexSolrCommand extends Command
         ));
 
         try {
-            $createdCount = $this->initializeQueue($site, $queue);
+            $createdCount = $this->initializeQueue($site);
             $io->writeln(sprintf(
                 'Created %d queue item(s) for "%s".',
                 $createdCount,
-                self::INDEXING_CONFIGURATION,
+                SkillsIndexQueue::CONFIGURATION,
             ));
 
             if ($createdCount === 0) {
@@ -116,34 +113,38 @@ final class IndexSolrCommand extends Command
                 return true;
             }
 
-            return $this->processQueue($site, $queue, $limit, $io);
+            return $this->processQueue($site, $limit, $io);
         } catch (\Throwable $e) {
             $io->error($e->getMessage());
             return false;
         }
     }
 
-    private function initializeQueue(Site $site, Queue $queue): int
+    private function initializeQueue(Site $site): int
     {
-        $status = $this->queueInitializationService
-            ->initializeBySiteAndIndexConfiguration($site, self::INDEXING_CONFIGURATION);
+        if (!$site->getSolrConfiguration()->getIndexQueueConfigurationIsEnabled(SkillsIndexQueue::CONFIGURATION)) {
+            throw new \RuntimeException('Enable the webconsulting/skillflow-solr site set before indexing skills.');
+        }
 
-        if (($status[self::INDEXING_CONFIGURATION] ?? false) !== true) {
+        $status = $this->queueInitializationService
+            ->initializeBySiteAndIndexConfiguration($site, SkillsIndexQueue::CONFIGURATION);
+
+        if (($status[SkillsIndexQueue::CONFIGURATION] ?? false) !== true) {
             throw new \RuntimeException(sprintf(
                 'Could not initialize "%s". Verify that plugin.tx_solr.index.queue.%s is enabled.',
-                self::INDEXING_CONFIGURATION,
-                self::INDEXING_CONFIGURATION,
+                SkillsIndexQueue::CONFIGURATION,
+                SkillsIndexQueue::CONFIGURATION,
             ));
         }
 
-        return $queue->getStatisticsBySite($site, self::INDEXING_CONFIGURATION)->getTotalCount();
+        return $this->queue->getStatisticsBySite($site, SkillsIndexQueue::CONFIGURATION)->getTotalCount();
     }
 
-    private function processQueue(Site $site, Queue $queue, int $limit, SymfonyStyle $io): bool
+    private function processQueue(Site $site, int $limit, SymfonyStyle $io): bool
     {
-        $indexService = GeneralUtility::makeInstance(IndexService::class, $site);
+        $indexService = GeneralUtility::makeInstance(IndexService::class, $site, $this->queue);
         $indexingSucceeded = $indexService->indexItems($limit);
-        $statistics = $queue->getStatisticsBySite($site, self::INDEXING_CONFIGURATION);
+        $statistics = $this->queue->getStatisticsBySite($site, SkillsIndexQueue::CONFIGURATION);
 
         $io->writeln(sprintf(
             'Indexed %d, failed %d, pending %d (%.2f%% complete).',
@@ -160,9 +161,11 @@ final class IndexSolrCommand extends Command
             ));
         } elseif (!$indexingSucceeded) {
             $io->warning('Solr reported an indexing or commit error. Check the Solr log for details.');
+        } elseif ($statistics->getPendingCount() > 0) {
+            $io->warning('The rebuild is incomplete. Increase --limit to include all skills.');
         }
 
-        return $indexingSucceeded && $statistics->getFailedCount() === 0;
+        return $indexingSucceeded && $statistics->getFailedCount() === 0 && $statistics->getPendingCount() === 0;
     }
 
     /**

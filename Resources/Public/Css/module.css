@@ -1,7 +1,7 @@
 /*
  * Skillflow backend module – layout helpers.
  * Colours/surfaces come from TYPO3 backend tokens so light & dark themes
- * stay correct; this file only adds spacing, the run-form grid and chips.
+ * stay correct; this file only adds spacing, the run form and report layout.
  */
 
 .skf-module {
@@ -33,13 +33,6 @@
     padding: .35em .7em;
 }
 
-.skf-card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
 
 /* ---- Primary "Run a skill" panel ---- */
 .skf-run .card-body {
@@ -81,7 +74,7 @@
     gap: .5rem;
 }
 
-/* Leading button row (detail/quarantine views): tuck it closer to the
+/* Leading button row in the run-detail view: tuck it closer to the
  * docheader and give it extra breathing room before the first card. */
 .skf-module > .skf-actions:first-child {
     margin-top: -.5rem;
@@ -101,31 +94,6 @@
 
 .skf-target__title {
     font-weight: 600;
-}
-
-/* Assigned-skill chips */
-.skf-assigned {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: .4rem;
-    font-size: .9rem;
-}
-
-.skf-assigned__label {
-    color: var(--typo3-text-color-variant, #8a8a8a);
-}
-
-.skf-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: .3rem;
-    padding: .15rem .55rem;
-    border-radius: 999px;
-    font-size: .8rem;
-    line-height: 1.6;
-    background: var(--typo3-surface-container-high, rgba(125, 125, 125, .18));
-    border: 1px solid var(--typo3-component-border-color, rgba(125, 125, 125, .25));
 }
 
 /* Muted helper text */
@@ -150,65 +118,10 @@
     text-decoration: none;
 }
 
-.skf-module a.badge:hover,
-.skf-module a.badge:focus {
-    text-decoration: none;
-}
-
-.skf-module .badge .icon {
-    --icon-size: 1em;
-    width: 1em;
-    height: 1em;
-    line-height: 1;
-    flex-shrink: 0;
-}
-
-.skf-module .badge .icon svg,
-.skf-module .badge .icon img {
-    width: 100%;
-    height: 100%;
-}
-
 /* Centre row content vertically — badges and buttons sit mid-row instead of
  * hugging the top edge of tall cells. */
 .skf-module .table td {
     vertical-align: middle;
-}
-
-/* Edit + release actions: forms inside the group break Bootstrap's segmented
- * look anyway, so render them as evenly spaced, centred buttons. */
-.skf-module .col-control .btn-group {
-    display: inline-flex;
-    align-items: center;
-    flex-wrap: nowrap;
-    gap: .35rem;
-}
-
-/* Collapsible secondary sections */
-.skf-section > summary {
-    cursor: pointer;
-    list-style: none;
-    padding: .25rem 0;
-}
-
-.skf-section > summary::-webkit-details-marker {
-    display: none;
-}
-
-.skf-section > summary .skf-card-title::before {
-    content: "▸";
-    display: inline-block;
-    transition: transform .15s ease;
-    color: var(--typo3-text-color-variant, #8a8a8a);
-}
-
-.skf-section[open] > summary .skf-card-title::before {
-    transform: rotate(90deg);
-}
-
-.skf-section .table-fit,
-.skf-section .skf-section-body {
-    margin-top: .75rem;
 }
 
 /* ---- Run report ---- */
@@ -241,86 +154,4 @@
 
 .skf-meta dd {
     margin: 0;
-}
-
-/* --- Skill review (security + license) ------------------------------- */
-.skf-toolbar { display: flex; gap: .5rem; flex-wrap: wrap; }
-.skf-review-summary { margin: 0 0 1rem; display: flex; gap: .4rem; align-items: center; flex-wrap: wrap; }
-/* The advisory hint gets its own line below the badge row */
-.skf-review-summary .skf-muted {
-    flex-basis: 100%;
-    font-size: .9em;
-}
-.skf-review > summary { cursor: pointer; list-style: none; }
-.skf-review > summary::-webkit-details-marker { display: none; }
-.skf-review-summary-badges {
-    display: inline-flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: .35rem;
-}
-
-/* Expand hint: the badge row is clickable, give it a caret like skf-section */
-.skf-review > summary::after {
-    content: "▸";
-    color: var(--typo3-text-color-variant, #8a8a8a);
-    font-size: .85em;
-    line-height: 1;
-    transition: transform .15s ease;
-}
-
-.skf-review[open] > summary::after {
-    transform: rotate(90deg);
-}
-.skf-review-detail {
-    margin-top: .6rem;
-    padding: .6rem .75rem;
-    border-left: 3px solid var(--typo3-border-color, #d7d7d7);
-    background: var(--typo3-surface-container-low, #f6f6f6);
-    border-radius: 4px;
-    max-width: 46rem;
-}
-.skf-review-license { margin-bottom: .5rem; }
-.skf-review-check {
-    margin-top: .25rem;
-    font-size: .85em;
-    color: var(--typo3-text-color-variant, #6c6c6c);
-}
-.skf-review-findings { list-style: none; margin: .5rem 0 0; padding: 0; }
-.skf-finding {
-    padding: .4rem .5rem;
-    margin-bottom: .4rem;
-    border-radius: 4px;
-    background: var(--typo3-surface-container, #fff);
-    border: 1px solid var(--typo3-border-color, #e0e0e0);
-}
-.skf-finding--danger { border-left: 3px solid var(--typo3-color-danger, #c83c3c); }
-.skf-finding--warning { border-left: 3px solid var(--typo3-color-warning, #c8842c); }
-.skf-finding--info { border-left: 3px solid var(--typo3-color-info, #2c7dc8); }
-.skf-finding-loc { margin-left: .35rem; font-size: .8em; opacity: .8; }
-.skf-finding-evidence {
-    margin: .3rem 0;
-    padding: .3rem .45rem;
-    font-size: .8em;
-    white-space: pre-wrap;
-    word-break: break-word;
-    background: var(--typo3-surface-container-low, #f0f0f0);
-    border-radius: 3px;
-}
-.skf-review-quarantine {
-    margin-bottom: .6rem;
-    padding: .4rem .55rem;
-    border-radius: 4px;
-    background: var(--typo3-color-danger-20, #fbe6e6);
-    border-left: 3px solid var(--typo3-color-danger, #c83c3c);
-    font-size: .85em;
-}
-.skf-review-quarantine-head { display: flex; align-items: center; gap: .35rem; }
-.skf-review-danger { list-style: none; margin: .35rem 0; padding: 0; }
-.skf-review-danger li { padding: .15rem 0; }
-.skf-sev-counts {
-    margin-left: .5rem;
-    font-size: .78em;
-    white-space: nowrap;
-    letter-spacing: .01em;
 }

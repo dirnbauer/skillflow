@@ -13,10 +13,6 @@ return [
         'provider' => SvgIconProvider::class,
         'source' => 'EXT:skillflow/Resources/Public/Icons/Skill.svg',
     ],
-    'skillflow-repository' => [
-        'provider' => SvgIconProvider::class,
-        'source' => 'EXT:skillflow/Resources/Public/Icons/Repository.svg',
-    ],
     'skillflow-run' => [
         'provider' => SvgIconProvider::class,
         'source' => 'EXT:skillflow/Resources/Public/Icons/Run.svg',

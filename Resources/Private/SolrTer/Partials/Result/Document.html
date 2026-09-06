@@ -31,23 +31,28 @@
             <div class="min-w-0">
                 <h3 class="card-title search-result-card__title mb-1" id="search-result-card-title-{document.type}-{document.uid}">
                     <span class="d-flex min-w-0 flex-wrap align-items-center gap-2">
-                        <span class="min-w-0 search-result-card__title-text">{document.title}</span>
+                        <span class="min-w-0 search-result-card__title-text">
+                            <f:if condition="{document.url}">
+                                <f:then><a href="{document.url}">{document.title}</a></f:then>
+                                <f:else>{document.title}</f:else>
+                            </f:if>
+                        </span>
                         <f:if condition="{exactMatchFound}">
                             <span class="badge bg-primary-subtle text-primary">exact match</span>
                         </f:if>
                     </span>
                 </h3>
-                <f:if condition="{document.identifier_stringS} || {document.sourceType_stringS}">
+                <f:if condition="{document.identifier_stringS} || {document.sourceTitle_stringS}">
                     <div class="mb-3 small text-muted">
                         <f:if condition="{document.identifier_stringS}">
                             {document.identifier_stringS}
                         </f:if>
-                        <f:if condition="{document.sourceType_stringS}">
+                        <f:if condition="{document.sourceTitle_stringS}">
                             <f:if condition="{document.identifier_stringS}">
                                 /
                             </f:if>
                             by
-                            <f:format.crop maxCharacters="{f:if(condition:exactMatchFound, then: '100', else: '50')}">{document.sourceType_stringS}</f:format.crop>
+                            <f:format.crop maxCharacters="{f:if(condition:exactMatchFound, then: '100', else: '50')}">{document.sourceTitle_stringS}</f:format.crop>
                         </f:if>
                     </div>
                 </f:if>

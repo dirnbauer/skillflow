@@ -1,5 +1,5 @@
 plugin.tx_solr.index.queue.skills {
-  # nr_llm stores skills at the root (pid=0).
+  # Optional storage folders outside the site. Root records are always included.
   additionalPageIds = 0
 
   # Page containing the skillflow_skilldetail content element.

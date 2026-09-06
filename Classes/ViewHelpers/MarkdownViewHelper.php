@@ -29,7 +29,8 @@ final class MarkdownViewHelper extends AbstractViewHelper
 
     public function __construct(
         private readonly MarkdownRenderer $markdownRenderer,
-    ) {}
+    ) {
+    }
 
     public function initializeArguments(): void
     {

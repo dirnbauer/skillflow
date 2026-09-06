@@ -49,8 +49,7 @@ final class AnthropicApiRunner implements SkillRunnerInterface
         $payload = [
             'model' => trim(Typed::string($conf['model'] ?? null)) ?: 'claude-sonnet-4-6',
             'max_tokens' => max(256, Typed::int($conf['maxTokens'] ?? 2048)),
-            'system' => $this->promptBuilder->buildSystemPrompt($skill)
-                . $this->promptBuilder->buildFilesSection(Typed::string($skill['body'] ?? null), $files),
+            'system' => $this->promptBuilder->buildSystemPrompt($skill),
             'messages' => [
                 ['role' => 'user', 'content' => $this->promptBuilder->buildUserPrompt($content)],
             ],
