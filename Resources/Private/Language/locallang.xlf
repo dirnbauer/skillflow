@@ -1,313 +1,107 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file source-language="en" datatype="plaintext" original="EXT:skillflow/Resources/Private/Language/locallang.xlf" product-name="skillflow">
-    <body>
-      <trans-unit id="module.headline" resname="module.headline">
-        <source>Agent Skills</source>
-      </trans-unit>
-      <trans-unit id="security.blocked.title" resname="security.blocked.title">
-        <source>Skill execution is blocked on this installation</source>
-      </trans-unit>
-      <trans-unit id="security.blocked.hint" resname="security.blocked.hint">
-        <source>Skills send editorial content to an AI runner and may execute a local CLI. They are therefore restricted to local DDEV installations running in Development context. Managing and editing skills is still possible.</source>
-      </trans-unit>
-      <trans-unit id="security.local.title" resname="security.local.title">
-        <source>Local development installation detected</source>
-      </trans-unit>
-      <trans-unit id="security.local.text" resname="security.local.text">
-        <source>Skill execution is enabled (Development context + DDEV). Remember: skill runs send record content to the configured AI runner. Review skills from third-party repositories before running them, and never disable the environment guard on shared or production systems.</source>
-      </trans-unit>
-      <trans-unit id="skills.headline" resname="skills.headline">
-        <source>Skills</source>
-      </trans-unit>
-      <trans-unit id="skills.new" resname="skills.new">
-        <source>New skill</source>
-      </trans-unit>
-      <trans-unit id="skills.scanFolder" resname="skills.scanFolder">
-        <source>Import from skills folder</source>
-      </trans-unit>
-      <trans-unit id="skills.col.title" resname="skills.col.title">
-        <source>Name</source>
-      </trans-unit>
-      <trans-unit id="skills.col.identifier" resname="skills.col.identifier">
-        <source>Identifier</source>
-      </trans-unit>
-      <trans-unit id="skills.col.description" resname="skills.col.description">
-        <source>Description</source>
-      </trans-unit>
-      <trans-unit id="skills.col.source" resname="skills.col.source">
-        <source>Source</source>
-      </trans-unit>
-      <trans-unit id="skills.empty" resname="skills.empty">
-        <source>No skills yet. Create one manually, import the local skills folder or add a repository.</source>
-      </trans-unit>
-      <trans-unit id="review.col.review" resname="review.col.review">
-        <source>Review</source>
-      </trans-unit>
-      <trans-unit id="review.recheck" resname="review.recheck">
-        <source>Re-scan all</source>
-      </trans-unit>
-      <trans-unit id="review.recheck.help" resname="review.recheck.help">
-        <source>Re-run the security + license review on every stored skill (advisory, never disables a skill).</source>
-      </trans-unit>
-      <trans-unit id="review.summary.security" resname="review.summary.security">
-        <source>with security flags</source>
-      </trans-unit>
-      <trans-unit id="review.summary.review" resname="review.summary.review">
-        <source>to review</source>
-      </trans-unit>
-      <trans-unit id="review.summary.unchecked" resname="review.summary.unchecked">
-        <source>not scanned</source>
-      </trans-unit>
-      <trans-unit id="review.summary.quarantined" resname="review.summary.quarantined">
-        <source>quarantined — click to review</source>
-      </trans-unit>
-      <trans-unit id="review.summary.hint" resname="review.summary.hint">
-        <source>Open a skill's Review cell to see what to check. Findings are advisory; nothing is disabled automatically.</source>
-      </trans-unit>
-      <trans-unit id="review.badge.security" resname="review.badge.security">
-        <source>Security</source>
-      </trans-unit>
-      <trans-unit id="review.badge.review" resname="review.badge.review">
-        <source>Review</source>
-      </trans-unit>
-      <trans-unit id="review.badge.ok" resname="review.badge.ok">
-        <source>OK</source>
-      </trans-unit>
-      <trans-unit id="review.badge.code" resname="review.badge.code">
-        <source>code</source>
-      </trans-unit>
-      <trans-unit id="review.badge.quarantined" resname="review.badge.quarantined">
-        <source>Quarantined</source>
-      </trans-unit>
-      <trans-unit id="review.quarantined.help" resname="review.quarantined.help">
-        <source>Hidden automatically because of a danger-level security finding. Not deleted — review the findings and unhide it (Access tab) if you trust it.</source>
-      </trans-unit>
-      <trans-unit id="review.quarantined.note" resname="review.quarantined.note">
-        <source>Quarantined: this skill was hidden automatically because of a danger-level finding below. It was NOT deleted. Release it from the Quarantine screen (or clear "Disable" on the Access tab) after reviewing.</source>
-      </trans-unit>
-      <trans-unit id="review.quarantined.reason" resname="review.quarantined.reason">
-        <source>Quarantined — hidden because of danger-level evidence:</source>
-      </trans-unit>
-      <trans-unit id="review.severity.help" resname="review.severity.help">
-        <source>Finding counts by severity. Only a danger-level finding quarantines a skill; warning/info are advisory.</source>
-      </trans-unit>
-      <trans-unit id="review.spector.advisory" resname="review.spector.advisory">
-        <source>advisory</source>
-      </trans-unit>
-      <trans-unit id="review.spector.advisory.help" resname="review.spector.advisory.help">
-        <source>SkillSpector's aggregate verdict is advisory. It raises the review to "warning" but does not by itself quarantine — only a concrete danger-level finding does.</source>
-      </trans-unit>
-      <trans-unit id="quarantine.button" resname="quarantine.button">
-        <source>Quarantine</source>
-      </trans-unit>
-      <trans-unit id="quarantine.headline" resname="quarantine.headline">
-        <source>Quarantined skills</source>
-      </trans-unit>
-      <trans-unit id="quarantine.back" resname="quarantine.back">
-        <source>Back to overview</source>
-      </trans-unit>
-      <trans-unit id="quarantine.intro" resname="quarantine.intro">
-        <source>These skills are hidden and will NOT run — either quarantined automatically by the security scan (danger-level finding) or disabled manually. Nothing here is deleted. Review each skill's findings, then release the ones you trust; released skills stay flagged in the catalogue so the findings remain visible.</source>
-      </trans-unit>
-      <trans-unit id="quarantine.col.reason" resname="quarantine.col.reason">
-        <source>Reason</source>
-      </trans-unit>
-      <trans-unit id="quarantine.reason.auto" resname="quarantine.reason.auto">
-        <source>Auto-quarantined (security)</source>
-      </trans-unit>
-      <trans-unit id="quarantine.reason.manual" resname="quarantine.reason.manual">
-        <source>Manually disabled</source>
-      </trans-unit>
-      <trans-unit id="quarantine.release" resname="quarantine.release">
-        <source>Release</source>
-      </trans-unit>
-      <trans-unit id="quarantine.release.help" resname="quarantine.release.help">
-        <source>Unhide this skill so it can run again. Do this only after reviewing its findings.</source>
-      </trans-unit>
-      <trans-unit id="quarantine.release.confirm" resname="quarantine.release.confirm">
-        <source>Release this skill? It becomes runnable again. Only release it after you have reviewed its security findings.</source>
-      </trans-unit>
-      <trans-unit id="quarantine.empty" resname="quarantine.empty">
-        <source>No quarantined skills — every imported skill passed the security scan, or has been reviewed and released.</source>
-      </trans-unit>
-      <trans-unit id="review.code.help" resname="review.code.help">
-        <source>This skill ships code examples — check the license before reusing them.</source>
-      </trans-unit>
-      <trans-unit id="review.unchecked" resname="review.unchecked">
-        <source>not scanned</source>
-      </trans-unit>
-      <trans-unit id="review.unchecked.help" resname="review.unchecked.help">
-        <source>Not scanned yet — run "Re-scan all" or re-import.</source>
-      </trans-unit>
-      <trans-unit id="review.clean" resname="review.clean">
-        <source>No security patterns matched and the license is compatible.</source>
-      </trans-unit>
-      <trans-unit id="review.license.label" resname="review.license.label">
-        <source>License</source>
-      </trans-unit>
-      <trans-unit id="review.license.review" resname="review.license.review">
-        <source>check GPL-2.0 compatibility</source>
-      </trans-unit>
-      <trans-unit id="review.license.incompatible" resname="review.license.incompatible">
-        <source>likely incompatible with GPL-2.0</source>
-      </trans-unit>
-      <trans-unit id="review.license.unknown" resname="review.license.unknown">
-        <source>no license declared</source>
-      </trans-unit>
-      <trans-unit id="review.spector.label" resname="review.spector.label">
-        <source>SkillSpector</source>
-      </trans-unit>
-      <trans-unit id="review.spector.doNotInstall" resname="review.spector.doNotInstall">
-        <source>do not install</source>
-      </trans-unit>
-      <trans-unit id="review.spector.caution" resname="review.spector.caution">
-        <source>caution</source>
-      </trans-unit>
-      <trans-unit id="review.spector.safe" resname="review.spector.safe">
-        <source>safe</source>
-      </trans-unit>
-      <trans-unit id="review.spector.llm" resname="review.spector.llm">
-        <source>LLM</source>
-      </trans-unit>
-      <trans-unit id="review.spector.llm.help" resname="review.spector.llm.help">
-        <source>SkillSpector's LLM-assisted semantic analysis ran in addition to the static scan.</source>
-      </trans-unit>
-      <trans-unit id="review.spector.unavailable" resname="review.spector.unavailable">
-        <source>SkillSpector not installed — static NVIDIA scan skipped</source>
-      </trans-unit>
-      <trans-unit id="review.spector.error" resname="review.spector.error">
-        <source>SkillSpector scan failed</source>
-      </trans-unit>
-      <trans-unit id="repositories.headline" resname="repositories.headline">
-        <source>Skill repositories</source>
-      </trans-unit>
-      <trans-unit id="repositories.new" resname="repositories.new">
-        <source>New repository</source>
-      </trans-unit>
-      <trans-unit id="repositories.col.title" resname="repositories.col.title">
-        <source>Title</source>
-      </trans-unit>
-      <trans-unit id="repositories.col.lastSynced" resname="repositories.col.lastSynced">
-        <source>Last synced</source>
-      </trans-unit>
-      <trans-unit id="repositories.col.lastError" resname="repositories.col.lastError">
-        <source>Last error</source>
-      </trans-unit>
-      <trans-unit id="repositories.sync" resname="repositories.sync">
-        <source>Sync</source>
-      </trans-unit>
-      <trans-unit id="repositories.empty" resname="repositories.empty">
-        <source>No repositories configured yet.</source>
-      </trans-unit>
-      <trans-unit id="run.headline" resname="run.headline">
-        <source>Run a skill on a page</source>
-      </trans-unit>
-      <trans-unit id="run.hint" resname="run.hint">
-        <source>Runs the skill against the page properties and its content elements in your current workspace and stores a report.</source>
-      </trans-unit>
-      <trans-unit id="run.workspace" resname="run.workspace">
-        <source>current workspace</source>
-      </trans-unit>
-      <trans-unit id="run.page" resname="run.page">
-        <source>Page ID</source>
-      </trans-unit>
-      <trans-unit id="run.instructions" resname="run.instructions">
-        <source>Per-run instructions (optional)</source>
-      </trans-unit>
-      <trans-unit id="run.instructions.placeholder" resname="run.instructions.placeholder">
-        <source>Extra context for this run — you can use {uid}, {table}, {title}, {pid}, {workspace}.</source>
-      </trans-unit>
-      <trans-unit id="run.instructions.help" resname="run.instructions.help">
-        <source>Placeholders are replaced with the target record's values when the skill starts: {uid}, {table}, {title}, {pid}, {workspace}.</source>
-      </trans-unit>
-      <trans-unit id="runDetail.instructions" resname="runDetail.instructions">
-        <source>Per-run instructions</source>
-      </trans-unit>
-      <trans-unit id="run.skill" resname="run.skill">
-        <source>Skill</source>
-      </trans-unit>
-      <trans-unit id="run.submit" resname="run.submit">
-        <source>Run skill</source>
-      </trans-unit>
-      <trans-unit id="run.submitSelected" resname="run.submitSelected">
-        <source>Run selected skill</source>
-      </trans-unit>
-      <trans-unit id="run.submitAssigned" resname="run.submitAssigned">
-        <source>Run skills assigned to the page</source>
-      </trans-unit>
-      <trans-unit id="run.runAssigned" resname="run.runAssigned">
-        <source>Run all assigned skills</source>
-      </trans-unit>
-      <trans-unit id="run.runner" resname="run.runner">
-        <source>Runner</source>
-      </trans-unit>
-      <trans-unit id="run.engine" resname="run.engine">
-        <source>Engine</source>
-      </trans-unit>
-      <trans-unit id="run.engine.auto" resname="run.engine.auto">
-        <source>Auto (skill / default)</source>
-      </trans-unit>
-      <trans-unit id="run.engine.classic" resname="run.engine.classic">
-        <source>Quick (single-shot)</source>
-      </trans-unit>
-      <trans-unit id="run.target.none.title" resname="run.target.none.title">
-        <source>No page selected</source>
-      </trans-unit>
-      <trans-unit id="run.target.none.text" resname="run.target.none.text">
-        <source>Pick a page in the page tree on the left, or type a page ID below.</source>
-      </trans-unit>
-      <trans-unit id="run.assigned.label" resname="run.assigned.label">
-        <source>Assigned to this page:</source>
-      </trans-unit>
-      <trans-unit id="run.assigned.none" resname="run.assigned.none">
-        <source>No skills are assigned to this page yet (Page properties → Skills tab).</source>
-      </trans-unit>
-      <trans-unit id="common.id" resname="common.id">
-        <source>ID</source>
-      </trans-unit>
-      <trans-unit id="runs.headline" resname="runs.headline">
-        <source>Recent runs</source>
-      </trans-unit>
-      <trans-unit id="runs.col.date" resname="runs.col.date">
-        <source>Date</source>
-      </trans-unit>
-      <trans-unit id="runs.col.skill" resname="runs.col.skill">
-        <source>Skill</source>
-      </trans-unit>
-      <trans-unit id="runs.col.target" resname="runs.col.target">
-        <source>Target</source>
-      </trans-unit>
-      <trans-unit id="runs.col.status" resname="runs.col.status">
-        <source>Status</source>
-      </trans-unit>
-      <trans-unit id="runs.col.verdict" resname="runs.col.verdict">
-        <source>Verdict</source>
-      </trans-unit>
-      <trans-unit id="runs.show" resname="runs.show">
-        <source>Show report</source>
-      </trans-unit>
-      <trans-unit id="runs.empty" resname="runs.empty">
-        <source>No runs yet.</source>
-      </trans-unit>
-      <trans-unit id="runDetail.headline" resname="runDetail.headline">
-        <source>Skill run</source>
-      </trans-unit>
-      <trans-unit id="runDetail.back" resname="runDetail.back">
-        <source>Back to overview</source>
-      </trans-unit>
-      <trans-unit id="runDetail.openTarget" resname="runDetail.openTarget">
-        <source>Open target page</source>
-      </trans-unit>
-      <trans-unit id="runDetail.report" resname="runDetail.report">
-        <source>Report</source>
-      </trans-unit>
-      <trans-unit id="runDetail.openEngine" resname="runDetail.openEngine">
-        <source>Open engine run</source>
-      </trans-unit>
-      <trans-unit id="runDetail.externalRef" resname="runDetail.externalRef">
-        <source>Engine run</source>
-      </trans-unit>
-    </body>
-  </file>
+<xliff
+    xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+    <file source-language="en" datatype="plaintext" original="EXT:skillflow/Resources/Private/Language/locallang.xlf" product-name="skillflow">
+        <body>
+            <trans-unit id="security.blocked.title" resname="security.blocked.title">
+                <source>Skill execution is blocked on this installation</source>
+            </trans-unit>
+            <trans-unit id="skills.headline" resname="skills.headline">
+                <source>Skills</source>
+            </trans-unit>
+            <trans-unit id="skills.empty" resname="skills.empty">
+                <source>Add and enable a source in nr_llm, then review and activate the skills you want to run.</source>
+            </trans-unit>
+            <trans-unit id="run.headline" resname="run.headline">
+                <source>Run a skill on a page</source>
+            </trans-unit>
+            <trans-unit id="run.workspace" resname="run.workspace">
+                <source>current workspace</source>
+            </trans-unit>
+            <trans-unit id="run.page" resname="run.page">
+                <source>Page ID</source>
+            </trans-unit>
+            <trans-unit id="run.instructions" resname="run.instructions">
+                <source>Per-run instructions (optional)</source>
+            </trans-unit>
+            <trans-unit id="runDetail.instructions" resname="runDetail.instructions">
+                <source>Per-run instructions</source>
+            </trans-unit>
+            <trans-unit id="run.skill" resname="run.skill">
+                <source>Skill</source>
+            </trans-unit>
+            <trans-unit id="run.submit" resname="run.submit">
+                <source>Run skill</source>
+            </trans-unit>
+            <trans-unit id="run.submitSelected" resname="run.submitSelected">
+                <source>Run selected skill</source>
+            </trans-unit>
+            <trans-unit id="run.submitAssigned" resname="run.submitAssigned">
+                <source>Run skills assigned to the page</source>
+            </trans-unit>
+            <trans-unit id="run.runner" resname="run.runner">
+                <source>Runner</source>
+            </trans-unit>
+            <trans-unit id="run.engine" resname="run.engine">
+                <source>Engine</source>
+            </trans-unit>
+            <trans-unit id="run.engine.auto" resname="run.engine.auto">
+                <source>Auto (skill / default)</source>
+            </trans-unit>
+            <trans-unit id="run.engine.classic" resname="run.engine.classic">
+                <source>Quick (single-shot)</source>
+            </trans-unit>
+            <trans-unit id="common.id" resname="common.id">
+                <source>ID</source>
+            </trans-unit>
+            <trans-unit id="runs.headline" resname="runs.headline">
+                <source>Recent runs</source>
+            </trans-unit>
+            <trans-unit id="runs.col.date" resname="runs.col.date">
+                <source>Date</source>
+            </trans-unit>
+            <trans-unit id="runs.col.skill" resname="runs.col.skill">
+                <source>Skill</source>
+            </trans-unit>
+            <trans-unit id="runs.col.target" resname="runs.col.target">
+                <source>Target</source>
+            </trans-unit>
+            <trans-unit id="runs.col.status" resname="runs.col.status">
+                <source>Status</source>
+            </trans-unit>
+            <trans-unit id="runs.show" resname="runs.show">
+                <source>Show report</source>
+            </trans-unit>
+            <trans-unit id="runs.empty" resname="runs.empty">
+                <source>No runs yet.</source>
+            </trans-unit>
+            <trans-unit id="runDetail.headline" resname="runDetail.headline">
+                <source>Skill run</source>
+            </trans-unit>
+            <trans-unit id="runDetail.back" resname="runDetail.back">
+                <source>Back to overview</source>
+            </trans-unit>
+            <trans-unit id="runDetail.openTarget" resname="runDetail.openTarget">
+                <source>Open target page</source>
+            </trans-unit>
+            <trans-unit id="runDetail.report" resname="runDetail.report">
+                <source>Report</source>
+            </trans-unit>
+            <trans-unit id="runDetail.openEngine" resname="runDetail.openEngine">
+                <source>Open engine run</source>
+            </trans-unit>
+            <trans-unit id="runDetail.externalRef" resname="runDetail.externalRef">
+                <source>Engine run</source>
+            </trans-unit>
+            <trans-unit id="skills.managed" resname="skills.managed">
+                <source>Skills and sources are managed in nr_llm. Skillflow runs enabled, available skills and stores their reports.</source>
+            </trans-unit>
+            <trans-unit id="skills.manage" resname="skills.manage">
+                <source>Manage skills and sources</source>
+            </trans-unit>
+            <trans-unit id="skills.empty.title" resname="skills.empty.title">
+                <source>No active skills</source>
+            </trans-unit>
+        </body>
+    </file>
 </xliff>

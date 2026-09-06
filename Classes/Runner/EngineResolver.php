@@ -46,7 +46,7 @@ final class EngineResolver
     }
 
     /**
-     * @param array<string, mixed> $skill tx_skillflow_skill row
+     * @param array<string, mixed> $skill normalized tx_nrllm_skill row
      */
     public function resolve(array $skill, SkillRunContext $context): EngineResolution
     {
@@ -59,15 +59,7 @@ final class EngineResolver
         }
 
         $runner = $this->getRegisteredEngines()[$requested] ?? null;
-        if ($runner === null) {
-            $this->logger->warning('Requested skill engine is not registered, using the classic chain', [
-                'engine' => $requested,
-                'skill' => Typed::string($skill['identifier'] ?? ''),
-            ]);
-            return new EngineResolution(null, $requested);
-        }
-
-        if (!$runner->canRun($skill, $context)) {
+        if ($runner === null || !$runner->canRun($skill, $context)) {
             if ($this->fallbackEnabled()) {
                 $this->logger->warning('Skill engine unavailable, falling back to the classic chain', [
                     'engine' => $requested,
@@ -104,7 +96,7 @@ final class EngineResolver
 
     private function fallbackEnabled(): bool
     {
-        return Typed::string($this->configuration()['engineFallback'] ?? '1') !== '0';
+        return (bool)($this->configuration()['engineFallback'] ?? true);
     }
 
     /**

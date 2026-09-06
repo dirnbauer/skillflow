@@ -20,22 +20,14 @@
         </f:then>
         <f:else>
             <article class="skillflow-skill">
-                <nav class="skillflow-skill__breadcrumb">
-                    <f:link.page pageUid="{TSFE.id}" class="skillflow-skill__back">&larr;
-                        <f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:plugin.skilldetail.back"
-                            default="Back" />
-                    </f:link.page>
-                </nav>
-
                 <header class="skillflow-skill__header">
-                    <h1 class="skillflow-skill__title">{skill.title}</h1>
+                    <h1 class="skillflow-skill__title">{skill.name}</h1>
 
                     <p class="skillflow-skill__meta">
-                        <span class="skillflow-skill__identifier"><code>{skill.identifier}</code></span>
-                        <f:if condition="{skill.source_type}">
+                        <span class="skillflow-skill__identifier"><code>{skill.public_identifier}</code></span>
+                        <f:if condition="{skill.source_title}">
                             <span class="skillflow-skill__source">
-                                <f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:skill.source_type.{skill.source_type}"
-                                    default="{skill.source_type}" />
+                                {skill.source_title}
                             </span>
                         </f:if>
                     </p>
@@ -63,22 +55,6 @@
                     <sf:markdown>{skill.body}</sf:markdown>
                 </div>
 
-                <f:if condition="{files}">
-                    <section class="skillflow-skill__files">
-                        <h2>
-                            <f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:skill.files"
-                                default="Supporting files" />
-                        </h2>
-                        <ul class="skillflow-skill__filelist">
-                            <f:for each="{files}" as="file">
-                                <li class="skillflow-skill__file">
-                                    <span class="skillflow-skill__file-path">{file.relative_path}</span>
-                                    <span class="skillflow-skill__file-size">{file.size} B</span>
-                                </li>
-                            </f:for>
-                        </ul>
-                    </section>
-                </f:if>
             </article>
         </f:else>
     </f:if>

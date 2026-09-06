@@ -1,0 +1,37 @@
+#ddev-generated
+services:
+  typo3-solr:
+    container_name: ddev-${DDEV_SITENAME}-typo3-solr
+    hostname: ${DDEV_SITENAME}-typo3-solr
+    image: ${SOLR_BASE_IMAGE:-solr:9.10}
+    labels:
+      com.ddev.site-name: ${DDEV_SITENAME}
+      com.ddev.approot: $DDEV_APPROOT
+    # Solr 10 made `bin/solr start` default to SolrCloud and ignore the SOLR_MODE
+    # env var, so standalone must be forced explicitly with `--user-managed`. That
+    # flag is also accepted by Solr 9.8+, so it is version-agnostic. For SolrCloud
+    # we pass no flag: Solr 9.x honours SOLR_MODE=solrcloud, Solr 10 defaults to it.
+    # `$$SOLR_MODE` is escaped so the container shell evaluates it at runtime.
+    command:
+      - sh
+      - -c
+      - 'if [ "$${SOLR_MODE:-standalone}" = "solrcloud" ]; then exec solr-foreground; else exec solr-foreground --user-managed; fi'
+    environment:
+      - VIRTUAL_HOST=$DDEV_HOSTNAME
+      - HTTP_EXPOSE=8983:8983
+      - HTTPS_EXPOSE=8984:8983
+      # For setup steps see https://docs.typo3.org/p/apache-solr-for-typo3/solr/main/en-us/Solr/ConfigurationStructures.html#setup-steps
+      - SOLR_ENABLE_REMOTE_STREAMING=true
+      - SOLR_ENABLE_STREAM_BODY=true
+      - SOLR_MODE=${SOLR_MODE:-standalone}
+    volumes:
+      - "typo3-solr:/var/solr/"
+      - ".:/mnt/ddev_config"
+      - "ddev-global-cache:/mnt/ddev-global-cache"
+
+  web:
+    volumes:
+      - "typo3-solr:/mnt/typo3-solr"
+
+volumes:
+  typo3-solr:

@@ -1,23 +1,29 @@
 {
     "name": "webconsulting/skillflow",
-    "description": "Workflow assignments and runs for nr_llm skills on TYPO3 pages, users, and workspace stages.",
+    "description": "Run nr_llm-managed skills in TYPO3 page and workspace review workflows.",
+    "homepage": "https://typo3-lab.webconsulting.at",
     "type": "typo3-cms-extension",
     "license": "GPL-2.0-or-later",
     "require": {
-        "apache-solr-for-typo3/solr": "^14.0@beta",
-        "php": "^8.2",
-        "league/commonmark": "^2.7",
-        "netresearch/nr-llm": "^0.25",
+        "apache-solr-for-typo3/solr": "^14.0.1",
+        "php": "^8.4",
+        "league/commonmark": "^2.10",
+        "netresearch/nr-llm": "^0.34",
         "symfony/process": "^7.0",
-        "symfony/yaml": "^7.0",
-        "typo3/cms-backend": "^14.3",
-        "typo3/cms-core": "^14.3",
-        "typo3/cms-workspaces": "^14.3"
+        "typo3/cms-backend": "^14.3.6",
+        "typo3/cms-core": "^14.3.6",
+        "typo3/cms-extbase": "^14.3.6",
+        "typo3/cms-frontend": "^14.3.6",
+        "typo3/cms-workspaces": "^14.3.6"
     },
     "require-dev": {
+        "a9f/typo3-fractor": "^1.0",
+        "friendsofphp/php-cs-fixer": "^3.0",
         "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^11.5",
-        "saschaegerer/phpstan-typo3": "^3.0.1"
+        "saschaegerer/phpstan-typo3": "^3.0.1",
+        "ssch/typo3-rector": "^3.14",
+        "typo3/testing-framework": "^9.6"
     },
     "autoload": {
         "psr-4": {
@@ -31,13 +37,22 @@
     },
     "scripts": {
         "analyse": "phpstan analyse",
-        "test": "phpunit"
+        "lint": "php-cs-fixer check --diff",
+        "rector": "rector process --dry-run",
+        "fractor": "fractor process --dry-run",
+        "test": "phpunit",
+        "test:functional": "phpunit -c Build/FunctionalTests.xml"
     },
     "config": {
         "allow-plugins": {
+            "a9f/fractor-extension-installer": true,
             "typo3/class-alias-loader": true,
             "typo3/cms-composer-installers": true
         }
+    },
+    "support": {
+        "issues": "https://github.com/dirnbauer/skillflow/issues",
+        "source": "https://github.com/dirnbauer/skillflow"
     },
     "extra": {
         "typo3/cms": {

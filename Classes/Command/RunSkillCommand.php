@@ -74,7 +74,7 @@ final class RunSkillCommand extends Command
         $io->newLine();
         $io->writeln($result->output);
 
-        return $result->status === 'failed' ? Command::FAILURE : Command::SUCCESS;
+        return in_array($result->status, ['success', 'pending'], true) ? Command::SUCCESS : Command::FAILURE;
     }
 
     private function resolveSkillUid(string $skill): int
@@ -82,11 +82,6 @@ final class RunSkillCommand extends Command
         if (ctype_digit($skill)) {
             return $this->skillFinder->findSkillByUid((int)$skill) !== null ? (int)$skill : 0;
         }
-        foreach ($this->skillFinder->findAllSkills(true) as $row) {
-            if (Typed::string($row['identifier'] ?? '') === $skill) {
-                return Typed::int($row['uid']);
-            }
-        }
-        return 0;
+        return Typed::int($this->skillFinder->findSkillByIdentifier($skill)['uid'] ?? 0);
     }
 }

@@ -1,0 +1,24 @@
+{
+    "name": "webconsulting/skillflow-test-site",
+    "description": "Disposable local Skillflow integration site.",
+    "type": "project",
+    "license": "GPL-2.0-or-later",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../..",
+            "options": {"symlink": true, "versions": {"webconsulting/skillflow": "dev-main"}}
+        }
+    ],
+    "require": {
+        "webconsulting/skillflow": "dev-main",
+        "typo3/cms-fluid-styled-content": "^14.3.6",
+        "typo3/cms-install": "^14.3.6"
+    },
+    "config": {
+        "allow-plugins": {
+            "typo3/class-alias-loader": true,
+            "typo3/cms-composer-installers": true
+        }
+    }
+}

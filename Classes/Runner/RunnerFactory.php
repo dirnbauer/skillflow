@@ -29,8 +29,8 @@ final class RunnerFactory
             return $this->claudeCliRunner;
         }
 
-        // API mode: prefer the connection already configured in nr_llm (the "LLM"
-        // backend module) so no separate ANTHROPIC_API_KEY env var is required;
+        // API mode: prefer the connection configured in nr_llm (AI → Setup)
+        // so no separate ANTHROPIC_API_KEY env var is required;
         // fall back to the env-var Anthropic Messages API runner when nr_llm has
         // no usable provider. Set runner=anthropic to force the env-var runner.
         if ($runner !== 'anthropic' && $this->nrLlmRunner->isAvailable()) {

@@ -1,0 +1,21 @@
+base: 'https://skillflow.ddev.site/'
+rootPageId: 1
+websiteTitle: Skillflow
+dependencies:
+  - typo3/fluid-styled-content
+  - typo3/fluid-styled-content-css
+  - webconsulting/skillflow-solr
+languages:
+  - title: English
+    enabled: true
+    languageId: 0
+    base: /
+    locale: en_US.UTF-8
+    navigationTitle: English
+    flag: us
+solr_enabled_read: true
+solr_host_read: typo3-solr
+solr_port_read: 8983
+solr_scheme_read: http
+solr_path_read: /
+solr_core_read: core_en

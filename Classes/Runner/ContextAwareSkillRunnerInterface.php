@@ -26,7 +26,7 @@ interface ContextAwareSkillRunnerInterface
      * Fast availability probe (backend reachable, environment allowed).
      * MUST NOT throw — an unavailable engine falls back or blocks, it never errors.
      *
-     * @param array<string, mixed> $skill tx_skillflow_skill row
+     * @param array<string, mixed> $skill normalized tx_nrllm_skill row
      */
     public function canRun(array $skill, SkillRunContext $context): bool;
 
@@ -41,8 +41,8 @@ interface ContextAwareSkillRunnerInterface
      * failure to a SkillRunResult with status 'failed' (or 'pending' when the
      * engine continues asynchronously and settles the run row later).
      *
-     * @param array<string, mixed> $skill tx_skillflow_skill row, body token-resolved
-     * @param array<int, array<string, mixed>> $files tx_skillflow_file rows
+     * @param array<string, mixed> $skill normalized tx_nrllm_skill row, body token-resolved
+     * @param array<int, array<string, mixed>> $files Retained for engine compatibility; Skillflow passes no attachments.
      */
     public function runInContext(array $skill, SkillRunContext $context, string $content = '', array $files = []): SkillRunResult;
 }

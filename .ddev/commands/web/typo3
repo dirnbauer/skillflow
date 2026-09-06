@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+## Description: Run TYPO3 in the disposable Skillflow test site
+## Usage: typo3 [command]
+## Example: ddev typo3 cache:flush
+set -euo pipefail
+cd /var/www/html/.Build/site
+exec vendor/bin/typo3 "$@"

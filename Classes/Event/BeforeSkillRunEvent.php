@@ -18,7 +18,7 @@ final class BeforeSkillRunEvent
     private string $preventReason = '';
 
     /**
-     * @param array<string, mixed> $skill tx_skillflow_skill row, body token-resolved
+     * @param array<string, mixed> $skill normalized tx_nrllm_skill row, body token-resolved
      */
     public function __construct(
         private readonly array $skill,

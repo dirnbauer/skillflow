@@ -8,6 +8,7 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use Webconsulting\Skillflow\Service\SkillExecutionService;
@@ -30,41 +31,59 @@ final class DataHandlerHook
 {
     private static bool $autoWorkflowRunning = false;
 
-    /** @var array<int, array{table: string, uid: int, stage: int}> */
+    /** @var array<string, array<int, array{version: array{action: string, stageId: int, comment: string}}>> */
     private array $pendingAutoWorkflow = [];
+
+    /** @var array<string, array{stage: int, workspace: int, errors: int}> */
+    private array $pendingStageChanges = [];
 
     public function __construct(
         private readonly SkillFinder $skillFinder,
         private readonly SkillExecutionService $skillExecutionService,
+        private readonly TcaSchemaFactory $schemaFactory,
     ) {
     }
 
-    /**
-     * @param int|string $id
-     * @param mixed $value
-     */
-    public function processCmdmap_postProcess(string $command, string $table, $id, $value, DataHandler $dataHandler): void
+    public function processCmdmap_preProcess(string $command, string $table, int|string $id, mixed $value, DataHandler $dataHandler): void
     {
         if ($command !== 'version' || !is_array($value) || ($value['action'] ?? '') !== 'setStage') {
             return;
         }
-        // Only custom stages (positive uids) can carry skills; 0 = editing, -10 = ready to publish
-        $stageUid = Typed::int($value['stageId'] ?? 0);
-        if ($stageUid <= 0) {
+        $record = BackendUtility::getRecord($table, $id);
+        if ($record === null || Typed::int($record['t3ver_wsid'] ?? 0) <= 0) {
             return;
         }
-        $skills = $this->skillFinder->findSkillsForStage($stageUid, true);
-        if ($skills === []) {
-            return;
-        }
+        $this->pendingStageChanges[spl_object_id($dataHandler) . ':' . $table . ':' . $id] = [
+            'stage' => Typed::int($record['t3ver_stage'] ?? 0),
+            'workspace' => Typed::int($record['t3ver_wsid']),
+            'errors' => count($dataHandler->errorLog),
+        ];
+    }
 
-        $workspaceId = (int)$dataHandler->BE_USER->workspace;
-        foreach ($skills as $skill) {
+    public function processCmdmap_postProcess(string $command, string $table, int|string $id, mixed $value, DataHandler $dataHandler): void
+    {
+        if ($command !== 'version' || !is_array($value) || ($value['action'] ?? '') !== 'setStage') {
+            return;
+        }
+        $key = spl_object_id($dataHandler) . ':' . $table . ':' . $id;
+        $previous = $this->pendingStageChanges[$key] ?? null;
+        unset($this->pendingStageChanges[$key]);
+        $stageUid = Typed::int($value['stageId'] ?? 0);
+        if ($previous === null || $stageUid <= 0 || $previous['stage'] === $stageUid || count($dataHandler->errorLog) !== $previous['errors']) {
+            return;
+        }
+        // Core calls this hook even when setStage was rejected. Only a persisted
+        // transition may start a review, in the record's actual workspace.
+        $record = BackendUtility::getRecord($table, $id);
+        if ($record === null || Typed::int($record['t3ver_stage'] ?? 0) !== $stageUid || Typed::int($record['t3ver_wsid'] ?? 0) !== $previous['workspace']) {
+            return;
+        }
+        foreach ($this->skillFinder->findSkillsForStage($stageUid, true) as $skill) {
             $result = $this->skillExecutionService->runSkillOnRecord(
                 Typed::int($skill['uid']),
                 $table,
                 (int)$id,
-                $workspaceId,
+                $previous['workspace'],
                 $stageUid
             );
             $this->notify(
@@ -87,7 +106,7 @@ final class DataHandlerHook
             return;
         }
         $workspaceId = (int)$dataHandler->BE_USER->workspace;
-        if ($workspaceId <= 0 || !BackendUtility::isTableWorkspaceEnabled($table)) {
+        if ($workspaceId <= 0 || !$this->schemaFactory->has($table) || !$this->schemaFactory->get($table)->isWorkspaceAware()) {
             return;
         }
         $workspace = BackendUtility::getRecord('sys_workspace', $workspaceId);
@@ -101,10 +120,10 @@ final class DataHandlerHook
         if ($recordUid <= 0) {
             return;
         }
-        $this->pendingAutoWorkflow[] = [
-            'table' => $table,
-            'uid' => $recordUid,
-            'stage' => Typed::int($workspace['tx_skillflow_auto_workflow_stage']),
+        $this->pendingAutoWorkflow[$table][$recordUid]['version'] = [
+            'action' => 'setStage',
+            'stageId' => Typed::int($workspace['tx_skillflow_auto_workflow_stage']),
+            'comment' => 'Automatically sent to stage by the Skills auto-workflow for new elements.',
         ];
     }
 
@@ -113,14 +132,7 @@ final class DataHandlerHook
         if ($this->pendingAutoWorkflow === [] || self::$autoWorkflowRunning) {
             return;
         }
-        $commandMap = [];
-        foreach ($this->pendingAutoWorkflow as $pending) {
-            $commandMap[$pending['table']][$pending['uid']]['version'] = [
-                'action' => 'setStage',
-                'stageId' => $pending['stage'],
-                'comment' => 'Automatically sent to stage by the Skills auto-workflow for new elements.',
-            ];
-        }
+        $commandMap = $this->pendingAutoWorkflow;
         $this->pendingAutoWorkflow = [];
 
         self::$autoWorkflowRunning = true;
