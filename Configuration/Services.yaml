@@ -4,6 +4,10 @@ services:
     autoconfigure: true
     public: false
 
+  # Everything under Classes/ is a service. CLI commands (skillflow:run,
+  # skillflow:solr:index, skillflow:skills:sync|enable|list) live in
+  # Classes/Command and are registered through their #[AsCommand] attribute:
+  # autoconfiguration adds the console.command tag and makes them public.
   Webconsulting\Skillflow\:
     resource: '../Classes/*'
     exclude:

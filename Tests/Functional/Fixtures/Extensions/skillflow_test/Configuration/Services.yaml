@@ -1,0 +1,13 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  Webconsulting\Skillflow\Tests\Functional\Fixtures\FakeGitHubClient: ~
+
+  # Loaded after nr_llm, so this alias replaces nr_llm's GitHubClient and
+  # SkillSyncService reads repositories from FakeGitHubClient::$files.
+  Netresearch\NrLlm\Service\Skill\GitHubClientInterface:
+    alias: Webconsulting\Skillflow\Tests\Functional\Fixtures\FakeGitHubClient
+    public: true

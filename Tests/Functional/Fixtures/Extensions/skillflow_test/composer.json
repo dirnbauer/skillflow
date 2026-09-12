@@ -1,0 +1,11 @@
+{
+    "name": "webconsulting/skillflow-test",
+    "type": "typo3-cms-extension",
+    "description": "Functional test fixture: swaps nr_llm's GitHub client for an in-memory fake",
+    "license": "GPL-2.0-or-later",
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "skillflow_test"
+        }
+    }
+}
