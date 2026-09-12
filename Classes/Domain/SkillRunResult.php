@@ -18,7 +18,7 @@ final readonly class SkillRunResult
         /** Structured engine result as JSON */
         public string $resultJson = '',
         public string $externalEngine = '',
-        /** Engine-side run reference, e.g. 'tx_flue_run:123' */
+        /** Engine-side run reference, e.g. 'tx_myengine_run:123' */
         public string $externalRef = '',
         /** Backend deep link to the engine's run view */
         public string $externalUrl = '',

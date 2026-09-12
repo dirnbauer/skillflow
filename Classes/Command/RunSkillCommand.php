@@ -18,7 +18,8 @@ use Webconsulting\Skillflow\Support\Typed;
 /**
  * Run one skill against one record from the CLI (Scheduler-friendly) — the
  * counterpart to the Skills module run form. Engine-agnostic: --engine selects
- * the classic single-shot chain or a registered context-aware engine (e.g. flue).
+ * the classic single-shot chain or any context-aware engine registered via the
+ * "skillflow.context_runner" DI tag.
  */
 #[AsCommand(
     name: 'skillflow:run',
@@ -40,7 +41,7 @@ final class RunSkillCommand extends Command
             ->addArgument('uid', InputArgument::REQUIRED, 'Target record uid')
             ->addOption('table', 't', InputOption::VALUE_REQUIRED, 'Target table', 'pages')
             ->addOption('workspace', 'w', InputOption::VALUE_REQUIRED, 'Workspace uid', '0')
-            ->addOption('engine', 'e', InputOption::VALUE_REQUIRED, 'Engine: classic, flue, … (empty = auto)', '')
+            ->addOption('engine', 'e', InputOption::VALUE_REQUIRED, 'Engine identifier: "classic" or a registered context engine (empty = auto)', '')
             ->addOption('instructions', 'i', InputOption::VALUE_REQUIRED, 'Per-run instructions', '');
     }
 

@@ -19,7 +19,7 @@ use Webconsulting\Skillflow\Domain\SkillRunResult;
  */
 interface ContextAwareSkillRunnerInterface
 {
-    /** Stable engine identifier (e.g. 'flue'). 'classic' is reserved for the built-in chain. */
+    /** Stable engine identifier (e.g. 'agent-runtime'). 'classic' is reserved for the built-in chain. */
     public function getIdentifier(): string;
 
     /**

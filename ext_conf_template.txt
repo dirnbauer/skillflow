@@ -19,7 +19,7 @@ mcpServersJson =
 # cat=runner/enable/155; type=string; label=MCP config JSON (claude-cli runner, optional): Claude Code .mcp.json content, e.g. {"mcpServers":{"typo3":{"command":"vendor/bin/typo3","args":["mcp:server"]}}} to let skills call the abilities registry as MCP tools. Whitelist the tools per skill via allowed-tools. Leave empty to disable.
 mcpConfigJson =
 
-# cat=runner/enable/160; type=string; label=Default engine: Execution engine used when neither the run nor the skill (frontmatter key "engine") requests one. "classic" = the built-in single-shot chain above; other values match engines registered by other extensions (e.g. "flue").
+# cat=runner/enable/160; type=string; label=Default engine: Execution engine used when neither the run nor the skill (frontmatter key "engine") requests one. "classic" = the built-in single-shot chain above; other values match engines registered by other extensions through the "skillflow.context_runner" DI tag.
 defaultEngine = classic
 
 # cat=runner/enable/170; type=boolean; label=Engine fallback: When the selected context-aware engine is unavailable, fall back to the classic chain instead of blocking the run.
