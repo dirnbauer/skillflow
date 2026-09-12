@@ -12,9 +12,7 @@ use Webconsulting\Skillflow\Support\Typed;
 /** Frontend catalogue detail for an active nr_llm skill. */
 final class SkillDetailController extends ActionController
 {
-    public function __construct(private readonly SkillFinder $skillFinder)
-    {
-    }
+    public function __construct(private readonly SkillFinder $skillFinder) {}
 
     public function showAction(int $skill = 0): ResponseInterface
     {
@@ -35,8 +33,8 @@ final class SkillDetailController extends ActionController
         $tags = trim(Typed::string($row['tx_skillflow_search_tags'] ?? '')) ?: ($meta['tags'] ?? []);
         $tagValues = is_string($tags) ? explode(',', $tags) : (is_array($tags) ? $tags : []);
         $meta['tags'] = array_values(array_filter(
-            array_map(static fn (mixed $tag): string => trim(Typed::string($tag)), $tagValues),
-            static fn (string $tag): bool => $tag !== '',
+            array_map(static fn(mixed $tag): string => trim(Typed::string($tag)), $tagValues),
+            static fn(string $tag): bool => $tag !== '',
         ));
         $this->view->assignMultiple(['skill' => $row, 'meta' => $meta]);
         return $this->htmlResponse();

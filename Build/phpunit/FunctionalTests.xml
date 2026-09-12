@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Defaults to an isolated SQLite database. Set the typo3Database* environment
+    variables (driver mysqli, host, port, username, password, name) to run
+    against MariaDB/MySQL instead; PHPUnit's <env> entries never override
+    variables that are already present in the environment.
+-->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="../vendor/phpunit/phpunit/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="../../vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="FunctionalTestsBootstrap.php"
          backupGlobals="true"
          colors="true"
@@ -8,10 +14,10 @@
          failOnRisky="true"
          failOnNotice="true"
          displayDetailsOnTestsThatTriggerDeprecations="true"
-         cacheDirectory="../.Build/phpunit-functional">
+         cacheDirectory="../../.Build/phpunit-functional">
     <testsuites>
         <testsuite name="functional">
-            <directory>../Tests/Functional</directory>
+            <directory>../../Tests/Functional</directory>
         </testsuite>
     </testsuites>
     <php>

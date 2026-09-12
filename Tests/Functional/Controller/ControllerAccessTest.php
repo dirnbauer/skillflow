@@ -10,8 +10,8 @@ use TYPO3\CMS\Backend\Module\ModuleProvider;
 use TYPO3\CMS\Backend\Routing\Router;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\FormProtection\FormProtectionFactory;
-use TYPO3\CMS\Core\Http\ResponseFactory;
 use TYPO3\CMS\Core\Http\NormalizedParams;
+use TYPO3\CMS\Core\Http\ResponseFactory;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Http\StreamFactory;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
@@ -203,7 +203,7 @@ final class ControllerAccessTest extends FunctionalTestCase
         $controller = new SkillDetailController($this->get(SkillFinder::class));
         $controller->injectResponseFactory(new ResponseFactory());
         $controller->injectStreamFactory(new StreamFactory());
-        $view = new class () implements ViewInterface {
+        $view = new class implements ViewInterface {
             /** @var array<string, mixed> */
             private array $values = [];
 

@@ -17,8 +17,7 @@ final class EnvironmentGuard
 {
     public function __construct(
         private readonly ExtensionConfiguration $extensionConfiguration,
-    ) {
-    }
+    ) {}
 
     public function isExecutionAllowed(): bool
     {

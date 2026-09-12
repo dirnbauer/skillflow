@@ -24,6 +24,5 @@ final class AfterSkillRunEvent
         public readonly int $runUid,
         public readonly string $engineRequested,
         public readonly string $engineUsed,
-    ) {
-    }
+    ) {}
 }

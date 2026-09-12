@@ -16,8 +16,8 @@ final class NrLlmRunnerTest extends TestCase
     public function testMissingUsableDefaultBlocksBeforeChat(): void
     {
         $manager = $this->createMock(LlmServiceManagerInterface::class);
-        $manager->expects(self::once())->method('resolveEffectiveConfiguration')->willReturn(null);
-        $manager->expects(self::never())->method('chat');
+        $manager->expects($this->once())->method('resolveEffectiveConfiguration')->willReturn(null);
+        $manager->expects($this->never())->method('chat');
         $runner = new NrLlmRunner(new ExtensionConfiguration(), new PromptBuilder(), $manager);
 
         $this->expectException(ExecutionBlockedException::class);
@@ -27,8 +27,8 @@ final class NrLlmRunnerTest extends TestCase
     public function testConfigurationFailureIsUnavailable(): void
     {
         $manager = $this->createMock(LlmServiceManagerInterface::class);
-        $manager->expects(self::once())->method('resolveEffectiveConfiguration')->willThrowException(new \RuntimeException('Unavailable'));
-        $manager->expects(self::never())->method('chat');
+        $manager->expects($this->once())->method('resolveEffectiveConfiguration')->willThrowException(new \RuntimeException('Unavailable'));
+        $manager->expects($this->never())->method('chat');
         $runner = new NrLlmRunner(new ExtensionConfiguration(), new PromptBuilder(), $manager);
 
         self::assertFalse($runner->isAvailable());

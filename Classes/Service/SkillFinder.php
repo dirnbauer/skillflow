@@ -25,8 +25,7 @@ final class SkillFinder
 
     public function __construct(
         private readonly ConnectionPool $connectionPool,
-    ) {
-    }
+    ) {}
 
     /**
      * @return list<array<string, mixed>>

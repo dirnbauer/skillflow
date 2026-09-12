@@ -16,6 +16,5 @@ final readonly class EngineResolution
         public ?ContextAwareSkillRunnerInterface $contextRunner,
         public string $engineRequested,
         public string $blockReason = '',
-    ) {
-    }
+    ) {}
 }

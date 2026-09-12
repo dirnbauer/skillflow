@@ -99,8 +99,8 @@ final class SkillWorkflowTest extends FunctionalTestCase
     {
         $engine = $this->createMock(ContextAwareSkillRunnerInterface::class);
         $engine->method('getIdentifier')->willReturn('test');
-        $engine->expects(self::never())->method('runInContext');
-        $engine->expects(self::never())->method('canRun');
+        $engine->expects($this->never())->method('runInContext');
+        $engine->expects($this->never())->method('canRun');
 
         $result = $this->executionService($engine)->runSkillOnRecord($skillUid, 'pages', 1, 0);
 
@@ -111,6 +111,7 @@ final class SkillWorkflowTest extends FunctionalTestCase
         self::assertSame('blocked', $runs[0]['status']);
     }
 
+    /** @return iterable<string, array{int}> */
     public static function unavailableSkills(): iterable
     {
         yield 'disabled' => [2];
@@ -124,10 +125,12 @@ final class SkillWorkflowTest extends FunctionalTestCase
         $engine->method('getIdentifier')->willReturn('test');
         $engine->method('canRun')->willReturn(true);
         $engine->method('wantsCollectedContent')->willReturn(false);
-        $engine->expects(self::once())->method('runInContext')->willReturnCallback(function (array $skill, $context): SkillRunResult {
+        $engine->expects($this->once())->method('runInContext')->willReturnCallback(function (array $skill, $context): SkillRunResult {
             self::assertSame(1, $skill['uid']);
             self::assertGreaterThan(0, $context->skillRunUid);
-            self::assertSame('running', $this->finder->findRunByUid($context->skillRunUid)['status']);
+            $run = $this->finder->findRunByUid($context->skillRunUid);
+            self::assertNotNull($run);
+            self::assertSame('running', $run['status']);
             return new SkillRunResult('pending', 'Queued', 'test');
         });
 
@@ -142,10 +145,10 @@ final class SkillWorkflowTest extends FunctionalTestCase
         $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['skillflow']['requireLocalEnvironment'] = '1';
         $this->pool->getConnectionForTable('tx_nrllm_skill')->update('tx_nrllm_skill', ['body' => 'Review {title}.'], ['uid' => 1]);
         $engine = $this->createMock(ContextAwareSkillRunnerInterface::class);
-        $engine->expects(self::never())->method('canRun');
-        $engine->expects(self::never())->method('runInContext');
+        $engine->expects($this->never())->method('canRun');
+        $engine->expects($this->never())->method('runInContext');
         $events = [];
-        $dispatcher = $this->createStub(EventDispatcherInterface::class);
+        $dispatcher = self::createStub(EventDispatcherInterface::class);
         $dispatcher->method('dispatch')->willReturnCallback(static function (object $event) use (&$events): object {
             $events[] = $event;
             return $event;
@@ -195,7 +198,7 @@ final class SkillWorkflowTest extends FunctionalTestCase
         $engine = $this->createMock(ContextAwareSkillRunnerInterface::class);
         $engine->method('getIdentifier')->willReturn('test');
         $engine->method('canRun')->willReturn(true);
-        $engine->expects(self::never())->method('runInContext');
+        $engine->expects($this->never())->method('runInContext');
         $hook = new DataHandlerHook($this->finder, $this->executionService($engine), $this->get(TcaSchemaFactory::class));
         $dataHandler = $this->get(DataHandler::class);
         $this->pool->getConnectionForTable('pages')->insert('pages', [
@@ -226,7 +229,7 @@ final class SkillWorkflowTest extends FunctionalTestCase
         $engine->method('getIdentifier')->willReturn('test');
         $engine->method('canRun')->willReturn(true);
         $engine->method('wantsCollectedContent')->willReturn(false);
-        $engine->expects(self::once())->method('runInContext')->willReturnCallback(static function (array $skill, $context): SkillRunResult {
+        $engine->expects($this->once())->method('runInContext')->willReturnCallback(static function (array $skill, $context): SkillRunResult {
             self::assertSame(7, $context->workspaceId);
             return new SkillRunResult('success', 'Reviewed', 'test');
         });
@@ -246,7 +249,7 @@ final class SkillWorkflowTest extends FunctionalTestCase
         $binary = $this->getInstancePath() . '/fake-claude';
         file_put_contents($binary, "#!/usr/bin/env php\n<?php echo json_encode(\$argv, JSON_THROW_ON_ERROR);\n");
         chmod($binary, 0700);
-        $configuration = $this->createStub(ExtensionConfiguration::class);
+        $configuration = self::createStub(ExtensionConfiguration::class);
         $configuration->method('get')->willReturn([
             'claudeBinary' => $binary,
             'mcpConfigJson' => '{"mcpServers":{"example":{"command":"unused"}}}',
@@ -292,12 +295,12 @@ final class SkillWorkflowTest extends FunctionalTestCase
 
     public function testCompletionListenerFailureDoesNotBreakTheEditingRequest(): void
     {
-        $engine = $this->createStub(ContextAwareSkillRunnerInterface::class);
+        $engine = self::createStub(ContextAwareSkillRunnerInterface::class);
         $engine->method('getIdentifier')->willReturn('test');
         $engine->method('canRun')->willReturn(true);
         $engine->method('wantsCollectedContent')->willReturn(false);
         $engine->method('runInContext')->willReturn(new SkillRunResult('success', 'Reviewed', 'test'));
-        $dispatcher = $this->createStub(EventDispatcherInterface::class);
+        $dispatcher = self::createStub(EventDispatcherInterface::class);
         $dispatcher->method('dispatch')->willReturnCallback(static function (object $event): object {
             if ($event instanceof AfterSkillRunEvent) {
                 throw new \RuntimeException('Completion notification failed');
@@ -316,7 +319,7 @@ final class SkillWorkflowTest extends FunctionalTestCase
         $configuration = new ExtensionConfiguration();
         $prompt = new PromptBuilder();
         $llm = $this->createMock(LlmServiceManagerInterface::class);
-        $llm->expects(self::never())->method('chat');
+        $llm->expects($this->never())->method('chat');
         $factory = new RunnerFactory(
             $configuration,
             new AnthropicApiRunner($this->get(RequestFactory::class), $configuration, $prompt),
@@ -324,7 +327,7 @@ final class SkillWorkflowTest extends FunctionalTestCase
             new NrLlmRunner($configuration, $prompt, $llm),
         );
         if ($dispatcher === null) {
-            $dispatcher = $this->createStub(EventDispatcherInterface::class);
+            $dispatcher = self::createStub(EventDispatcherInterface::class);
             $dispatcher->method('dispatch')->willReturnArgument(0);
         }
 

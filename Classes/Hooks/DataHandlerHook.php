@@ -12,8 +12,8 @@ use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use Webconsulting\Skillflow\Service\SkillExecutionService;
-use Webconsulting\Skillflow\Support\Typed;
 use Webconsulting\Skillflow\Service\SkillFinder;
+use Webconsulting\Skillflow\Support\Typed;
 
 /**
  * Workspace integration:
@@ -41,8 +41,7 @@ final class DataHandlerHook
         private readonly SkillFinder $skillFinder,
         private readonly SkillExecutionService $skillExecutionService,
         private readonly TcaSchemaFactory $schemaFactory,
-    ) {
-    }
+    ) {}
 
     public function processCmdmap_preProcess(string $command, string $table, int|string $id, mixed $value, DataHandler $dataHandler): void
     {

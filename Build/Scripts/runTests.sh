@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Local quality gates. Mirrors .github/workflows/ci.yml:
+#   Build/Scripts/runTests.sh -s lint|cgl|phpstan|unit|functional|rector|fractor [-p 8.4]
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 suite=unit
@@ -15,10 +17,12 @@ if [[ -n "$php_version" && "$(php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_V
     exit 1
 fi
 case "$suite" in
-    unit) exec vendor/bin/phpunit ;;
-    functional) exec vendor/bin/phpunit -c Build/FunctionalTests.xml ;;
-    phpstan) exec vendor/bin/phpstan analyse --no-progress ;;
+    lint) find Classes Configuration Tests Build/phpunit ext_localconf.php -name '*.php' -print0 | xargs -0 -n1 -P4 php -l >/dev/null && echo "Lint OK" ;;
     cgl) exec vendor/bin/php-cs-fixer check --diff ;;
+    cgl:fix) exec vendor/bin/php-cs-fixer fix ;;
+    phpstan) exec vendor/bin/phpstan analyse --no-progress ;;
+    unit) exec vendor/bin/phpunit -c Build/phpunit/UnitTests.xml ;;
+    functional) exec vendor/bin/phpunit -c Build/phpunit/FunctionalTests.xml ;;
     rector) exec vendor/bin/rector process --dry-run ;;
     fractor) exec vendor/bin/fractor process --dry-run ;;
     *) echo "Unknown suite: $suite" >&2; exit 2 ;;

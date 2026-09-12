@@ -1,9 +1,25 @@
+# IDE and OS
 .idea/
+.vscode/
 .DS_Store
+*.swp
+
+# Composer
 vendor/
 composer.lock
+
+# Build artifacts, tool caches and the local test/site instance
 .Build/
+.php-cs-fixer.cache
+.phpunit.cache/
+.phpunit.result.cache
+/typo3temp/
+/Documentation-GENERATED-temp/
+/node_modules/
+
+# Local agent configuration
 .claude/
-# created by the TYPO3 composer plugin when installing dev deps in the extension root
+
+# Created by the TYPO3 composer plugin when installing dev deps in the extension root
 /public/
 /var/

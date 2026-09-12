@@ -39,8 +39,7 @@ final class SkillsModuleController
         private readonly SkillExecutionService $skillExecutionService,
         private readonly EnvironmentGuard $environmentGuard,
         private readonly EngineResolver $engineResolver,
-    ) {
-    }
+    ) {}
 
     public function handleRequest(ServerRequestInterface $request): ResponseInterface
     {
@@ -154,7 +153,7 @@ final class SkillsModuleController
             return;
         }
         $skillUids = $assigned
-            ? array_map(static fn (array $skill): int => Typed::int($skill['uid']), $this->skillFinder->findSkillsForPage($pageUid))
+            ? array_map(static fn(array $skill): int => Typed::int($skill['uid']), $this->skillFinder->findSkillsForPage($pageUid))
             : [$skillUid];
         if ($skillUids === []) {
             $moduleTemplate->addFlashMessage('No active nr_llm skills are assigned to page ' . $pageUid . '.', 'Nothing to run', ContextualFeedbackSeverity::INFO);

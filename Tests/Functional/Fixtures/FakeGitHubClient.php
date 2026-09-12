@@ -50,7 +50,5 @@ final class FakeGitHubClient implements GitHubClientInterface
         throw new \LogicException('Marketplace sources are not covered by this fixture.');
     }
 
-    public function setHttpClient(ClientInterface $client): void
-    {
-    }
+    public function setHttpClient(ClientInterface $client): void {}
 }

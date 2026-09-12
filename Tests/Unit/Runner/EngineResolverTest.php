@@ -17,9 +17,9 @@ final class EngineResolverTest extends TestCase
     #[DataProvider('unavailableEngines')]
     public function testUnavailableEngineRespectsFallback(bool $registered, bool $fallback): void
     {
-        $configuration = $this->createStub(ExtensionConfiguration::class);
+        $configuration = self::createStub(ExtensionConfiguration::class);
         $configuration->method('get')->willReturn(['engineFallback' => $fallback ? '1' : '0']);
-        $runner = $this->createStub(ContextAwareSkillRunnerInterface::class);
+        $runner = self::createStub(ContextAwareSkillRunnerInterface::class);
         $runner->method('getIdentifier')->willReturn('review');
         $runner->method('canRun')->willReturn(false);
 
@@ -31,6 +31,7 @@ final class EngineResolverTest extends TestCase
         self::assertSame($fallback, $result->blockReason === '');
     }
 
+    /** @return iterable<string, array{bool, bool}> */
     public static function unavailableEngines(): iterable
     {
         yield 'unregistered, fallback disabled' => [false, false];
@@ -41,7 +42,7 @@ final class EngineResolverTest extends TestCase
 
     public function testExplicitClassicOverridesSkillAndDefaultEngine(): void
     {
-        $configuration = $this->createStub(ExtensionConfiguration::class);
+        $configuration = self::createStub(ExtensionConfiguration::class);
         $configuration->method('get')->willReturn(['defaultEngine' => 'review']);
         $resolver = new EngineResolver([], $configuration, new NullLogger());
 

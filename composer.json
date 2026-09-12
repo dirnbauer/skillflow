@@ -10,19 +10,21 @@
         "league/commonmark": "^2.10",
         "netresearch/nr-llm": "^0.34",
         "symfony/process": "^7.0",
-        "typo3/cms-backend": "^14.3.6",
-        "typo3/cms-core": "^14.3.6",
-        "typo3/cms-extbase": "^14.3.6",
-        "typo3/cms-frontend": "^14.3.6",
-        "typo3/cms-workspaces": "^14.3.6"
+        "typo3/cms-backend": "^14.3.7",
+        "typo3/cms-core": "^14.3.7",
+        "typo3/cms-extbase": "^14.3.7",
+        "typo3/cms-frontend": "^14.3.7",
+        "typo3/cms-workspaces": "^14.3.7"
     },
     "require-dev": {
         "a9f/typo3-fractor": "^1.0",
         "friendsofphp/php-cs-fixer": "^3.0",
         "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-phpunit": "^2.0",
         "phpunit/phpunit": "^11.5",
         "saschaegerer/phpstan-typo3": "^3.0.1",
         "ssch/typo3-rector": "^3.14",
+        "typo3/coding-standards": "^0.9",
         "typo3/testing-framework": "^9.6"
     },
     "autoload": {
@@ -36,12 +38,17 @@
         }
     },
     "scripts": {
-        "analyse": "phpstan analyse",
-        "lint": "php-cs-fixer check --diff",
+        "analyse": "phpstan analyse --no-progress",
+        "cgl": "php-cs-fixer fix",
+        "cgl:check": "php-cs-fixer check --diff",
         "rector": "rector process --dry-run",
         "fractor": "fractor process --dry-run",
-        "test": "phpunit",
-        "test:functional": "phpunit -c Build/FunctionalTests.xml"
+        "test": [
+            "@test:unit",
+            "@test:functional"
+        ],
+        "test:unit": "phpunit -c Build/phpunit/UnitTests.xml",
+        "test:functional": "phpunit -c Build/phpunit/FunctionalTests.xml"
     },
     "config": {
         "allow-plugins": {

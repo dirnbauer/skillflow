@@ -23,8 +23,7 @@ final class NrLlmRunner implements SkillRunnerInterface
         private readonly ExtensionConfiguration $extensionConfiguration,
         private readonly PromptBuilder $promptBuilder,
         private readonly LlmServiceManagerInterface $llmServiceManager,
-    ) {
-    }
+    ) {}
 
     public function getName(): string
     {

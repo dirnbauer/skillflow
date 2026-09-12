@@ -31,8 +31,7 @@ final class ClaudeCliRunner implements SkillRunnerInterface
     public function __construct(
         private readonly ExtensionConfiguration $extensionConfiguration,
         private readonly PromptBuilder $promptBuilder,
-    ) {
-    }
+    ) {}
 
     public function getName(): string
     {

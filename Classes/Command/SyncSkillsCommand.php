@@ -110,7 +110,7 @@ HELP);
     {
         return array_values(array_filter(
             $this->skills->findSources(),
-            static fn (SkillSource $source): bool => $source->isEnabled(),
+            static fn(SkillSource $source): bool => $source->isEnabled(),
         ));
     }
 

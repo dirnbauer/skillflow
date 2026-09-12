@@ -10,9 +10,7 @@ namespace Webconsulting\Skillflow\Support;
  */
 final class Typed
 {
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     public static function string(mixed $value): string
     {

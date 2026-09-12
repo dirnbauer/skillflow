@@ -24,6 +24,5 @@ final readonly class SkillRunContext
         public string $requestedEngine,
         /** Pre-created tx_skillflow_run uid (two-phase persistence) for cross-linking */
         public int $skillRunUid,
-    ) {
-    }
+    ) {}
 }

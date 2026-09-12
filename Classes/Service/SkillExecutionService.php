@@ -40,8 +40,7 @@ final class SkillExecutionService
         private readonly ConnectionPool $connectionPool,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly LoggerInterface $logger,
-    ) {
-    }
+    ) {}
 
     public function runSkillOnRecord(int $skillUid, string $table, int $recordUid, int $workspaceId, int $stageUid = 0, string $instructions = '', string $engine = ''): SkillRunResult
     {

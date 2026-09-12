@@ -26,8 +26,7 @@ final class AnthropicApiRunner implements SkillRunnerInterface
         private readonly RequestFactory $requestFactory,
         private readonly ExtensionConfiguration $extensionConfiguration,
         private readonly PromptBuilder $promptBuilder,
-    ) {
-    }
+    ) {}
 
     public function getName(): string
     {

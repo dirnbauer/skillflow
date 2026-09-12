@@ -48,6 +48,7 @@ final class SkillsIndexQueueTest extends FunctionalTestCase
         }
     }
 
+    /** @param list<int> $expectedSkills */
     #[DataProvider('storageFolders')]
     public function testInitializationIncludesRootAndConfiguredFoldersWithoutChangingOtherQueues(string $additionalPageIds, array $expectedSkills): void
     {
@@ -66,6 +67,7 @@ final class SkillsIndexQueueTest extends FunctionalTestCase
         self::assertSame(2, $queue->select(['root'], 'tx_solr_indexqueue_item', ['uid' => $otherSiteQueueUid])->fetchOne());
     }
 
+    /** @return iterable<string, array{string, list<int>}> */
     public static function storageFolders(): iterable
     {
         yield 'root PID zero' => ['0', [1, 6]];
@@ -96,7 +98,7 @@ final class SkillsIndexQueueTest extends FunctionalTestCase
             self::assertSame('skills', $item->getIndexingConfigurationName());
             self::assertSame('tx_nrllm_skill', $item->getType());
         }
-        self::assertEqualsCanonicalizing([1, 6, 7], array_map(static fn (Item $item): int => $item->getRecordUid(), $queue->getItemsToIndex($site, 10)));
+        self::assertEqualsCanonicalizing([1, 6, 7], array_map(static fn(Item $item): int => $item->getRecordUid(), $queue->getItemsToIndex($site, 10)));
     }
 
     /** @return array<string, int|string> */

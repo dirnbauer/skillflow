@@ -23,9 +23,7 @@ use Webconsulting\Skillflow\Support\Typed;
  */
 final class ContextResolver
 {
-    public function __construct(private readonly TcaSchemaFactory $schemaFactory)
-    {
-    }
+    public function __construct(private readonly TcaSchemaFactory $schemaFactory) {}
 
     /**
      * @return array<string, string> token => already-stringified value

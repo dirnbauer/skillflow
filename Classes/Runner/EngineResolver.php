@@ -30,8 +30,7 @@ final class EngineResolver
         private readonly iterable $contextRunners,
         private readonly ExtensionConfiguration $extensionConfiguration,
         private readonly LoggerInterface $logger,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array<string, ContextAwareSkillRunnerInterface> identifier => runner

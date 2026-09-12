@@ -94,7 +94,7 @@ final class ResultsTemplateTest extends FunctionalTestCase
         ])));
         $resultSet->setAllResultCount($total);
         $resultSet->setSearchResults(new SearchResultCollection(array_map(
-            static fn (int $index): SearchResult => new SearchResult(['title' => 'Review ' . $index]),
+            static fn(int $index): SearchResult => new SearchResult(['title' => 'Review ' . $index]),
             $total > 0 ? range(1, $shown) : [],
         )));
         $search = $this->createMock(Search::class);

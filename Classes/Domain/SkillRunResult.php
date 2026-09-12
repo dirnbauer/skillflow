@@ -22,8 +22,7 @@ final readonly class SkillRunResult
         public string $externalRef = '',
         /** Backend deep link to the engine's run view */
         public string $externalUrl = '',
-    ) {
-    }
+    ) {}
 
     public function isSuccess(): bool
     {

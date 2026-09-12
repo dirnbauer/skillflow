@@ -38,8 +38,7 @@ final class SkillAdministrationService
         private readonly SkillSyncService $syncService,
         private readonly SkillAuditService $auditService,
         private readonly PersistenceManagerInterface $persistenceManager,
-    ) {
-    }
+    ) {}
 
     /**
      * @return list<SkillSource> ordered by title
@@ -75,13 +74,13 @@ final class SkillAdministrationService
 
         $matches = array_values(array_filter(
             $this->findSources(),
-            static fn (SkillSource $source): bool => strcasecmp($source->getTitle(), $uidOrTitle) === 0,
+            static fn(SkillSource $source): bool => strcasecmp($source->getTitle(), $uidOrTitle) === 0,
         ));
         if (count($matches) > 1) {
             throw new \RuntimeException(sprintf(
                 'Skill source title "%s" is ambiguous (uids %s); use the uid.',
                 $uidOrTitle,
-                implode(', ', array_map(static fn (SkillSource $source): int => (int)$source->getUid(), $matches)),
+                implode(', ', array_map(static fn(SkillSource $source): int => (int)$source->getUid(), $matches)),
             ), 1757700001);
         }
 
@@ -155,7 +154,7 @@ final class SkillAdministrationService
             throw new \RuntimeException(sprintf(
                 'Skill name "%s" is ambiguous (uids %s); use the uid or identifier.',
                 $reference,
-                implode(', ', array_map(static fn (Skill $skill): int => (int)$skill->getUid(), $byName)),
+                implode(', ', array_map(static fn(Skill $skill): int => (int)$skill->getUid(), $byName)),
             ), 1757700002);
         }
 

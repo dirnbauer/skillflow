@@ -25,8 +25,7 @@ final class AddSkillMetadataToSolrDocument
     public function __construct(
         private readonly SkillDocumentFields $skillDocumentFields,
         private readonly ConnectionPool $connectionPool,
-    ) {
-    }
+    ) {}
 
     public function __invoke(BeforeDocumentIsProcessedForIndexingEvent $event): void
     {

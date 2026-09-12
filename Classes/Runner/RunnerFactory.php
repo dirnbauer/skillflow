@@ -13,8 +13,7 @@ final class RunnerFactory
         private readonly AnthropicApiRunner $anthropicApiRunner,
         private readonly ClaudeCliRunner $claudeCliRunner,
         private readonly NrLlmRunner $nrLlmRunner,
-    ) {
-    }
+    ) {}
 
     public function create(): SkillRunnerInterface
     {

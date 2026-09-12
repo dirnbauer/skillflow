@@ -25,8 +25,7 @@ final class ContentCollector
     public function __construct(
         private readonly ConnectionPool $connectionPool,
         private readonly TcaSchemaFactory $schemaFactory,
-    ) {
-    }
+    ) {}
 
     public function collect(string $table, int $uid, int $workspaceId): string
     {
