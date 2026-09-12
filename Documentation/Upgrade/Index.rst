@@ -1,0 +1,87 @@
+..  _upgrade:
+
+=========
+Upgrading
+=========
+
+..  _upgrade-1-6:
+
+1.6.0
+=====
+
+*   Requirements: TYPO3 14.3.7+, PHP 8.4+, nr_llm 0.34.x, EXT:solr 14.0.1+
+    and CommonMark 2.10+. TYPO3 14.3.7 closes TYPO3-CORE-SA-2026-022.
+*   New commands ``skillflow:skills:sync``, ``skillflow:skills:enable`` and
+    ``skillflow:skills:list`` (see :ref:`commands`). No database changes.
+*   The engine seam is unchanged; only the Flue-era examples in its
+    documentation were replaced. ``defaultEngine`` and ``engineFallback``
+    keep their meaning.
+*   For contributors: PHPUnit configurations moved to
+    :file:`Build/phpunit/`, php-cs-fixer uses the TYPO3 ruleset and PHPStan
+    runs at level 8 (see the README).
+
+..  _upgrade-ownership:
+
+Skill ownership migration
+=========================
+
+Older releases imported skills themselves. Since the move to nr_llm ownership
+folder/repository/rule import, attachment materialization, local
+quarantine/license scanning and the commands ``skillflow:sync``,
+``skillflow:import-rules`` and ``skillflow:check`` are gone.
+
+Manage sources and activation in :guilabel:`AI > Authoring > Skills`.
+Skillflow owns assignments and run history. Optional SkillSpector checks
+belong to a separate integration; this extension does not install one.
+
+For installations predating nr_llm ownership:
+
+#.  Export the database and the old skills. Retain old tables until their
+    contents and historic run references have been reviewed.
+#.  Import and review sources in nr_llm, then map former skill identifiers
+    to the new records. UIDs from the two skill tables are not
+    interchangeable.
+#.  Reassign pages, users and stages using
+    :sql:`tx_skillflow_nrllm_skills`. Review historic
+    :sql:`tx_skillflow_run.skill` references before remapping them.
+#.  Remove cron jobs and listeners for the deleted commands and
+    :php:`AfterSkillsSyncedEvent`. No database data is deleted or
+    automatically remapped.
+
+Already migrated installations retain nr_llm assignments and runs. Review
+skills that rely on supporting scripts or assets before enabling them.
+
+..  _upgrade-apply:
+
+Apply and verify locally
+========================
+
+..  code-block:: bash
+    :caption: Update inside DDEV
+
+    ddev snapshot --name before-skillflow-update
+    ddev composer update webconsulting/skillflow netresearch/nr-llm apache-solr-for-typo3/solr 'typo3/*' -W
+    ddev typo3 extension:setup
+    ddev typo3 upgrade:list
+    ddev typo3 referenceindex:update
+    ddev typo3 cache:flush
+    ddev typo3 cache:warmup
+
+Use the Solr server and configset supported by EXT:solr 14. Replace old
+``type:tx_skillflow_skill`` catalogue filters with ``type:tx_nrllm_skill``,
+update detail route enhancers, then run
+:bash:`skillflow:solr:index --site=<identifier>`. Verify detail and search
+pages, assignments, editor permissions, stage auto-run and reports. Inactive
+skills must stay absent from search and detail views and blocked through
+CLI and module requests.
+
+..  _upgrade-handover:
+
+Deployment handover
+===================
+
+Verification runs locally. For each target environment use its reviewed
+Composer lock, database backup, schema and wizard steps, cache rebuild and
+Solr reindex. Keep hostnames, mail transport and credentials in that
+installation, and preserve the local-only execution setting on shared
+environments.
