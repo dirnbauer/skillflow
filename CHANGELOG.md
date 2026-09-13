@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.6.1 — 2026-09-13
+
+### Fixed
+
+- `skillflow:solr:index` no longer fails a multi-site run because some sites
+  do not index skills. A site can be Solr-enabled for its own content without
+  the `webconsulting/skillflow-solr` site set; those sites are skipped and
+  listed instead of raising an error, and the exit code now reflects only the
+  sites that actually index skills. An explicitly requested `--site` without
+  the set still fails, as does a run in which no site indexes skills at all.
+
 ## 1.6.0 — 2026-09-12
 
 ### Added
