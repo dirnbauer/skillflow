@@ -76,10 +76,44 @@ final class IndexSolrCommand extends Command
         }
 
         $hasErrors = false;
+        $indexedSites = 0;
+        $skippedSites = [];
+
         foreach ($sites as $site) {
+            $identifier = $site->getTypo3SiteObject()->getIdentifier();
+
+            // A site can be Solr-enabled for its own content without indexing
+            // skills. Only sites carrying webconsulting/skillflow-solr have the
+            // queue configuration, and the others must not fail the run — in a
+            // multi-site installation that would make the command always exit 1.
+            // An explicitly requested site is different: there the missing set
+            // is exactly what the caller needs to hear about.
+            if (!$this->indexesSkills($site)) {
+                if ($siteIdentifier !== null) {
+                    $io->error(sprintf(
+                        'Site "%s" does not index skills. Enable the webconsulting/skillflow-solr site set.',
+                        $identifier,
+                    ));
+
+                    return Command::FAILURE;
+                }
+
+                $skippedSites[] = $identifier;
+                continue;
+            }
+
+            ++$indexedSites;
             if (!$this->indexSite($site, $limit, $io)) {
                 $hasErrors = true;
             }
+        }
+
+        if ($skippedSites !== []) {
+            $io->writeln(sprintf(
+                'Skipped %d site(s) without the webconsulting/skillflow-solr site set: %s.',
+                count($skippedSites),
+                implode(', ', $skippedSites),
+            ));
         }
 
         if ($hasErrors) {
@@ -87,8 +121,22 @@ final class IndexSolrCommand extends Command
             return Command::FAILURE;
         }
 
-        $io->success('Indexing finished.');
+        if ($indexedSites === 0) {
+            $io->warning('No site indexes skills. Enable the webconsulting/skillflow-solr site set on at least one site.');
+
+            return Command::FAILURE;
+        }
+
+        $io->success(sprintf('Indexing finished for %d site(s).', $indexedSites));
+
         return Command::SUCCESS;
+    }
+
+    /** Whether the site carries the skills index-queue configuration. */
+    private function indexesSkills(Site $site): bool
+    {
+        return $site->getSolrConfiguration()
+            ->getIndexQueueConfigurationIsEnabled(SkillsIndexQueue::CONFIGURATION);
     }
 
     private function indexSite(Site $site, int $limit, SymfonyStyle $io): bool
@@ -122,10 +170,6 @@ final class IndexSolrCommand extends Command
 
     private function initializeQueue(Site $site): int
     {
-        if (!$site->getSolrConfiguration()->getIndexQueueConfigurationIsEnabled(SkillsIndexQueue::CONFIGURATION)) {
-            throw new \RuntimeException('Enable the webconsulting/skillflow-solr site set before indexing skills.');
-        }
-
         $status = $this->queueInitializationService
             ->initializeBySiteAndIndexConfiguration($site, SkillsIndexQueue::CONFIGURATION);
 
