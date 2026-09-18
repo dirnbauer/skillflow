@@ -8,7 +8,7 @@
         "apache-solr-for-typo3/solr": "^14.0.1",
         "php": "^8.4",
         "league/commonmark": "^2.10",
-        "netresearch/nr-llm": "^0.34",
+        "netresearch/nr-llm": "^0.34 || ^0.35",
         "symfony/process": "^7.0",
         "typo3/cms-backend": "^14.3.7",
         "typo3/cms-core": "^14.3.7",
