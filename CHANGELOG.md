@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.6.3 — 2026-09-20
+
+### Fixed
+
+- The Solr results template no longer prints a hardcoded English "Skills"
+  heading. It is registered at `templateRootPaths.200` and so applies to every
+  site that resolves the `webconsulting/skillflow-solr` set, including sites
+  that reach it only through an optional dependency — which gave those sites a
+  second top-level heading, in the wrong language and about the wrong subject.
+  The page title supplies the heading instead, and the results region keeps its
+  own screen-reader one.
+
 ## 1.6.1 — 2026-09-13
 
 ### Fixed
