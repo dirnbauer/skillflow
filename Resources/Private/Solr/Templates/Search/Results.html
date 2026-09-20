@@ -8,9 +8,16 @@
 
 <f:section name="content">
     <div id="tx-solr-search" class="d-solr-search d-solr-search--skills" data-shadcn-pattern="search-results">
-        <header class="d-solr-search__heading">
-            <h1 class="d-solr-results-group__title d-solr-search__title">Skills</h1>
-        </header>
+        <!--
+            No heading here on purpose. This template is registered at
+            templateRootPaths.200 and so outranks Desiderio's on every site that
+            resolves the skillflow-solr set, not only the skills search - including
+            sites that reach it through site-package-search's optional dependency.
+            The hardcoded "Skills" that used to sit here therefore gave the MTUG
+            camp site a second top-level heading, in English, on its German,
+            Chinese and Hungarian search pages. The page title supplies the
+            heading, and the results region below has its own screen-reader one.
+        -->
 
         <f:render partial="Debug/Query" section="Query" arguments="{resultSet: resultSet}" />
 
