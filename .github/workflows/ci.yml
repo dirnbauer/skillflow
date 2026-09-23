@@ -69,7 +69,6 @@ jobs:
   unit:
     name: Unit tests (PHP ${{ matrix.php }})
     runs-on: ubuntu-latest
-    continue-on-error: ${{ matrix.php == '8.5' }}
     strategy:
       fail-fast: false
       matrix:
@@ -85,13 +84,22 @@ jobs:
           coverage: none
           tools: composer:v2
       - uses: ramsey/composer-install@v3
-        with:
-          composer-options: ${{ matrix.php == '8.5' && '--ignore-platform-req=php+' || '' }}
       - run: Build/Scripts/runTests.sh -s unit -p ${{ matrix.php }}
 
   functional:
-    name: Functional tests (PHP 8.4, MariaDB 10.11)
+    name: Functional tests (PHP ${{ matrix.php }}, nr_llm ${{ matrix.nr-llm }}, MariaDB 10.11)
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.4'
+            nr-llm: '0.35'
+          - php: '8.5'
+            nr-llm: '0.35'
+          # The lowest nr_llm line composer.json still allows.
+          - php: '8.4'
+            nr-llm: '0.34'
     services:
       mariadb:
         image: mariadb:10.11
@@ -117,9 +125,11 @@ jobs:
           persist-credentials: false
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: ${{ matrix.php }}
           extensions: ${{ env.PHP_EXTENSIONS }}
           coverage: none
           tools: composer:v2
       - uses: ramsey/composer-install@v3
-      - run: Build/Scripts/runTests.sh -s functional -p '8.4'
+        with:
+          composer-options: --with netresearch/nr-llm:~${{ matrix.nr-llm }}.0
+      - run: Build/Scripts/runTests.sh -s functional -p ${{ matrix.php }}

@@ -88,7 +88,7 @@ final class ResultsTemplateTest extends FunctionalTestCase
     {
         $resultSet = new SearchResultSet();
         $resultSet->setHasSearched(true);
-        $resultSet->setUsedQuery((new SearchQuery())->setRawSearchTerm($query));
+        $resultSet->setUsedQuery(new SearchQuery()->setRawSearchTerm($query));
         $resultSet->setUsedSearchRequest(new SearchRequest(typoScriptConfiguration: new TypoScriptConfiguration([
             'plugin.' => ['tx_solr.' => ['search.' => ['faceting' => 1]]],
         ])));
@@ -97,7 +97,7 @@ final class ResultsTemplateTest extends FunctionalTestCase
             static fn(int $index): SearchResult => new SearchResult(['title' => 'Review ' . $index]),
             $total > 0 ? range(1, $shown) : [],
         )));
-        $search = $this->createMock(Search::class);
+        $search = self::createStub(Search::class);
         $search->method('getQueryTime')->willReturn(9);
         $search->method('getResponseBody')->willReturn((object)['start' => $start]);
         $resultSet->setUsedSearch($search);

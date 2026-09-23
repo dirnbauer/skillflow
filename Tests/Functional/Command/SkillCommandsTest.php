@@ -16,9 +16,9 @@ use Webconsulting\Skillflow\Tests\Functional\Fixtures\FakeGitHubClient;
 
 final class SkillCommandsTest extends FunctionalTestCase
 {
-    private const REVIEW_SKILL = "---\nname: Review\ndescription: Reviews editorial content\n---\nReview the record.\n";
-    private const REVIEW_SKILL_CHANGED = "---\nname: Review\ndescription: Reviews editorial content\n---\nReview the record thoroughly.\n";
-    private const SEO_SKILL = "---\nname: SEO check\ndescription: Checks metadata\nallowed-tools: Read\n---\nCheck the metadata.\n";
+    private const string REVIEW_SKILL = "---\nname: Review\ndescription: Reviews editorial content\n---\nReview the record.\n";
+    private const string REVIEW_SKILL_CHANGED = "---\nname: Review\ndescription: Reviews editorial content\n---\nReview the record thoroughly.\n";
+    private const string SEO_SKILL = "---\nname: SEO check\ndescription: Checks metadata\nallowed-tools: Read\n---\nCheck the metadata.\n";
 
     protected array $coreExtensionsToLoad = ['workspaces', 'scheduler', 'reports', 'tstemplate', 'install'];
     protected array $testExtensionsToLoad = [

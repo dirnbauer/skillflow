@@ -79,16 +79,16 @@ final class IndexSolrCommandTest extends TestCase
     {
         $solrSites = [];
         foreach ($sites as $identifier => $indexesSkills) {
-            $configuration = $this->createMock(TypoScriptConfiguration::class);
+            $configuration = self::createStub(TypoScriptConfiguration::class);
             $configuration->method('getIndexQueueConfigurationIsEnabled')
                 ->willReturnCallback(
                     static fn(string $name): bool => $name === SkillsIndexQueue::CONFIGURATION && $indexesSkills,
                 );
 
-            $coreSite = $this->createMock(CoreSite::class);
+            $coreSite = self::createStub(CoreSite::class);
             $coreSite->method('getIdentifier')->willReturn($identifier);
 
-            $site = $this->createMock(Site::class);
+            $site = self::createStub(Site::class);
             $site->method('getSolrConfiguration')->willReturn($configuration);
             $site->method('getTypo3SiteObject')->willReturn($coreSite);
             $site->method('getLabel')->willReturn($identifier);
@@ -97,15 +97,15 @@ final class IndexSolrCommandTest extends TestCase
             $solrSites[] = $site;
         }
 
-        $repository = $this->createMock(SiteRepository::class);
+        $repository = self::createStub(SiteRepository::class);
         $repository->method('getAvailableSites')->willReturn($solrSites);
 
         return new IndexSolrCommand(
             $repository,
-            $this->createMock(QueueInitializationService::class),
+            self::createStub(QueueInitializationService::class),
             // Final, and never reached on these paths: nothing is indexed once a
             // site is skipped or the run is refused.
-            (new \ReflectionClass(SkillsIndexQueue::class))->newInstanceWithoutConstructor(),
+            new \ReflectionClass(SkillsIndexQueue::class)->newInstanceWithoutConstructor(),
         );
     }
 }

@@ -1,15 +1,31 @@
 {
     "name": "webconsulting/skillflow",
     "description": "Run nr_llm-managed skills in TYPO3 page and workspace review workflows.",
-    "homepage": "https://typo3-lab.webconsulting.at",
+    "homepage": "https://github.com/dirnbauer/skillflow",
+    "keywords": [
+        "TYPO3 CMS",
+        "skills",
+        "LLM",
+        "nr_llm",
+        "workspaces",
+        "Solr"
+    ],
     "type": "typo3-cms-extension",
     "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Kurt Dirnbauer",
+            "email": "dirnbauer@webconsulting.at",
+            "homepage": "https://webconsulting.at",
+            "role": "Developer"
+        }
+    ],
     "require": {
-        "apache-solr-for-typo3/solr": "^14.0.1",
         "php": "^8.4",
+        "apache-solr-for-typo3/solr": "^14.0.1",
         "league/commonmark": "^2.10",
         "netresearch/nr-llm": "^0.34 || ^0.35",
-        "symfony/process": "^7.0",
+        "symfony/process": "^7.4",
         "typo3/cms-backend": "^14.3.7",
         "typo3/cms-core": "^14.3.7",
         "typo3/cms-extbase": "^14.3.7",
@@ -18,14 +34,14 @@
     },
     "require-dev": {
         "a9f/typo3-fractor": "^1.0",
-        "friendsofphp/php-cs-fixer": "^3.0",
-        "phpstan/phpstan": "^2.1",
-        "phpstan/phpstan-phpunit": "^2.0",
-        "phpunit/phpunit": "^11.5",
-        "saschaegerer/phpstan-typo3": "^3.0.1",
-        "ssch/typo3-rector": "^3.14",
+        "friendsofphp/php-cs-fixer": "^3.95",
+        "phpstan/phpstan": "^2.2",
+        "phpstan/phpstan-phpunit": "^2.0.18",
+        "phpunit/phpunit": "^13.3",
+        "saschaegerer/phpstan-typo3": "^3.1",
+        "ssch/typo3-rector": "^3.16",
         "typo3/coding-standards": "^0.9",
-        "typo3/testing-framework": "^9.6"
+        "typo3/testing-framework": "^9.7"
     },
     "autoload": {
         "psr-4": {
@@ -55,15 +71,18 @@
             "a9f/fractor-extension-installer": true,
             "typo3/class-alias-loader": true,
             "typo3/cms-composer-installers": true
-        }
+        },
+        "sort-packages": true
     },
     "support": {
         "issues": "https://github.com/dirnbauer/skillflow/issues",
-        "source": "https://github.com/dirnbauer/skillflow"
+        "source": "https://github.com/dirnbauer/skillflow",
+        "docs": "https://github.com/dirnbauer/skillflow/tree/main/Documentation"
     },
     "extra": {
         "typo3/cms": {
-            "extension-key": "skillflow"
+            "extension-key": "skillflow",
+            "version": "1.7.0"
         }
     }
 }

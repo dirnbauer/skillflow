@@ -59,7 +59,7 @@ final class SkillsIndexQueueTest extends FunctionalTestCase
         $otherSiteQueueUid = (int)$queue->lastInsertId();
         $queue->insert('tx_solr_indexqueue_item', $this->queueRow(1, 'tx_nrllm_skill', 2, 'skills'));
 
-        $status = (new QueueInitializationService())->initializeBySiteAndIndexConfiguration($this->createSite($additionalPageIds), 'skills');
+        $status = new QueueInitializationService()->initializeBySiteAndIndexConfiguration($this->createSite($additionalPageIds), 'skills');
 
         self::assertSame(['skills' => true], $status);
         self::assertSame($expectedSkills, $queue->select(['item_uid'], 'tx_solr_indexqueue_item', ['root' => 1, 'indexing_configuration' => 'skills'], [], ['item_uid' => 'ASC'])->fetchFirstColumn());
