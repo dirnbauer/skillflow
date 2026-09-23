@@ -110,7 +110,62 @@ ID with a copy button, license, version, allowed tools and the Markdown body.
     ``--radius``) when the site defines them and otherwise derives every
     colour from the text colour, so light and dark themes both work. It is
     loaded only on pages that render the plugin.
+*   The skill's name is the page's only :html:`<h1>`. The Markdown body is
+    rendered one level lower, so a SKILL.md ``# Title`` becomes an
+    :html:`<h2>` and ``##`` an :html:`<h3>` (capped at :html:`<h6>`).
+*   Themes that print the page title as an :html:`<h1>` of their own can step
+    aside on these pages: Skillflow adds an entry to the TypoScript registry
+    :typoscript:`lib.pageHeadingOwnedByContent` on every page that holds a
+    :guilabel:`Skill detail` element. Desiderio 4.4 reads the registry; see
+    :ref:`usage-heading-registry` for other themes.
 *   Override :file:`SkillDetail/Show.html` through
     :typoscript:`plugin.tx_skillflow_skilldetail.view.templateRootPaths` to
-    replace the markup; the Markdown ViewHelper
-    ``<sf:markdown>{skill.body}</sf:markdown>`` stays available.
+    replace the markup; the Markdown ViewHelper stays available, with an
+    optional heading offset:
+
+    ..  code-block:: html
+
+        <sf:markdown source="{skill.body}" headingOffset="1" />
+
+    ``headingOffset`` moves every heading down that many levels (``0``, the
+    default, keeps them). The backend run report uses ``2`` because it sits
+    under the module's :html:`<h1>` and the :guilabel:`Report` :html:`<h2>`.
+
+..  _usage-heading-registry:
+
+Page heading registry
+=====================
+
+:typoscript:`lib.pageHeadingOwnedByContent` is a :typoscript:`COA` that a
+theme declares and renders: when any of its entries outputs something, the
+page's content renders the :html:`<h1>` and the theme leaves its page-title
+:html:`<h1>` out. Skillflow registers key ``7545``:
+
+..  code-block:: typoscript
+
+    lib.pageHeadingOwnedByContent.7545 = TEXT
+    lib.pageHeadingOwnedByContent.7545 {
+      value = 1
+      if.isTrue.numRows {
+        table = tt_content
+        select {
+          pidInList = this
+          where = {#CType} = 'skillflow_skilldetail'
+        }
+      }
+    }
+
+A theme without the registry never renders the entry, so Skillflow does not
+depend on any theme. A theme adopts it with a :typoscript:`COA` of the same
+name (assign the type only, never clear the path with ``>``, or the entries of
+extensions loaded earlier are lost) and a condition on its page-title markup,
+for example a :typoscript:`PAGEVIEW` variable:
+
+..  code-block:: typoscript
+
+    lib.pageHeadingOwnedByContent = COA
+    lib.fluidPage.variables.pageHeadingOwnedByContent = TEXT
+    lib.fluidPage.variables.pageHeadingOwnedByContent {
+      value = 1
+      if.isTrue.cObject =< lib.pageHeadingOwnedByContent
+    }

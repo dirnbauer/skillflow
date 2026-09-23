@@ -202,25 +202,26 @@
 
 /* Sites with a CSS reset (e.g. Tailwind's preflight) strip heading sizes and
  * list markers, so the Markdown body sets its own, in em to follow the site's
- * type scale. */
-.skillflow-skill__body :is(h1, h2, h3, h4) {
+ * type scale. The skill title is the page's h1 and the template renders the
+ * body with headingOffset="1": SKILL.md "#" arrives as h2, "##" as h3. */
+.skillflow-skill__body :is(h1, h2, h3, h4, h5, h6) {
   margin: 2rem 0 0.75rem;
   font-weight: 700;
   line-height: 1.25;
   scroll-margin-top: 1.5rem;
 }
 
-.skillflow-skill__body :is(h1, h2) {
+.skillflow-skill__body :is(h1, h2, h3) {
   padding-bottom: 0.35rem;
   border-bottom: 1px solid var(--skillflow-border);
   font-size: 1.5em;
 }
 
-.skillflow-skill__body h3 {
+.skillflow-skill__body h4 {
   font-size: 1.25em;
 }
 
-.skillflow-skill__body h4 {
+.skillflow-skill__body :is(h5, h6) {
   font-size: 1.05em;
 }
 

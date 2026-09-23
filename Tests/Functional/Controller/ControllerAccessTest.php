@@ -187,12 +187,15 @@ final class ControllerAccessTest extends FunctionalTestCase
     public function testReportIsRenderedAsSafeMarkdown(): void
     {
         $this->login(2);
-        $this->insertRun('pages', 2, 0, "## Findings\n\n<script>alert(1)</script>\n\n[x](javascript:alert(1))\n\n> Quoted \"note\"\n\n```\ngenerate-test.sh <Type>\n```");
+        $this->insertRun('pages', 2, 0, "# Review\n\n## Findings\n\n<script>alert(1)</script>\n\n[x](javascript:alert(1))\n\n> Quoted \"note\"\n\n```\ngenerate-test.sh <Type>\n```");
         $body = (string)$this->get(SkillsModuleController::class)->handleRequest(
             $this->request()->withQueryParams(['action' => 'showRun', 'run' => 1]),
         )->getBody();
 
-        self::assertStringContainsString('<h2>Findings</h2>', $body);
+        // The report sits under the module h1 and the "Report" h2: its headings start at h3.
+        self::assertStringContainsString('<h3>Review</h3>', $body);
+        self::assertStringContainsString('<h4>Findings</h4>', $body);
+        self::assertSame(1, substr_count($body, '<h1'));
         self::assertStringNotContainsString('<script>alert(1)</script>', $body);
         self::assertStringNotContainsString('href="javascript:', $body);
         // The Markdown reaches the converter verbatim: one level of escaping, real quotes and blocks.

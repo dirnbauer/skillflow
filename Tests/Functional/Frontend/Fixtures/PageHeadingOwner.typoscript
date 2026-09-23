@@ -1,0 +1,13 @@
+# What a theme such as Desiderio does with the registry: give it a type and
+# render its page-title h1 only when no entry renders anything.
+lib.pageHeadingOwnedByContent = COA
+
+page = PAGE
+page.config.disableAllHeaderCode = 1
+page.10 = TEXT
+page.10 {
+  value = content-owns-the-h1
+  if.isTrue.cObject =< lib.pageHeadingOwnedByContent
+}
+page.20 = TEXT
+page.20.value = |rendered

@@ -72,7 +72,8 @@
         <f:then>
             <div class="card skillflow-report">
                 <div class="card-body">
-                    <sf:markdown source="{run.output}" />
+                    <f:comment>The report sits under the module h1 and the "Report" h2, so its headings start at h3.</f:comment>
+                    <sf:markdown source="{run.output}" headingOffset="2" />
                 </div>
             </div>
             <details class="skillflow-details">
