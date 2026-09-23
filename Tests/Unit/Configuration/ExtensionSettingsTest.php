@@ -17,7 +17,7 @@ final class ExtensionSettingsTest extends TestCase
         $settings = ExtensionSettings::fromArray([]);
 
         self::assertSame(RunnerMode::Api, $settings->runner);
-        self::assertSame('claude-sonnet-4-6', $settings->model);
+        self::assertSame('claude-sonnet-5', $settings->model);
         self::assertSame('ANTHROPIC_API_KEY', $settings->apiKeyEnvVar);
         self::assertSame(2048, $settings->maxTokens);
         self::assertSame('claude', $settings->claudeBinary);
@@ -26,6 +26,35 @@ final class ExtensionSettingsTest extends TestCase
         self::assertSame('classic', $settings->defaultEngine);
         self::assertTrue($settings->engineFallback);
         self::assertTrue($settings->requireLocalEnvironment);
+        self::assertSame('typo3', $settings->abilitiesMcpServer);
+    }
+
+    /**
+     * A model stored before 1.8.0 stays: only an unset model falls back to
+     * the new default.
+     */
+    public function testAConfiguredModelIsKept(): void
+    {
+        self::assertSame('claude-sonnet-4-6', ExtensionSettings::fromArray(['model' => 'claude-sonnet-4-6'])->model);
+        self::assertSame('claude-opus-5-5', ExtensionSettings::fromArray(['model' => 'claude-opus-5-5'])->model);
+        self::assertSame('claude-sonnet-5', ExtensionSettings::fromArray(['model' => '  '])->model);
+    }
+
+    /** @return iterable<string, array{mixed, string}> */
+    public static function abilitiesMcpServerValues(): iterable
+    {
+        yield 'unset' => [null, 'typo3'];
+        yield 'custom name' => [' abilities_server ', 'abilities_server'];
+        yield 'dashes and digits' => ['typo3-lab-2', 'typo3-lab-2'];
+        yield 'the tool rule separator' => ['typo3__x', 'typo3'];
+        yield 'space' => ['my server', 'typo3'];
+        yield 'dot' => ['typo3.local', 'typo3'];
+    }
+
+    #[DataProvider('abilitiesMcpServerValues')]
+    public function testAbilitiesMcpServerIsAValidServerName(mixed $value, string $expected): void
+    {
+        self::assertSame($expected, ExtensionSettings::fromArray(['abilitiesMcpServer' => $value])->abilitiesMcpServer);
     }
 
     public function testStoredStringsAreTrimmedAndTyped(): void

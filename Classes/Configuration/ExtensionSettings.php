@@ -17,10 +17,11 @@ use Webconsulting\Skillflow\Support\Typed;
  */
 final readonly class ExtensionSettings
 {
-    public const string DEFAULT_MODEL = 'claude-sonnet-4-6';
+    public const string DEFAULT_MODEL = 'claude-sonnet-5';
     public const string DEFAULT_API_KEY_ENV_VAR = 'ANTHROPIC_API_KEY';
     public const string DEFAULT_CLAUDE_BINARY = 'claude';
     public const string CLASSIC_ENGINE = 'classic';
+    public const string DEFAULT_ABILITIES_MCP_SERVER = 'typo3';
     public const int DEFAULT_MAX_TOKENS = 2048;
 
     /** Below this an API report cannot hold findings and suggestions. */
@@ -45,6 +46,12 @@ final readonly class ExtensionSettings
         public bool $engineFallback = true,
         /** Only execute skills in Development context inside DDEV. */
         public bool $requireLocalEnvironment = true,
+        /**
+         * Name of the MCP server in mcpConfigJson that serves the abilities
+         * registry: a skill's abilities become the tools
+         * "mcp__<server>__ability_<namespace>_<name>".
+         */
+        public string $abilitiesMcpServer = self::DEFAULT_ABILITIES_MCP_SERVER,
     ) {}
 
     public static function load(ExtensionConfiguration $extensionConfiguration): self
@@ -75,7 +82,21 @@ final readonly class ExtensionSettings
             trim(Typed::string($raw['defaultEngine'] ?? null)) ?: self::CLASSIC_ENGINE,
             self::flag($raw['engineFallback'] ?? null, true),
             self::flag($raw['requireLocalEnvironment'] ?? null, true),
+            self::serverName($raw['abilitiesMcpServer'] ?? null),
         );
+    }
+
+    /**
+     * Claude Code MCP server names are letters, digits, "-" and "_"; "__"
+     * separates the parts of a tool rule, so it cannot occur in the name.
+     */
+    private static function serverName(mixed $value): string
+    {
+        $name = trim(Typed::string($value));
+
+        return preg_match('/^[A-Za-z0-9_-]+$/', $name) === 1 && !str_contains($name, '__')
+            ? $name
+            : self::DEFAULT_ABILITIES_MCP_SERVER;
     }
 
     /** TYPO3 stores checkboxes as '0'/'1'; anything unset keeps the safe default. */

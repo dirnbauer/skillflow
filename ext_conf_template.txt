@@ -2,7 +2,7 @@
 runner = api
 
 # cat=runner/enable/110; type=string; label=Model: Model id used by the API runner
-model = claude-sonnet-4-6
+model = claude-sonnet-5
 
 # cat=runner/enable/120; type=string; label=API key environment variable: Name of the env var that holds the Anthropic API key. The key itself is never stored in the database.
 apiKeyEnvVar = ANTHROPIC_API_KEY
@@ -18,6 +18,9 @@ mcpServersJson =
 
 # cat=runner/enable/155; type=string; label=MCP config JSON (claude-cli runner, optional): Claude Code .mcp.json content, e.g. {"mcpServers":{"typo3":{"command":"vendor/bin/typo3","args":["mcp:server"]}}} to let skills call the abilities registry as MCP tools. Whitelist the tools per skill via allowed-tools. Leave empty to disable.
 mcpConfigJson =
+
+# cat=runner/enable/157; type=string; label=Abilities MCP server name (claude-cli runner): Name of the server in "MCP config JSON" that serves the TYPO3 abilities registry. A skill's "abilities:" front matter becomes the allowed tools mcp__<name>__ability_<namespace>_<ability>.
+abilitiesMcpServer = typo3
 
 # cat=runner/enable/160; type=string; label=Default engine: Execution engine used when neither the run nor the skill (frontmatter key "engine") requests one. "classic" = the built-in single-shot chain above; other values match engines registered by other extensions through the "skillflow.context_runner" DI tag.
 defaultEngine = classic

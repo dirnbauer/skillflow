@@ -44,7 +44,7 @@ final class AnthropicApiRunnerTest extends TestCase
         self::assertSame('2023-06-01', $headers['anthropic-version']);
         self::assertArrayNotHasKey('anthropic-beta', $headers);
         $payload = $this->sentPayload();
-        self::assertSame('claude-sonnet-4-6', $payload['model']);
+        self::assertSame('claude-sonnet-5', $payload['model']);
         self::assertSame(2048, $payload['max_tokens']);
         self::assertArrayNotHasKey('mcp_servers', $payload);
         self::assertArrayNotHasKey('tools', $payload);
