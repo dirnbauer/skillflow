@@ -6,55 +6,96 @@
 <f:layout name="Default" />
 
 <f:section name="Main">
+    <f:asset.css identifier="skillflow-skill-detail" href="EXT:skillflow/Resources/Public/Css/skill-detail.css" />
+    <f:variable name="ll" value="LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:" />
     <f:if condition="{notFound}">
         <f:then>
-            <div class="skillflow-skill__notfound">
-                <p>
-                    <f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:plugin.skilldetail.notfound"
-                        default="No skill found for this identifier." />
-                </p>
-                <f:if condition="{identifier}">
-                    <p class="skillflow-skill__identifier"><code>{identifier}</code></p>
-                </f:if>
+            <div class="skillflow-skill skillflow-skill--not-found">
+                <h1 class="skillflow-skill__title"><f:translate key="{ll}plugin.skilldetail.notfound.title" /></h1>
+                <p class="skillflow-skill__description"><f:translate key="{ll}plugin.skilldetail.notfound" /></p>
             </div>
         </f:then>
         <f:else>
-            <article class="skillflow-skill">
+            <f:asset.script identifier="skillflow-skill-detail" src="EXT:skillflow/Resources/Public/JavaScript/skill-detail.js" defer="1" />
+            <article class="skillflow-skill" aria-labelledby="skillflow-skill-title-{skill.uid}">
                 <header class="skillflow-skill__header">
-                    <h1 class="skillflow-skill__title">{skill.name}</h1>
-
-                    <p class="skillflow-skill__meta">
-                        <span class="skillflow-skill__identifier"><code>{skill.public_identifier}</code></span>
-                        <f:if condition="{skill.source_title}">
-                            <span class="skillflow-skill__source">
-                                {skill.source_title}
-                            </span>
-                        </f:if>
-                    </p>
-
+                    <f:if condition="{meta.category} || {sourceTitle}">
+                        <p class="skillflow-skill__eyebrow">
+                            <f:if condition="{meta.category}">
+                                <span class="skillflow-skill__badge skillflow-skill__badge--category">{meta.category}</span>
+                            </f:if>
+                            <f:if condition="{sourceTitle}">
+                                <span class="skillflow-skill__badge">{sourceTitle}</span>
+                            </f:if>
+                        </p>
+                    </f:if>
+                    <h1 class="skillflow-skill__title" id="skillflow-skill-title-{skill.uid}">{skill.name}</h1>
                     <f:if condition="{skill.description}">
                         <p class="skillflow-skill__description">{skill.description}</p>
                     </f:if>
-
-                    <f:if condition="{meta.category}">
-                        <p class="skillflow-skill__badges skillflow-skill__categories">
-                            <span class="skillflow-skill__badge skillflow-skill__badge--category">{meta.category}</span>
-                        </p>
-                    </f:if>
-
                     <f:if condition="{meta.tags}">
-                        <p class="skillflow-skill__badges skillflow-skill__tags">
+                        <ul class="skillflow-skill__tags" aria-label="{f:translate(key: '{ll}skill.tags')}">
                             <f:for each="{meta.tags}" as="tag">
-                                <span class="skillflow-skill__badge skillflow-skill__badge--tag">{tag}</span>
+                                <li class="skillflow-skill__badge skillflow-skill__badge--tag">{tag}</li>
                             </f:for>
-                        </p>
+                        </ul>
                     </f:if>
                 </header>
 
-                <div class="skillflow-skill__body">
-                    <sf:markdown>{skill.body}</sf:markdown>
-                </div>
+                <div class="skillflow-skill__layout">
+                    <div class="skillflow-skill__body">
+                        <sf:markdown source="{skill.body}" />
+                    </div>
 
+                    <aside class="skillflow-skill__aside" aria-label="{f:translate(key: '{ll}skill.details')}">
+                        <section class="skillflow-skill__card">
+                            <h2 class="skillflow-skill__card-title"><f:translate key="{ll}skill.use" /></h2>
+                            <p class="skillflow-skill__label" id="skillflow-skill-id-label-{skill.uid}"><f:translate key="{ll}skill.identifier" /></p>
+                            <div class="skillflow-skill__identifier">
+                                <code id="skillflow-skill-id-{skill.uid}" aria-labelledby="skillflow-skill-id-label-{skill.uid}">{skill.public_identifier}</code>
+                                <button
+                                    type="button"
+                                    class="skillflow-skill__copy"
+                                    hidden="hidden"
+                                    data-skillflow-copy="skillflow-skill-id-{skill.uid}"
+                                    data-skillflow-copied="{f:translate(key: '{ll}skill.copied')}"
+                                    aria-describedby="skillflow-skill-id-label-{skill.uid}"
+                                >
+                                    <f:translate key="{ll}skill.copy" />
+                                </button>
+                            </div>
+                            <p class="skillflow-skill__copy-status" role="status" aria-live="polite" data-skillflow-copy-status=""></p>
+                        </section>
+
+                        <section class="skillflow-skill__card">
+                            <h2 class="skillflow-skill__card-title"><f:translate key="{ll}skill.details" /></h2>
+                            <dl class="skillflow-skill__meta">
+                                <f:if condition="{meta.category}">
+                                    <div><dt><f:translate key="{ll}skill.category" /></dt><dd>{meta.category}</dd></div>
+                                </f:if>
+                                <f:if condition="{sourceTitle}">
+                                    <div><dt><f:translate key="{ll}skill.source" /></dt><dd>{sourceTitle}</dd></div>
+                                </f:if>
+                                <f:if condition="{meta.license}">
+                                    <div><dt><f:translate key="{ll}skill.license" /></dt><dd>{meta.license}</dd></div>
+                                </f:if>
+                                <f:if condition="{meta.version}">
+                                    <div><dt><f:translate key="{ll}skill.version" /></dt><dd>{meta.version}</dd></div>
+                                </f:if>
+                                <f:if condition="{allowedTools}">
+                                    <div>
+                                        <dt><f:translate key="{ll}skill.allowedTools" /></dt>
+                                        <dd>
+                                            <ul class="skillflow-skill__tools">
+                                                <f:for each="{allowedTools}" as="tool"><li><code>{tool}</code></li></f:for>
+                                            </ul>
+                                        </dd>
+                                    </div>
+                                </f:if>
+                            </dl>
+                        </section>
+                    </aside>
+                </div>
             </article>
         </f:else>
     </f:if>

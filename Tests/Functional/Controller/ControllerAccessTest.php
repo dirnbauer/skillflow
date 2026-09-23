@@ -15,6 +15,8 @@ use TYPO3\CMS\Core\Http\ResponseFactory;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Http\StreamFactory;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
+use TYPO3\CMS\Core\MetaTag\MetaTagManagerRegistry;
+use TYPO3\CMS\Core\PageTitle\RecordTitleProvider;
 use TYPO3\CMS\Core\View\ViewInterface;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 use Webconsulting\Skillflow\Controller\SkillDetailController;
@@ -200,7 +202,7 @@ final class ControllerAccessTest extends FunctionalTestCase
 
     private function detailController(): SkillDetailController
     {
-        $controller = new SkillDetailController($this->get(SkillFinder::class));
+        $controller = new SkillDetailController($this->get(SkillFinder::class), new RecordTitleProvider(), $this->get(MetaTagManagerRegistry::class));
         $controller->injectResponseFactory(new ResponseFactory());
         $controller->injectStreamFactory(new StreamFactory());
         $view = new class implements ViewInterface {

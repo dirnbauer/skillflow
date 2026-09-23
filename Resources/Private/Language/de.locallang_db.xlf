@@ -1,218 +1,288 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xliff
   xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
-  <file source-language="en" datatype="plaintext" original="EXT:skillflow/Resources/Private/Language/locallang_db.xlf" date="2026-09-23T00:00:00Z" product-name="skillflow">
+  <file source-language="en" target-language="de" datatype="plaintext" original="EXT:skillflow/Resources/Private/Language/locallang_db.xlf" date="2026-09-23T00:00:00Z" product-name="skillflow">
     <header/>
     <body>
       <trans-unit id="tx_skillflow_run" resname="tx_skillflow_run">
         <source>Skill run</source>
+        <target state="translated">Skill-Lauf</target>
       </trans-unit>
       <trans-unit id="plugin.group" resname="plugin.group">
         <source>Skillflow</source>
+        <target state="translated">Skillflow</target>
       </trans-unit>
       <trans-unit id="plugin.skilldetail.title" resname="plugin.skilldetail.title">
         <source>Skill detail</source>
+        <target state="translated">Skill-Detail</target>
       </trans-unit>
       <trans-unit id="plugin.skilldetail.description" resname="plugin.skilldetail.description">
         <source>Display one active skill managed by nr_llm.</source>
+        <target state="translated">Zeigt einen aktiven, von nr_llm verwalteten Skill an.</target>
       </trans-unit>
       <trans-unit id="plugin.skilldetail.notfound.title" resname="plugin.skilldetail.notfound.title">
         <source>Skill not found</source>
+        <target state="translated">Skill nicht gefunden</target>
       </trans-unit>
       <trans-unit id="plugin.skilldetail.notfound" resname="plugin.skilldetail.notfound">
         <source>No active skill found for this identifier.</source>
+        <target state="translated">Für diese Kennung wurde kein aktiver Skill gefunden.</target>
       </trans-unit>
       <trans-unit id="skill.tags" resname="skill.tags">
         <source>Tags</source>
+        <target state="translated">Schlagwörter</target>
       </trans-unit>
       <trans-unit id="skill.details" resname="skill.details">
         <source>Details</source>
+        <target state="translated">Details</target>
       </trans-unit>
       <trans-unit id="skill.use" resname="skill.use">
         <source>Use this skill</source>
+        <target state="translated">Diesen Skill verwenden</target>
       </trans-unit>
       <trans-unit id="skill.identifier" resname="skill.identifier">
         <source>Skill ID</source>
+        <target state="translated">Skill-ID</target>
       </trans-unit>
       <trans-unit id="skill.copy" resname="skill.copy">
         <source>Copy</source>
+        <target state="translated">Kopieren</target>
       </trans-unit>
       <trans-unit id="skill.copied" resname="skill.copied">
         <source>Skill ID copied to the clipboard.</source>
+        <target state="translated">Skill-ID in die Zwischenablage kopiert.</target>
       </trans-unit>
       <trans-unit id="skill.category" resname="skill.category">
         <source>Category</source>
+        <target state="translated">Kategorie</target>
       </trans-unit>
       <trans-unit id="skill.source" resname="skill.source">
         <source>Source</source>
+        <target state="translated">Quelle</target>
       </trans-unit>
       <trans-unit id="skill.license" resname="skill.license">
         <source>License</source>
+        <target state="translated">Lizenz</target>
       </trans-unit>
       <trans-unit id="skill.version" resname="skill.version">
         <source>Version</source>
+        <target state="translated">Version</target>
       </trans-unit>
       <trans-unit id="skill.allowedTools" resname="skill.allowedTools">
         <source>Allowed tools</source>
+        <target state="translated">Erlaubte Werkzeuge</target>
       </trans-unit>
       <trans-unit id="tab.skills" resname="tab.skills">
         <source>Skills</source>
+        <target state="translated">Skills</target>
       </trans-unit>
       <trans-unit id="run.skill" resname="run.skill">
         <source>Skill</source>
+        <target state="translated">Skill</target>
       </trans-unit>
       <trans-unit id="run.target_table" resname="run.target_table">
         <source>Table</source>
+        <target state="translated">Tabelle</target>
       </trans-unit>
       <trans-unit id="run.target_uid" resname="run.target_uid">
         <source>Record uid</source>
+        <target state="translated">Datensatz-UID</target>
       </trans-unit>
       <trans-unit id="run.workspace_uid" resname="run.workspace_uid">
         <source>Workspace</source>
+        <target state="translated">Arbeitsumgebung</target>
       </trans-unit>
       <trans-unit id="run.stage_uid" resname="run.stage_uid">
         <source>Stage</source>
+        <target state="translated">Stufe</target>
       </trans-unit>
       <trans-unit id="run.status" resname="run.status">
         <source>Status</source>
+        <target state="translated">Status</target>
       </trans-unit>
       <trans-unit id="run.status.success" resname="run.status.success">
         <source>Success</source>
+        <target state="translated">Erfolgreich</target>
       </trans-unit>
       <trans-unit id="run.status.failed" resname="run.status.failed">
         <source>Failed</source>
+        <target state="translated">Fehlgeschlagen</target>
       </trans-unit>
       <trans-unit id="run.status.blocked" resname="run.status.blocked">
         <source>Blocked (environment guard or missing credentials)</source>
+        <target state="translated">Blockiert (Umgebungsschutz oder fehlende Zugangsdaten)</target>
       </trans-unit>
       <trans-unit id="run.status.pending" resname="run.status.pending">
         <source>Pending (engine continues asynchronously)</source>
+        <target state="translated">Ausstehend (Engine arbeitet asynchron weiter)</target>
       </trans-unit>
       <trans-unit id="run.status.running" resname="run.status.running">
         <source>Running</source>
+        <target state="translated">Läuft</target>
       </trans-unit>
       <trans-unit id="run.runner" resname="run.runner">
         <source>Runner</source>
+        <target state="translated">Runner</target>
       </trans-unit>
       <trans-unit id="run.output" resname="run.output">
         <source>Report</source>
+        <target state="translated">Bericht</target>
       </trans-unit>
       <trans-unit id="run.instructions" resname="run.instructions">
         <source>Per-run instructions</source>
+        <target state="translated">Anweisungen für diesen Lauf</target>
       </trans-unit>
       <trans-unit id="run.verdict" resname="run.verdict">
         <source>Verdict</source>
+        <target state="translated">Bewertung</target>
       </trans-unit>
       <trans-unit id="run.score" resname="run.score">
         <source>Score (0-100, -1 = none)</source>
+        <target state="translated">Punktzahl (0–100, -1 = keine)</target>
       </trans-unit>
       <trans-unit id="run.result_json" resname="run.result_json">
         <source>Structured result (JSON)</source>
+        <target state="translated">Strukturiertes Ergebnis (JSON)</target>
       </trans-unit>
       <trans-unit id="run.external_engine" resname="run.external_engine">
         <source>External engine</source>
+        <target state="translated">Externe Engine</target>
       </trans-unit>
       <trans-unit id="run.external_ref" resname="run.external_ref">
         <source>External run reference</source>
+        <target state="translated">Referenz des externen Laufs</target>
       </trans-unit>
       <trans-unit id="run.external_url" resname="run.external_url">
         <source>External run link</source>
+        <target state="translated">Link zum externen Lauf</target>
       </trans-unit>
       <trans-unit id="stage.skills" resname="stage.skills">
         <source>Skills for this stage</source>
+        <target state="translated">Skills für diese Stufe</target>
       </trans-unit>
       <trans-unit id="stage.skills.description" resname="stage.skills.description">
         <source>These skills review a record when it is sent to this stage.</source>
+        <target state="translated">Diese Skills prüfen einen Datensatz, sobald er an diese Stufe gesendet wird.</target>
       </trans-unit>
       <trans-unit id="stage.auto_run" resname="stage.auto_run">
         <source>Run skills automatically on stage change</source>
+        <target state="translated">Skills beim Stufenwechsel automatisch ausführen</target>
       </trans-unit>
       <trans-unit id="stage.auto_run.description" resname="stage.auto_run.description">
         <source>If enabled, the assigned skills run automatically whenever a record is sent to this stage. Reports are stored in the Skills module. Requires a local DDEV installation.</source>
+        <target state="translated">Wenn aktiviert, laufen die zugewiesenen Skills automatisch, sobald ein Datensatz an diese Stufe gesendet wird. Die Berichte stehen im Modul „Skills“. Erfordert eine lokale DDEV-Installation.</target>
       </trans-unit>
       <trans-unit id="workspace.auto_workflow" resname="workspace.auto_workflow">
         <source>Start workflow automatically for new elements</source>
+        <target state="translated">Workflow für neue Elemente automatisch starten</target>
       </trans-unit>
       <trans-unit id="workspace.auto_workflow.description" resname="workspace.auto_workflow.description">
         <source>New elements created in this workspace are automatically sent to the selected stage, which starts the review workflow (and its skills).</source>
+        <target state="translated">Neue Elemente in dieser Arbeitsumgebung werden automatisch an die gewählte Stufe gesendet; das startet den Prüf-Workflow und seine Skills.</target>
       </trans-unit>
       <trans-unit id="workspace.auto_workflow_stage" resname="workspace.auto_workflow_stage">
         <source>Stage for new elements</source>
+        <target state="translated">Stufe für neue Elemente</target>
       </trans-unit>
       <trans-unit id="workspace.auto_workflow_stage.description" resname="workspace.auto_workflow_stage.description">
         <source>Custom stage of this workspace that new elements are sent to.</source>
+        <target state="translated">Eigene Stufe dieser Arbeitsumgebung, an die neue Elemente gesendet werden.</target>
       </trans-unit>
       <trans-unit id="workspace.auto_workflow_stage.none" resname="workspace.auto_workflow_stage.none">
         <source>(none)</source>
+        <target state="translated">(keine)</target>
       </trans-unit>
       <trans-unit id="pages.skills" resname="pages.skills">
         <source>Skills for this page</source>
+        <target state="translated">Skills für diese Seite</target>
       </trans-unit>
       <trans-unit id="pages.skills.description" resname="pages.skills.description">
         <source>Quality skills (SEO, tone of voice, content QA, ...) that can be run against this page and its content from the Skills module.</source>
+        <target state="translated">Qualitäts-Skills (SEO, Tonalität, Inhaltsprüfung …), die im Modul „Skills“ auf diese Seite und ihre Inhalte angewendet werden können.</target>
       </trans-unit>
       <trans-unit id="users.skills" resname="users.skills">
         <source>Skills for this user</source>
+        <target state="translated">Skills für dieses Benutzerkonto</target>
       </trans-unit>
       <trans-unit id="users.skills.description" resname="users.skills.description">
         <source>Skills assigned to this backend user. The Skills module lists them first when this user runs a skill.</source>
+        <target state="translated">Diesem Backend-Benutzerkonto zugewiesene Skills. Das Modul „Skills“ zeigt sie bei der Auswahl zuerst an.</target>
       </trans-unit>
       <trans-unit id="tab.search" resname="tab.search">
         <source>Skillflow search</source>
+        <target state="translated">Skillflow-Suche</target>
       </trans-unit>
       <trans-unit id="search.category" resname="search.category">
         <source>Search category</source>
+        <target state="translated">Suchkategorie</target>
       </trans-unit>
       <trans-unit id="search.tags" resname="search.tags">
         <source>Search tags</source>
+        <target state="translated">Such-Schlagwörter</target>
       </trans-unit>
       <trans-unit id="search.tags.description" resname="search.tags.description">
         <source>Comma-separated catalogue tags. These override imported tags for search without changing the skill content.</source>
+        <target state="translated">Kommagetrennte Katalog-Schlagwörter. Sie ersetzen die importierten Schlagwörter in der Suche, ohne den Skill-Inhalt zu ändern.</target>
       </trans-unit>
       <trans-unit id="search.noResults.hint" resname="search.noResults.hint">
         <source>Try a different or more general search term.</source>
+        <target state="translated">Versuchen Sie einen anderen oder allgemeineren Suchbegriff.</target>
       </trans-unit>
       <trans-unit id="search.facet.category" resname="search.facet.category">
         <source>Category</source>
+        <target state="translated">Kategorie</target>
       </trans-unit>
       <trans-unit id="search.facet.tags" resname="search.facet.tags">
         <source>Tags</source>
+        <target state="translated">Schlagwörter</target>
       </trans-unit>
       <trans-unit id="search.facet.source" resname="search.facet.source">
         <source>Source</source>
+        <target state="translated">Quelle</target>
       </trans-unit>
       <trans-unit id="search.facet.tools" resname="search.facet.tools">
         <source>Allowed tools</source>
+        <target state="translated">Erlaubte Werkzeuge</target>
       </trans-unit>
       <trans-unit id="search.facet.license" resname="search.facet.license">
         <source>License</source>
+        <target state="translated">Lizenz</target>
       </trans-unit>
       <trans-unit id="search.facet.trust" resname="search.facet.trust">
         <source>Trust</source>
+        <target state="translated">Vertrauensstufe</target>
       </trans-unit>
       <trans-unit id="search.facet.support" resname="search.facet.support">
         <source>Support</source>
+        <target state="translated">Unterstützung</target>
       </trans-unit>
       <trans-unit id="search.sort.relevance" resname="search.sort.relevance">
         <source>Relevance</source>
+        <target state="translated">Relevanz</target>
       </trans-unit>
       <trans-unit id="search.sort.title" resname="search.sort.title">
         <source>Title</source>
+        <target state="translated">Titel</target>
       </trans-unit>
       <trans-unit id="search.sort.category" resname="search.sort.category">
         <source>Category</source>
+        <target state="translated">Kategorie</target>
       </trans-unit>
       <trans-unit id="search.ter.placeholder" resname="search.ter.placeholder">
         <source>Search for skills, tags, category …</source>
+        <target state="translated">Skills, Schlagwörter, Kategorien suchen …</target>
       </trans-unit>
       <trans-unit id="search.ter.exactMatch" resname="search.ter.exactMatch">
         <source>exact match</source>
+        <target state="translated">exakter Treffer</target>
       </trans-unit>
       <trans-unit id="search.ter.activeFilters" resname="search.ter.activeFilters">
         <source>Active filters</source>
+        <target state="translated">Aktive Filter</target>
       </trans-unit>
       <trans-unit id="search.ter.filters" resname="search.ter.filters">
         <source>Filters</source>
+        <target state="translated">Filter</target>
       </trans-unit>
     </body>
   </file>

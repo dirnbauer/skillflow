@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Webconsulting\Skillflow\Controller;
 
 use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Core\MetaTag\MetaTagManagerRegistry;
+use TYPO3\CMS\Core\PageTitle\RecordTitleProvider;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use Webconsulting\Skillflow\Service\SkillFinder;
 use Webconsulting\Skillflow\Support\Typed;
@@ -12,7 +14,13 @@ use Webconsulting\Skillflow\Support\Typed;
 /** Frontend catalogue detail for an active nr_llm skill. */
 final class SkillDetailController extends ActionController
 {
-    public function __construct(private readonly SkillFinder $skillFinder) {}
+    private const int DESCRIPTION_MAX = 300;
+
+    public function __construct(
+        private readonly SkillFinder $skillFinder,
+        private readonly RecordTitleProvider $titleProvider,
+        private readonly MetaTagManagerRegistry $metaTagManagerRegistry,
+    ) {}
 
     public function showAction(int $skill = 0): ResponseInterface
     {
@@ -36,7 +44,31 @@ final class SkillDetailController extends ActionController
             array_map(static fn(mixed $tag): string => trim(Typed::string($tag)), $tagValues),
             static fn(string $tag): bool => $tag !== '',
         ));
-        $this->view->assignMultiple(['skill' => $row, 'meta' => $meta]);
+        foreach (['license', 'version'] as $key) {
+            $meta[$key] = trim(Typed::string($meta[$key] ?? ''));
+        }
+
+        $this->describePage(Typed::string($row['name'] ?? ''), Typed::string($row['description'] ?? ''));
+        $this->view->assignMultiple([
+            'skill' => $row,
+            'meta' => $meta,
+            'sourceTitle' => $this->skillFinder->findSourceTitle(Typed::int($row['source'] ?? 0)),
+            'allowedTools' => array_values(array_filter(explode(',', Typed::string($row['allowed_tools'] ?? '')), static fn(string $tool): bool => trim($tool) !== '')),
+        ]);
         return $this->htmlResponse();
+    }
+
+    /** The skill, not the detail page, names the document for browsers, bookmarks and search engines. */
+    private function describePage(string $name, string $description): void
+    {
+        if ($name !== '') {
+            $this->titleProvider->setTitle($name);
+        }
+        $description = trim(preg_replace('/\s+/u', ' ', $description) ?? '');
+        if ($description !== '') {
+            $this->metaTagManagerRegistry
+                ->getManagerForProperty('description')
+                ->addProperty('description', mb_strimwidth($description, 0, self::DESCRIPTION_MAX, '…'), [], true);
+        }
     }
 }

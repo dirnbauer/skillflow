@@ -69,7 +69,7 @@ plugin.tx_solr.index.queue {
 plugin.tx_solr.logging.indexing.queue.skills = 1
 
 # -----------------------------------------------------------------------------
-# (2) Faceting
+# (2) Faceting — labels are TEXT objects so they follow the site language.
 # -----------------------------------------------------------------------------
 plugin.tx_solr.search.faceting = 1
 plugin.tx_solr.search.faceting {
@@ -79,31 +79,38 @@ plugin.tx_solr.search.faceting {
 
   facets {
     category {
-      label = Category
+      label = TEXT
+      label.data = LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:search.facet.category
       field = category_stringS
     }
     tags {
-      label = Tags
+      label = TEXT
+      label.data = LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:search.facet.tags
       field = tags_stringM
     }
     source {
-      label = Source
+      label = TEXT
+      label.data = LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:search.facet.source
       field = sourceTitle_stringS
     }
     tools {
-      label = Allowed tools
+      label = TEXT
+      label.data = LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:search.facet.tools
       field = allowedTools_stringM
     }
     license {
-      label = License
+      label = TEXT
+      label.data = LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:search.facet.license
       field = license_stringS
     }
     trust {
-      label = Trust
+      label = TEXT
+      label.data = LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:search.facet.trust
       field = trustLevel_stringS
     }
     support {
-      label = Support
+      label = TEXT
+      label.data = LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:search.facet.support
       field = supportStatus_stringS
     }
     type {
@@ -124,14 +131,17 @@ plugin.tx_solr.search.sorting {
     relevance {
       field = relevance
       label = Relevance
+      label.data = LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:search.sort.relevance
     }
     title {
       field = sortTitle_stringS
       label = Title
+      label.data = LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:search.sort.title
     }
     category {
       field = category_stringS
       label = Category
+      label.data = LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:search.sort.category
     }
   }
 }
