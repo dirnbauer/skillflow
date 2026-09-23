@@ -15,6 +15,8 @@ CREATE TABLE tx_nrllm_skill (
 );
 
 CREATE TABLE tx_skillflow_run (
+    skill_name varchar(255) DEFAULT '' NOT NULL,
+    skill_identifier varchar(512) DEFAULT '' NOT NULL,
     instructions text,
     output mediumtext,
     result_json mediumtext,

@@ -308,6 +308,42 @@
         <source>Verdict: %1$s (%2$s).</source>
         <target state="translated">Bewertung: %1$s (%2$s).</target>
       </trans-unit>
+      <trans-unit id="runs.skill.deleted" resname="runs.skill.deleted">
+        <source>Deleted skill</source>
+        <target state="translated">Skill gelöscht</target>
+      </trans-unit>
+      <trans-unit id="runs.skill.edit" resname="runs.skill.edit">
+        <source>Edit the skill "%s"</source>
+        <target state="translated">Skill „%s“ bearbeiten</target>
+      </trans-unit>
+      <trans-unit id="abilities.headline" resname="abilities.headline">
+        <source>Abilities of the skills</source>
+        <target state="translated">Abilities der Skills</target>
+      </trans-unit>
+      <trans-unit id="abilities.intro" resname="abilities.intro">
+        <source>Abilities the skills declare in their SKILL.md front matter, checked for your backend user. A run through the Claude CLI allows exactly these MCP tools.</source>
+        <target state="translated">Abilities, die die Skills im Front Matter ihrer SKILL.md deklarieren, geprüft für Ihren Backend-Benutzer. Ein Lauf über die Claude-CLI erlaubt genau diese MCP-Tools.</target>
+      </trans-unit>
+      <trans-unit id="abilities.col.abilities" resname="abilities.col.abilities">
+        <source>Abilities</source>
+        <target state="translated">Abilities</target>
+      </trans-unit>
+      <trans-unit id="abilities.status.ok" resname="abilities.status.ok">
+        <source>Available</source>
+        <target state="translated">Verfügbar</target>
+      </trans-unit>
+      <trans-unit id="abilities.tool" resname="abilities.tool">
+        <source>MCP tool %s</source>
+        <target state="translated">MCP-Tool %s</target>
+      </trans-unit>
+      <trans-unit id="abilities.unavailable.title" resname="abilities.unavailable.title">
+        <source>Abilities registry not active</source>
+        <target state="translated">Abilities-Registry nicht aktiv</target>
+      </trans-unit>
+      <trans-unit id="abilities.unavailable.message" resname="abilities.unavailable.message">
+        <source>The extension typo3-abilities is not active, so no declared ability can be resolved. Install and activate webconsulting/typo3-abilities to run these skills with their abilities.</source>
+        <target state="translated">Die Erweiterung typo3-abilities ist nicht aktiv, daher lässt sich keine deklarierte Ability auflösen. Installieren und aktivieren Sie webconsulting/typo3-abilities, um diese Skills mit ihren Abilities auszuführen.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

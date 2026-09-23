@@ -223,6 +223,12 @@
       <trans-unit id="skill.abilities.description" resname="skill.abilities.description">
         <source>The abilities this skill declares in its SKILL.md front matter ("abilities:"), stored by skillflow:skills:sync. A Claude CLI run allows exactly these as MCP tools.</source>
       </trans-unit>
+      <trans-unit id="run.skill_name" resname="run.skill_name">
+        <source>Skill name at run time</source>
+      </trans-unit>
+      <trans-unit id="run.skill_identifier" resname="run.skill_identifier">
+        <source>Skill identifier at run time</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>

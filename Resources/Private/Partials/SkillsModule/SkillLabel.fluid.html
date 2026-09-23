@@ -1,0 +1,16 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+<f:comment>The skill of a run: its title (linked to the nr_llm record for users who may edit it), or a "deleted skill" badge with what the run recorded.</f:comment>
+<f:if condition="{item.skillDeleted}">
+    <f:then>
+        <span class="badge badge-warning"><f:translate key="runs.skill.deleted" domain="skillflow.messages" /></span>
+        <f:if condition="{item.skillTitle}"><span class="text-variant">{item.skillTitle}</span></f:if>
+    </f:then>
+    <f:else if="{item.skillUri}">
+        <a href="{item.skillUri}" title="{f:translate(key: 'runs.skill.edit', domain: 'skillflow.messages', arguments: {0: item.skillTitle})}">{item.skillTitle}</a>
+    </f:else>
+    <f:else>{item.skillTitle}</f:else>
+</f:if>
+</html>

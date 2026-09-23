@@ -1,0 +1,28 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+<f:comment>The abilities one skill declares, with their status for the current backend user.</f:comment>
+<ul class="list-unstyled skillflow-abilities">
+    <f:for each="{abilities}" as="ability">
+        <li>
+            <code>{ability.name}</code>
+            <f:switch expression="{ability.status}">
+                <f:case value="ok">
+                    <span class="badge badge-success"><f:translate key="abilities.status.ok" domain="skillflow.messages" /></span>
+                    <span class="text-variant"><f:translate key="abilities.tool" domain="skillflow.messages" arguments="{0: ability.tool}" /></span>
+                </f:case>
+                <f:case value="missing">
+                    <span class="badge badge-danger">ability_missing</span>
+                    <span class="text-variant">{ability.message}</span>
+                </f:case>
+                <f:defaultCase>
+                    <span class="badge badge-warning">ability_denied</span>
+                    <span class="text-variant">{ability.message}</span>
+                </f:defaultCase>
+            </f:switch>
+        </li>
+    </f:for>
+</ul>
+</html>

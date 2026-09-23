@@ -111,3 +111,11 @@
   border-inline-start: 3px solid var(--typo3-component-border-color);
   color: var(--typo3-text-color-variant);
 }
+
+.skillflow-abilities {
+  margin: 0;
+}
+
+.skillflow-abilities > li + li {
+  margin-top: calc(var(--typo3-spacing) / 4);
+}

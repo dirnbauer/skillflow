@@ -54,7 +54,7 @@ final readonly class SkillExecutionService
 
         // Phase 1: the run row exists before anything executes, so engines get
         // a stable uid to cross-link and asynchronous settlement has a target.
-        $runUid = $this->insertRun($skillUid, $table, $recordUid, $workspaceId, $stageUid, $instructions);
+        $runUid = $this->insertRun($skill, $skillUid, $table, $recordUid, $workspaceId, $stageUid, $instructions);
 
         $resolvedInstructions = $instructions;
         $engineRequested = trim($engine);
@@ -187,7 +187,10 @@ final readonly class SkillExecutionService
         return 0;
     }
 
-    private function insertRun(int $skillUid, string $table, int $recordUid, int $workspaceId, int $stageUid, string $instructions): int
+    /**
+     * @param array<string, mixed> $skill
+     */
+    private function insertRun(array $skill, int $skillUid, string $table, int $recordUid, int $workspaceId, int $stageUid, string $instructions): int
     {
         $now = time();
         $connection = $this->connectionPool->getConnectionForTable(self::TABLE);
@@ -196,6 +199,8 @@ final readonly class SkillExecutionService
             'crdate' => $now,
             'tstamp' => $now,
             'skill' => $skillUid,
+            'skill_name' => mb_substr(Typed::string($skill['name'] ?? ''), 0, 255),
+            'skill_identifier' => mb_substr(Typed::string($skill['identifier'] ?? ''), 0, 512),
             'target_table' => $table,
             'target_uid' => $recordUid,
             'workspace_uid' => $workspaceId,

@@ -113,6 +113,77 @@ final class ControllerAccessTest extends FunctionalTestCase
         self::assertStringContainsString('action=showRun', html_entity_decode($body));
     }
 
+    /**
+     * The Skill column names the skill and links its nr_llm record; a run
+     * whose skill is gone says so instead of showing a bare "#uid".
+     */
+    public function testReportsNameExistingAndDeletedSkills(): void
+    {
+        $this->login(2);
+        $this->insertRun('pages', 2, 0);
+        $this->insertRunsOfDeletedSkills();
+
+        $body = html_entity_decode((string)$this->get(SkillsModuleController::class)->handleRequest(
+            $this->request()->withQueryParams(['id' => 2]),
+        )->getBody());
+
+        self::assertMatchesRegularExpression('#<a href="[^"]*record/edit[^"]*edit%5Btx_nrllm_skill%5D%5B1%5D=edit[^"]*"[^>]*>Test skill</a>#', $body);
+        self::assertSame(2, substr_count($body, 'Deleted skill'));
+        self::assertStringContainsString('Old review (3:skills/old-review/SKILL.md)', $body);
+        self::assertStringNotContainsString('#119', $body);
+        self::assertStringNotContainsString('#0', $body);
+    }
+
+    public function testReportOfADeletedSkillSaysSo(): void
+    {
+        $this->login(2);
+        $this->insertRunsOfDeletedSkills();
+
+        $report = (string)$this->get(SkillsModuleController::class)->handleRequest(
+            $this->request()->withQueryParams(['action' => 'showRun', 'run' => 2]),
+        )->getBody();
+
+        self::assertMatchesRegularExpression('#<h1>[^<]*: Deleted skill</h1>#', $report);
+        self::assertStringContainsString('Old review (3:skills/old-review/SKILL.md)', $report);
+    }
+
+    public function testRunRecordsTheSkillNameAndIdentifier(): void
+    {
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['skillflow']['requireLocalEnvironment'] = '0';
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['skillflow']['runner'] = 'anthropic';
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['skillflow']['apiKeyEnvVar'] = 'SKILLFLOW_TEST_UNSET_KEY';
+        $this->get(SkillsModuleController::class)->handleRequest(
+            $this->request()->withMethod('POST')->withParsedBody(['action' => 'run', 'skill' => 1, 'page' => 2]),
+        );
+
+        self::assertSame(
+            ['skill_name' => 'Test skill', 'skill_identifier' => 'test-skill'],
+            $this->getConnectionPool()->getConnectionForTable('tx_skillflow_run')
+                ->select(['skill_name', 'skill_identifier'], 'tx_skillflow_run')->fetchAssociative(),
+        );
+    }
+
+    /**
+     * Without typo3-abilities (not loaded in this test) the module shows
+     * which declared abilities cannot be resolved.
+     */
+    public function testRunFormListsDeclaredAbilitiesWithTheirStatus(): void
+    {
+        $this->login(2);
+        $this->getConnectionPool()->getConnectionForTable('tx_nrllm_skill')->update('tx_nrllm_skill', [
+            'raw_frontmatter' => json_encode(['abilities' => ['news/list']], JSON_THROW_ON_ERROR),
+        ], ['uid' => 1]);
+
+        $body = (string)$this->get(SkillsModuleController::class)->handleRequest(
+            $this->request()->withQueryParams(['id' => 2]),
+        )->getBody();
+
+        self::assertStringContainsString('Abilities of the skills', $body);
+        self::assertStringContainsString('<code>news/list</code>', $body);
+        self::assertStringContainsString('ability_missing', $body);
+        self::assertStringContainsString('Abilities registry not active', $body);
+    }
+
     public function testReportIsRenderedAsSafeMarkdown(): void
     {
         $this->login(2);
@@ -223,6 +294,16 @@ final class ControllerAccessTest extends FunctionalTestCase
         self::assertSame(['Content', 'Search', '0'], $data['meta']['tags']);
     }
 
+    public function testDetailListsTheDeclaredAbilities(): void
+    {
+        $this->getConnectionPool()->getConnectionForTable('tx_nrllm_skill')->update('tx_nrllm_skill', [
+            'raw_frontmatter' => json_encode(['abilities' => ['news/list', 'solr/index-queue']], JSON_THROW_ON_ERROR),
+        ], ['uid' => 1]);
+        $data = json_decode((string)$this->detailController()->showAction(1)->getBody(), true, flags: JSON_THROW_ON_ERROR);
+
+        self::assertSame(['news/list', 'solr/index-queue'], $data['abilities']);
+    }
+
     private function login(int $uid): void
     {
         $user = $this->setUpBackendUser($uid);
@@ -251,6 +332,21 @@ final class ControllerAccessTest extends FunctionalTestCase
             'uid' => 1, 'crdate' => 1_790_000_000, 'skill' => 1, 'target_table' => $table, 'target_uid' => $targetUid,
             'workspace_uid' => $workspaceUid, 'status' => 'success', 'runner' => 'test',
             'output' => $output,
+        ]);
+    }
+
+    /** Run 2: a deleted skill with the name recorded since 1.8.0; run 3: an old run without any. */
+    private function insertRunsOfDeletedSkills(): void
+    {
+        $runs = $this->getConnectionPool()->getConnectionForTable('tx_skillflow_run');
+        $runs->insert('tx_skillflow_run', [
+            'uid' => 2, 'crdate' => 1_790_000_100, 'skill' => 119, 'skill_name' => 'Old review',
+            'skill_identifier' => '3:skills/old-review/SKILL.md', 'target_table' => 'pages', 'target_uid' => 2,
+            'status' => 'success', 'runner' => 'test',
+        ]);
+        $runs->insert('tx_skillflow_run', [
+            'uid' => 3, 'crdate' => 1_790_000_200, 'skill' => 0, 'target_table' => 'pages', 'target_uid' => 2,
+            'status' => 'blocked', 'runner' => 'none',
         ]);
     }
 

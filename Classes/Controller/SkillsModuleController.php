@@ -25,10 +25,12 @@ use TYPO3\CMS\Core\Pagination\ArrayPaginator;
 use TYPO3\CMS\Core\Pagination\SimplePagination;
 use TYPO3\CMS\Core\Type\Bitmask\Permission;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use Webconsulting\Skillflow\Domain\AbilityFinding;
 use Webconsulting\Skillflow\Domain\RunStatus;
 use Webconsulting\Skillflow\Domain\SkillRunResult;
 use Webconsulting\Skillflow\Runner\EngineResolver;
 use Webconsulting\Skillflow\Service\EnvironmentGuard;
+use Webconsulting\Skillflow\Service\SkillAbilityResolver;
 use Webconsulting\Skillflow\Service\SkillExecutionService;
 use Webconsulting\Skillflow\Service\SkillFinder;
 use Webconsulting\Skillflow\Support\Typed;
@@ -56,6 +58,7 @@ final readonly class SkillsModuleController
         private SkillExecutionService $skillExecutionService,
         private EnvironmentGuard $environmentGuard,
         private EngineResolver $engineResolver,
+        private SkillAbilityResolver $abilityResolver,
     ) {}
 
     public function handleRequest(ServerRequestInterface $request): ResponseInterface
@@ -89,7 +92,9 @@ final readonly class SkillsModuleController
 
         $this->skillExecutionService->failStaleRuns();
         $titles = $this->skillTitles();
+        $returnUrl = $this->returnUrl($request);
         $runs = $this->readableRuns($allPages ? null : $pageUid);
+        $skillGroups = $page !== null ? $this->skillGroups($pageUid) : [];
         $currentPage = max(1, Typed::int($query['page'] ?? 1));
         $paginator = new ArrayPaginator($runs, $currentPage, self::RUNS_PER_PAGE);
 
@@ -100,16 +105,18 @@ final readonly class SkillsModuleController
             'formUri' => $this->moduleUri(array_filter(['id' => $pageUid])),
             'pageScopeUri' => $this->moduleUri(['id' => $pageUid]),
             'allPagesUri' => $this->moduleUri(array_filter(['id' => $pageUid, 'scope' => 'all'])),
-            'editPageUri' => $page !== null ? $this->editRecordUri('pages', $pageUid, $request) : '',
+            'editPageUri' => $page !== null ? $this->editRecordUri('pages', $pageUid, $returnUrl) : '',
             'executionBlockReason' => $this->environmentGuard->getBlockReason(),
-            'skillGroups' => $page !== null ? $this->skillGroups($pageUid) : [],
+            'skillGroups' => $skillGroups,
+            'skillAbilities' => $this->abilityOverview(array_merge(...array_column($skillGroups, 'skills')), $returnUrl),
+            'abilitiesAvailable' => $this->abilityResolver->isAvailable(),
             'assignedSkills' => $page !== null ? $this->skillFinder->findSkillsForPage($pageUid) : [],
             'engines' => array_keys($this->engineResolver->getRegisteredEngines()),
             'workspaceTitle' => $this->workspaceTitle($this->backendUser()->workspace),
             'isAdmin' => $this->backendUser()->isAdmin(),
             'skillSourcesUri' => $this->skillSourcesUri(),
             'runs' => array_map(
-                fn(array $run): array => $this->runListItem($run, $titles),
+                fn(array $run): array => $this->runListItem($run, $titles, $returnUrl),
                 array_slice($runs, $paginator->getKeyOfFirstPaginatedItem(), self::RUNS_PER_PAGE),
             ),
             'runCount' => count($runs),
@@ -139,7 +146,9 @@ final readonly class SkillsModuleController
             return $this->indexAction($request, $view);
         }
 
-        $item = $this->runListItem($run, $this->skillTitles());
+        $returnUrl = $this->returnUrl($request);
+        $item = $this->runListItem($run, $this->skillTitles(), $returnUrl);
+        $skill = $this->skillFinder->findSkillByUid(Typed::int($run['skill'] ?? 0));
         $title = $this->label('run.title', [$runUid]);
         $view->setTitle($title, $this->label('module.title'));
         $docHeader = $view->getDocHeaderComponent();
@@ -172,6 +181,7 @@ final readonly class SkillsModuleController
             'workspaceTitle' => $this->workspaceTitle(Typed::int($run['workspace_uid'] ?? 0)),
             'stageTitle' => $this->stageTitle(Typed::int($run['stage_uid'] ?? 0)),
             'resultJson' => $this->prettyJson(Typed::string($run['result_json'] ?? '')),
+            'skillAbilities' => $skill !== null ? ($this->abilityOverview([$skill], $returnUrl)[0]['abilities'] ?? []) : [],
             'dateFormat' => Typed::string($GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'] ?? 'Y-m-d'),
             'timeFormat' => Typed::string($GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm'] ?? 'H:i'),
         ]);
@@ -296,9 +306,9 @@ final readonly class SkillsModuleController
     /**
      * @param array<string, mixed> $run
      * @param array<int, string> $titles
-     * @return array{uid: int, crdate: int, skillTitle: string, status: RunStatus, severity: ContextualFeedbackSeverity, statusLabel: string, verdict: string, score: int, engine: string, targetTable: string, targetUid: int, targetTitle: string, targetRecord: array<string, mixed>|null, targetPageUid: int, targetUri: string, showUri: string}
+     * @return array{uid: int, crdate: int, skillTitle: string, skillDeleted: bool, skillUri: string, status: RunStatus, severity: ContextualFeedbackSeverity, statusLabel: string, verdict: string, score: int, engine: string, targetTable: string, targetUid: int, targetTitle: string, targetRecord: array<string, mixed>|null, targetPageUid: int, targetUri: string, showUri: string}
      */
-    private function runListItem(array $run, array $titles): array
+    private function runListItem(array $run, array $titles, string $returnUrl): array
     {
         $table = Typed::string($run['target_table'] ?? '');
         $targetUid = Typed::int($run['target_uid'] ?? 0);
@@ -312,7 +322,9 @@ final readonly class SkillsModuleController
         return [
             'uid' => Typed::int($run['uid'] ?? 0),
             'crdate' => Typed::int($run['crdate'] ?? 0),
-            'skillTitle' => $titles[$skillUid] ?? '#' . $skillUid,
+            'skillTitle' => $titles[$skillUid] ?? $this->deletedSkillReference($run, $skillUid),
+            'skillDeleted' => !isset($titles[$skillUid]),
+            'skillUri' => isset($titles[$skillUid]) ? $this->editSkillUri($skillUid, $returnUrl) : '',
             'status' => $status,
             'severity' => $status->severity(),
             'statusLabel' => $this->label('status.' . $status->value),
@@ -345,6 +357,77 @@ final readonly class SkillsModuleController
         return $titles;
     }
 
+    /**
+     * What a run recorded about a skill that no longer exists in nr_llm:
+     * its name and identifier at run time (since 1.8.0), else its uid.
+     *
+     * @param array<string, mixed> $run
+     */
+    private function deletedSkillReference(array $run, int $skillUid): string
+    {
+        $name = Typed::string($run['skill_name'] ?? '');
+        $identifier = Typed::string($run['skill_identifier'] ?? '');
+        if ($name !== '' && $identifier !== '') {
+            return $name . ' (' . $identifier . ')';
+        }
+
+        return $name ?: $identifier ?: ($skillUid > 0 ? '#' . $skillUid : '');
+    }
+
+    /** The nr_llm skill record, for users who may edit it. */
+    private function editSkillUri(int $skillUid, string $returnUrl): string
+    {
+        return $skillUid > 0 && $this->backendUser()->check('tables_modify', 'tx_nrllm_skill')
+            ? $this->editRecordUri('tx_nrllm_skill', $skillUid, $returnUrl)
+            : '';
+    }
+
+    /**
+     * The abilities each skill declares, checked for the current backend
+     * user: "ok" (allowed as the MCP tool shown), "missing" or "denied".
+     * Skills without abilities are left out.
+     *
+     * @param list<array<string, mixed>> $skills SkillFinder rows
+     * @return list<array{uid: int, name: string, uri: string, abilities: list<array{name: string, tool: string, status: string, message: string}>}>
+     */
+    private function abilityOverview(array $skills, string $returnUrl): array
+    {
+        $overview = [];
+        foreach ($skills as $skill) {
+            $abilities = is_array($skill['abilities'] ?? null) ? array_values(array_filter($skill['abilities'], is_string(...))) : [];
+            if ($abilities === []) {
+                continue;
+            }
+            $findings = [];
+            foreach ($this->abilityResolver->check($abilities, $this->backendUser()) as $finding) {
+                $findings[$finding->ability] = $finding;
+            }
+            $rows = [];
+            foreach ($abilities as $name) {
+                $finding = $findings[$name] ?? null;
+                $rows[] = [
+                    'name' => $name,
+                    'tool' => $finding === null ? ($this->abilityResolver->allowedTools([$name])[0] ?? '') : '',
+                    'status' => match ($finding?->code) {
+                        null => 'ok',
+                        AbilityFinding::MISSING => 'missing',
+                        default => 'denied',
+                    },
+                    'message' => $finding->message ?? '',
+                ];
+            }
+            $uid = Typed::int($skill['uid'] ?? 0);
+            $overview[] = [
+                'uid' => $uid,
+                'name' => Typed::string($skill['name'] ?? ''),
+                'uri' => $this->editSkillUri($uid, $returnUrl),
+                'abilities' => $rows,
+            ];
+        }
+
+        return $overview;
+    }
+
     private function addSkillSourcesButton(ModuleTemplate $view): void
     {
         $uri = $this->skillSourcesUri();
@@ -375,14 +458,19 @@ final readonly class SkillsModuleController
         }
     }
 
-    private function editRecordUri(string $table, int $uid, ServerRequestInterface $request): string
+    private function editRecordUri(string $table, int $uid, string $returnUrl): string
+    {
+        return (string)$this->uriBuilder->buildUriFromRoute('record_edit', [
+            'edit' => [$table => [$uid => 'edit']],
+            'returnUrl' => $returnUrl,
+        ]);
+    }
+
+    private function returnUrl(ServerRequestInterface $request): string
     {
         $normalizedParams = $request->getAttribute('normalizedParams');
 
-        return (string)$this->uriBuilder->buildUriFromRoute('record_edit', [
-            'edit' => [$table => [$uid => 'edit']],
-            'returnUrl' => $normalizedParams instanceof NormalizedParams ? $normalizedParams->getRequestUri() : $this->moduleUri(['id' => $uid]),
-        ]);
+        return $normalizedParams instanceof NormalizedParams ? $normalizedParams->getRequestUri() : $this->moduleUri();
     }
 
     /** @param array<string, mixed> $parameters */

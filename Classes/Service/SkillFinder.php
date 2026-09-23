@@ -188,7 +188,7 @@ final readonly class SkillFinder
     {
         $queryBuilder = $this->runQuery();
         $queryBuilder
-            ->select('uid', 'crdate', 'skill', 'target_table', 'target_uid', 'workspace_uid', 'stage_uid', 'status', 'runner', 'verdict', 'score', 'external_engine')
+            ->select('uid', 'crdate', 'skill', 'skill_name', 'skill_identifier', 'target_table', 'target_uid', 'workspace_uid', 'stage_uid', 'status', 'runner', 'verdict', 'score', 'external_engine')
             ->from(self::RUN_TABLE)
             ->orderBy('crdate', 'DESC')
             ->addOrderBy('uid', 'DESC')

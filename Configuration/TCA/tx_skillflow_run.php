@@ -31,6 +31,16 @@ return [
                 'readOnly' => true,
             ],
         ],
+        // Kept with the run, so a report still names a skill that was
+        // deleted in nr_llm later.
+        'skill_name' => [
+            'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:run.skill_name',
+            'config' => ['type' => 'input', 'max' => 255, 'readOnly' => true],
+        ],
+        'skill_identifier' => [
+            'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:run.skill_identifier',
+            'config' => ['type' => 'input', 'readOnly' => true],
+        ],
         'target_table' => [
             'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:run.target_table',
             'config' => ['type' => 'input', 'max' => 255, 'readOnly' => true],
@@ -102,7 +112,7 @@ return [
     ],
     'types' => [
         '0' => [
-            'showitem' => 'skill, status, runner, verdict, score, target_table, target_uid, workspace_uid, stage_uid, instructions, output, result_json, external_engine, external_ref, external_url',
+            'showitem' => 'skill, skill_name, skill_identifier, status, runner, verdict, score, target_table, target_uid, workspace_uid, stage_uid, instructions, output, result_json, external_engine, external_ref, external_url',
         ],
     ],
 ];

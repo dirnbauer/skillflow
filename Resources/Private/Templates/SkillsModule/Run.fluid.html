@@ -9,7 +9,7 @@
 <f:section name="Content">
     <f:asset.css identifier="skillflow-module" href="EXT:skillflow/Resources/Public/Css/module.css" />
 
-    <h1>{title}: {item.skillTitle}</h1>
+    <h1>{title}: <f:if condition="{item.skillDeleted}"><f:then><f:translate key="runs.skill.deleted" domain="skillflow.messages" /></f:then><f:else>{item.skillTitle}</f:else></f:if></h1>
     <p class="skillflow-run-badges">
         <span class="badge badge-{item.severity.cssClass}">{item.statusLabel}</span>
         <f:if condition="{item.verdict}">
@@ -25,8 +25,14 @@
             <tbody>
                 <tr>
                     <th scope="row"><f:translate key="runs.col.skill" domain="skillflow.messages" /></th>
-                    <td>{item.skillTitle}</td>
+                    <td><f:render partial="SkillsModule/SkillLabel" arguments="{item: item}" /></td>
                 </tr>
+                <f:if condition="{skillAbilities}">
+                    <tr>
+                        <th scope="row"><f:translate key="abilities.col.abilities" domain="skillflow.messages" /></th>
+                        <td><f:render partial="SkillsModule/AbilityList" arguments="{abilities: skillAbilities}" /></td>
+                    </tr>
+                </f:if>
                 <tr>
                     <th scope="row"><f:translate key="runs.col.date" domain="skillflow.messages" /></th>
                     <td><time datetime="{item.crdate -> f:format.date(format: 'c')}">{item.crdate -> f:format.date(format: '{dateFormat} {timeFormat}')}</time></td>

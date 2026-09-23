@@ -296,6 +296,14 @@
         <source>The abilities this skill declares in its SKILL.md front matter ("abilities:"), stored by skillflow:skills:sync. A Claude CLI run allows exactly these as MCP tools.</source>
         <target state="translated">Die Abilities, die dieser Skill im Front Matter seiner SKILL.md deklariert („abilities:“), gespeichert von skillflow:skills:sync. Ein Lauf über die Claude-CLI erlaubt genau diese als MCP-Tools.</target>
       </trans-unit>
+      <trans-unit id="run.skill_name" resname="run.skill_name">
+        <source>Skill name at run time</source>
+        <target state="translated">Skill-Name zum Zeitpunkt des Laufs</target>
+      </trans-unit>
+      <trans-unit id="run.skill_identifier" resname="run.skill_identifier">
+        <source>Skill identifier at run time</source>
+        <target state="translated">Skill-Kennung zum Zeitpunkt des Laufs</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -232,6 +232,33 @@
       <trans-unit id="flash.run.verdict" resname="flash.run.verdict">
         <source>Verdict: %1$s (%2$s).</source>
       </trans-unit>
+      <trans-unit id="runs.skill.deleted" resname="runs.skill.deleted">
+        <source>Deleted skill</source>
+      </trans-unit>
+      <trans-unit id="runs.skill.edit" resname="runs.skill.edit">
+        <source>Edit the skill "%s"</source>
+      </trans-unit>
+      <trans-unit id="abilities.headline" resname="abilities.headline">
+        <source>Abilities of the skills</source>
+      </trans-unit>
+      <trans-unit id="abilities.intro" resname="abilities.intro">
+        <source>Abilities the skills declare in their SKILL.md front matter, checked for your backend user. A run through the Claude CLI allows exactly these MCP tools.</source>
+      </trans-unit>
+      <trans-unit id="abilities.col.abilities" resname="abilities.col.abilities">
+        <source>Abilities</source>
+      </trans-unit>
+      <trans-unit id="abilities.status.ok" resname="abilities.status.ok">
+        <source>Available</source>
+      </trans-unit>
+      <trans-unit id="abilities.tool" resname="abilities.tool">
+        <source>MCP tool %s</source>
+      </trans-unit>
+      <trans-unit id="abilities.unavailable.title" resname="abilities.unavailable.title">
+        <source>Abilities registry not active</source>
+      </trans-unit>
+      <trans-unit id="abilities.unavailable.message" resname="abilities.unavailable.message">
+        <source>The extension typo3-abilities is not active, so no declared ability can be resolved. Install and activate webconsulting/typo3-abilities to run these skills with their abilities.</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>
