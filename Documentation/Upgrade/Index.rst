@@ -4,6 +4,35 @@
 Upgrading
 =========
 
+..  _upgrade-1-7:
+
+1.7.0
+=====
+
+No database changes and no required action.
+
+*   The Anthropic runner speaks the current MCP connector beta
+    (``mcp-client-2025-11-20``) and derives the required ``mcp_toolset``
+    entries from :confval:`mcpServersJson`. Existing settings keep working,
+    including tool allowlists written for the 2025-04-04 beta.
+*   :html:`<sf:markdown>` now receives the Markdown verbatim. Before, Fluid
+    HTML-escaped it first, so code examples showed ``&lt;Type&gt;`` and
+    ``>`` quotes turned into paragraphs. Templates that render
+    ``<sf:markdown>{skill.body}</sf:markdown>`` need no change; clear the
+    caches so compiled templates pick up the ViewHelper change.
+*   The skill detail plugin sets the page title and meta description from the
+    skill (TYPO3's ``recordTitle`` provider).
+*   Backend module labels moved to the ``skillflow.modules.skills`` translation
+    domain and the module templates to :file:`*.fluid.html`. Both are internal;
+    the module route and path are unchanged.
+*   For developers: :php:`SkillRunResult` gained ``$runUid`` (set by
+    :php:`SkillExecutionService`), the named constructors ``blocked()`` and
+    ``failed()`` and :php:`runStatus()`, which returns the new
+    :php:`RunStatus` enum. The ``$status`` string and its values are
+    unchanged. The extension configuration is read once into the
+    :php:`ExtensionSettings` service; runners and the engine resolver receive it
+    instead of :php:`ExtensionConfiguration`.
+
 ..  _upgrade-1-6:
 
 1.6.0

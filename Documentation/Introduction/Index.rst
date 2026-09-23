@@ -26,7 +26,8 @@ Scope
     operations that deployments need (see :ref:`commands`).
 *   Execution defaults to a local DDEV environment; reports are advisory.
 *   Supporting scripts and assets of a skill are not materialized, and
-    license or SkillSpector scanning is not bundled.
+    license or SkillSpector scanning is not bundled (the separate
+    ``webconsulting/skillspector`` extension provides advisory checks).
 
 ..  _requirements:
 
@@ -43,7 +44,7 @@ Requirements
     *   -   PHP
         -   8.4 or later
     *   -   netresearch/nr-llm
-        -   0.34.x
+        -   0.34.x or 0.35.x
     *   -   apache-solr-for-typo3/solr
         -   14.0.1 or later, with a Solr server and configset from the
             `EXT:solr version matrix
@@ -54,9 +55,8 @@ Requirements
 Links
 =====
 
-*   Website: `typo3-lab.webconsulting.at <https://typo3-lab.webconsulting.at>`__
-    (the website URL is recorded in the Composer metadata; the site may
-    require HTTP authentication)
+*   Demo: `typo3-lab.webconsulting.at <https://typo3-lab.webconsulting.at>`__
+    (the site may require HTTP authentication)
 *   Repository: `github.com/dirnbauer/skillflow
     <https://github.com/dirnbauer/skillflow>`__
 *   Issues: `github.com/dirnbauer/skillflow/issues

@@ -14,7 +14,7 @@ records, keeps the run reports and exposes active skills in a Solr catalogue.
 ## Requirements
 
 - TYPO3 **14.3.7+** on the 14.x line, PHP **8.4+**
-- `netresearch/nr-llm` **0.34.x**, EXT:solr **14.0.1+**
+- `netresearch/nr-llm` **0.34.x or 0.35.x**, EXT:solr **14.0.1+**
 - For the catalogue: a Solr server/configset from the
   [EXT:solr version matrix](https://docs.typo3.org/p/apache-solr-for-typo3/solr/main/en-us/Appendix/VersionMatrix.html)
 
@@ -41,7 +41,7 @@ Extension settings (Admin Tools → Settings → Extension Configuration):
 | `apiKeyEnvVar` | `ANTHROPIC_API_KEY` | Env var holding the Anthropic key (never stored in the DB). |
 | `maxTokens` | `2048` | Output token budget for API runners. |
 | `claudeBinary` | `claude` | Claude Code executable. |
-| `mcpServersJson` | empty | Remote MCP servers for the Anthropic runner. |
+| `mcpServersJson` | empty | Remote MCP servers (`name`, `url`, optional `authorization_token`) for the Anthropic runner's MCP connector. |
 | `mcpConfigJson` | empty | Claude Code `.mcp.json` content. |
 | `defaultEngine` | `classic` | Built-in chain or a registered context engine. |
 | `engineFallback` | `1` | Fall back to the classic chain when an engine is unavailable. |
@@ -58,8 +58,13 @@ environment variables.
 2. Review and enable skills in the module or from the CLI.
 3. Assign skills in the **Skills** tab of pages, backend users or custom
    workspace stages (optionally with auto-run on stage transitions).
-4. Run them in **Content → Skills** or from the CLI; reports keep status,
-   output and engine details.
+4. Run them in **Content → Skills** on the page selected in the page tree, or
+   from the CLI. A single run opens its report; reports keep status, verdict,
+   engine and the output rendered as Markdown.
+5. Publish the catalogue: the `skillflow_skilldetail` content element shows
+   one skill, sets the page title and description from it and follows the
+   site's theme tokens; the `webconsulting/skillflow-solr` set indexes and
+   lists the skills with translated facets.
 
 ```bash
 vendor/bin/typo3 skillflow:skills:sync --all                  # every enabled source
@@ -89,7 +94,8 @@ ddev composer rector && ddev composer fractor && ddev composer audit
 ```
 
 `.github/workflows/ci.yml` runs the same gates: lint, cgl, phpstan, unit on
-PHP 8.4 and 8.5 (allowed failure), functional against MariaDB 10.11. Set the
+PHP 8.4 and 8.5, functional against MariaDB 10.11 on PHP 8.4 and 8.5 and once
+more with the lowest supported nr_llm line (0.34). Set the
 `typo3Database*` environment variables to run functional tests on MariaDB
 locally. `ddev setup-site` creates a disposable browser test site at
 `https://skillflow.ddev.site/typo3/`.

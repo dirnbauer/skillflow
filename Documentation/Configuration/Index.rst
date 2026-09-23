@@ -50,8 +50,14 @@ Runner
     :type: string
     :default: empty
 
-    JSON array of remote MCP servers for the Anthropic MCP connector
-    (``api``/``anthropic`` runners). Empty disables the connector.
+    JSON array of remote MCP servers for the Anthropic MCP connector, used by
+    the direct Anthropic runner. Each entry needs ``name`` and ``url`` and may
+    carry ``authorization_token``, for example
+    ``[{"name":"typo3","url":"https://example.org/mcp","authorization_token":"…"}]``.
+    Skillflow sends them with the ``mcp-client-2025-11-20`` beta and adds the
+    ``mcp_toolset`` entry the connector requires for every server. A
+    ``tool_configuration`` block in the format of the retired 2025-04-04 beta
+    is translated into the toolset's allowlist. Empty disables the connector.
 
 ..  confval:: mcpConfigJson
     :type: string

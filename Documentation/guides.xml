@@ -6,7 +6,7 @@
         default-code-language="php"
 >
     <extension class="\T3Docs\Typo3DocsTheme\DependencyInjection\Typo3DocsThemeExtension"
-               project-home="https://typo3-lab.webconsulting.at"
+               project-home="https://github.com/dirnbauer/skillflow"
                project-repository="https://github.com/dirnbauer/skillflow"
                project-issues="https://github.com/dirnbauer/skillflow/issues"
                edit-on-github="dirnbauer/skillflow"
@@ -15,8 +15,8 @@
                interlink-shortcode="webconsulting/skillflow"
     />
     <project title="Skillflow"
-             version="1.6"
-             release="1.6.0"
+             version="1.7"
+             release="1.7.0"
              copyright="since 2026 by webconsulting"/>
     <inventory id="t3coreapi" url="https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/"/>
 </guides>

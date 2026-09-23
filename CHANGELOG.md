@@ -1,5 +1,66 @@
 # Changelog
 
+## 1.7.0 — 2026-09-23
+
+### Added
+
+- The Skills module is a native TYPO3 v14 module: page breadcrumb, automatic
+  reload and bookmark buttons, a link to nr_llm's skill sources for
+  administrators, `f:be.infobox` notices and an empty state. The run form
+  groups the skills into those assigned to the page, to the current backend
+  user and all others; a progress note (announced to screen readers) marks
+  a running skill and ignores repeated clicks.
+- Runs redirect after the `POST` (a reload never repeats a run); a single run
+  opens its report.
+- Reports list per page (the page and its content elements) or for all pages,
+  paginated, with colour-coded status, verdict, score, engine and the target
+  record's icon and title.
+- The report view renders the output as Markdown (raw HTML escaped, unsafe
+  links removed) and keeps the plain text and the structured engine result
+  one click away; workspace and stage are shown by name.
+- All module, TCA, plugin and catalogue labels in English and German
+  (XLIFF, two-space indentation); module labels use the v14
+  `skillflow.modules.skills` translation domain.
+- The skill detail plugin sets the page title and meta description from the
+  skill (core `recordTitle` provider). Its default template shows category,
+  source, tags, the skill ID with a copy button, license, version and allowed
+  tools, with a small stylesheet that follows the site's theme tokens in light
+  and dark mode.
+- Translated facet and sorting labels in the `webconsulting/skillflow-solr`
+  set and in the search templates.
+- `RunStatus` enum, `SkillRunResult::$runUid`, `SkillRunResult::blocked()`,
+  `::failed()` and `::runStatus()`.
+
+### Changed
+
+- The Anthropic runner uses the current MCP connector beta
+  (`mcp-client-2025-11-20`) and derives the required `mcp_toolset` entries;
+  tool allowlists written for the retired 2025-04-04 format are translated.
+- The extension configuration is read once into the typed `ExtensionSettings`
+  service (with a `RunnerMode` enum) instead of in every runner.
+- PHP 8.4 idioms: readonly service classes, typed class constants,
+  `#[\Override]`, `new` without parentheses; the backend controller registers
+  through `#[AsController]`.
+- Development dependencies: PHPUnit 11.5 → 13.3, testing-framework 9.6 → 9.7,
+  PHPStan 2.1 → 2.2, phpstan-typo3 3.0 → 3.1, typo3-rector 3.14 → 3.16,
+  php-cs-fixer 3.0 → 3.95; `symfony/process` constrained to `^7.4` as TYPO3
+  itself requires. Rector now also checks the PHP 8.4 level set; Fractor
+  keeps XLIFF at two-space indentation.
+- CI runs PHP 8.5 as a required leg and the functional suite against both
+  supported nr_llm lines (0.34, 0.35).
+
+### Fixed
+
+- `<sf:markdown>` received HTML-escaped Markdown, so code examples showed
+  `&lt;Type&gt;` and `>` quotes became paragraphs on skill detail pages.
+- The runner column no longer shows the placeholder `none` for runs that never
+  reached a runner.
+
+### Removed
+
+- `Resources/Private/Language/locallang_mod.xlf` (replaced by
+  `Modules/skills.xlf`).
+
 ## 1.6.3 — 2026-09-20
 
 ### Fixed
