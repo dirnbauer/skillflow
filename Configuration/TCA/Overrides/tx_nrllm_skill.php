@@ -16,9 +16,17 @@ ExtensionManagementUtility::addTCAcolumns('tx_nrllm_skill', [
         'description' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:search.tags.description',
         'config' => ['type' => 'input', 'max' => 1024, 'eval' => 'trim', 'searchable' => true],
     ],
+    // JSON list written by skillflow:skills:sync from the SKILL.md front
+    // matter; the front matter stays the source of truth.
+    'tx_skillflow_abilities' => [
+        'label' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:skill.abilities',
+        'description' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:skill.abilities.description',
+        'config' => ['type' => 'text', 'rows' => 2, 'readOnly' => true, 'searchable' => true],
+    ],
 ]);
 
 ExtensionManagementUtility::addToAllTCAtypes(
     'tx_nrllm_skill',
-    '--div--;LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:tab.search, tx_skillflow_search_category, tx_skillflow_search_tags',
+    '--div--;LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:tab.search, tx_skillflow_search_category, tx_skillflow_search_tags,'
+    . ' --div--;LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:tab.abilities, tx_skillflow_abilities',
 );

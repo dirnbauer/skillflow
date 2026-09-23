@@ -12,6 +12,7 @@ use Webconsulting\Skillflow\Configuration\ExtensionSettings;
 use Webconsulting\Skillflow\Domain\RunStatus;
 use Webconsulting\Skillflow\Domain\SkillRunResult;
 use Webconsulting\Skillflow\Exception\ExecutionBlockedException;
+use Webconsulting\Skillflow\Service\SkillAbilityResolver;
 use Webconsulting\Skillflow\Support\Typed;
 
 /**
@@ -19,10 +20,15 @@ use Webconsulting\Skillflow\Support\Typed;
  * mode. When the "mcpConfigJson" setting is set (e.g. to the TYPO3 abilities
  * MCP server), it is written to a transient config and passed via
  * --mcp-config --strict-mcp-config, so the skill can act through the governed
- * abilities registry. The skill's "allowed-tools" rules are passed to the
- * CLI permission system, e.g. "mcp__typo3__ability_system_site-info" (one
- * ability) or "mcp__typo3" (every tool that server exposes). An explicitly
- * empty nr_llm tool declaration disables built-in and MCP tools.
+ * abilities registry.
+ *
+ * --allowedTools combines the skill's "allowed-tools" rules (e.g.
+ * "mcp__typo3" for every tool of that server) with the abilities it declares
+ * in "abilities:", each allowed as "mcp__<abilitiesMcpServer>__" plus
+ * AbilityDefinition::mcpToolName(), e.g. "mcp__typo3__ability_news_list".
+ * An explicitly empty "allowed-tools" disables the built-in tools; the
+ * declared abilities stay available as MCP tools, and without abilities no
+ * MCP server is started at all.
  *
  * This runner is strictly local-only and is additionally protected by the
  * EnvironmentGuard (Development context + DDEV).
@@ -35,6 +41,7 @@ final readonly class ClaudeCliRunner implements SkillRunnerInterface
     public function __construct(
         private ExtensionSettings $settings,
         private PromptBuilder $promptBuilder,
+        private SkillAbilityResolver $abilityResolver,
     ) {}
 
     #[\Override]
@@ -47,34 +54,10 @@ final readonly class ClaudeCliRunner implements SkillRunnerInterface
     public function run(array $skill, string $content, array $files = []): SkillRunResult
     {
         $binary = $this->resolveBinary();
-        $allowedTools = trim(Typed::string($skill['allowed_tools'] ?? null));
-        $toolsDisabled = json_decode(Typed::string($skill['allowed_tools_json'] ?? ''), true) === [];
-
-        $mcpConfigFile = $toolsDisabled ? '' : $this->writeMcpConfig();
+        $mcpConfigFile = $this->usesMcpServers($skill) ? $this->writeMcpConfig() : '';
         $userPrompt = $this->promptBuilder->buildUserPrompt($content);
         try {
-            $command = [
-                $binary,
-                '-p',
-                '--output-format', 'text',
-                '--max-turns', self::MAX_TURNS,
-                '--append-system-prompt', $this->promptBuilder->buildSystemPrompt($skill),
-            ];
-            if ($toolsDisabled) {
-                $command[] = '--tools';
-                $command[] = '';
-                $command[] = '--strict-mcp-config';
-            } elseif ($allowedTools !== '') {
-                $command[] = '--allowedTools';
-                $command[] = $allowedTools;
-            }
-            if ($mcpConfigFile !== '') {
-                // Restrict to exactly the configured servers (the abilities
-                // MCP server), ignoring any user/global .mcp.json.
-                $command[] = '--mcp-config';
-                $command[] = $mcpConfigFile;
-                $command[] = '--strict-mcp-config';
-            }
+            $command = $this->buildCommand($binary, $skill, $mcpConfigFile);
 
             $process = new Process(
                 $command,
@@ -107,6 +90,90 @@ final readonly class ClaudeCliRunner implements SkillRunnerInterface
                 unlink($mcpConfigFile);
             }
         }
+    }
+
+    /**
+     * The CLI invocation for $skill, without the prompt (it goes to stdin).
+     *
+     * @param array<string, mixed> $skill a SkillFinder row
+     * @return list<string>
+     *
+     * @internal public for tests
+     */
+    public function buildCommand(string $binary, array $skill, string $mcpConfigFile): array
+    {
+        $command = [
+            $binary,
+            '-p',
+            '--output-format', 'text',
+            '--max-turns', self::MAX_TURNS,
+            '--append-system-prompt', $this->promptBuilder->buildSystemPrompt($skill),
+        ];
+
+        if ($this->builtInToolsDisabled($skill)) {
+            $command[] = '--tools';
+            $command[] = '';
+        }
+        $allowedTools = $this->allowedTools($skill);
+        if ($allowedTools !== []) {
+            $command[] = '--allowedTools';
+            $command[] = implode(',', $allowedTools);
+        }
+        if ($mcpConfigFile !== '') {
+            // Restrict to exactly the configured servers (the abilities
+            // MCP server), ignoring any user/global .mcp.json.
+            $command[] = '--mcp-config';
+            $command[] = $mcpConfigFile;
+        }
+        if ($mcpConfigFile !== '' || $this->builtInToolsDisabled($skill)) {
+            $command[] = '--strict-mcp-config';
+        }
+
+        return $command;
+    }
+
+    /**
+     * The skill's own allowed-tools rules followed by one rule per declared
+     * ability that the registry knows.
+     *
+     * @param array<string, mixed> $skill
+     * @return list<string>
+     */
+    public function allowedTools(array $skill): array
+    {
+        $declared = array_values(array_filter(
+            array_map(trim(...), explode(',', Typed::string($skill['allowed_tools'] ?? null))),
+            static fn(string $tool): bool => $tool !== '',
+        ));
+        $abilities = is_array($skill['abilities'] ?? null) ? array_values(array_filter($skill['abilities'], is_string(...))) : [];
+
+        return array_values(array_unique([...$declared, ...$this->abilityResolver->allowedTools($abilities)]));
+    }
+
+    /**
+     * An explicitly empty nr_llm tool declaration ("allowed-tools: []").
+     *
+     * @param array<string, mixed> $skill
+     */
+    private function builtInToolsDisabled(array $skill): bool
+    {
+        return json_decode(Typed::string($skill['allowed_tools_json'] ?? ''), true) === [];
+    }
+
+    /**
+     * MCP servers start unless the skill disabled every tool and declares
+     * no ability it could reach through them.
+     *
+     * @param array<string, mixed> $skill
+     */
+    private function usesMcpServers(array $skill): bool
+    {
+        if (!$this->builtInToolsDisabled($skill)) {
+            return true;
+        }
+        $abilities = is_array($skill['abilities'] ?? null) ? array_values(array_filter($skill['abilities'], is_string(...))) : [];
+
+        return $this->abilityResolver->allowedTools($abilities) !== [];
     }
 
     /**

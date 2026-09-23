@@ -54,6 +54,7 @@ final class SkillDetailController extends ActionController
             'meta' => $meta,
             'sourceTitle' => $this->skillFinder->findSourceTitle(Typed::int($row['source'] ?? 0)),
             'allowedTools' => array_values(array_filter(explode(',', Typed::string($row['allowed_tools'] ?? '')), static fn(string $tool): bool => trim($tool) !== '')),
+            'abilities' => is_array($row['abilities'] ?? null) ? array_values(array_filter($row['abilities'], is_string(...))) : [],
         ]);
         return $this->htmlResponse();
     }

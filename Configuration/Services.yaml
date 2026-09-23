@@ -22,6 +22,11 @@ services:
     arguments:
       - '@TYPO3\CMS\Core\Configuration\ExtensionConfiguration'
 
+  # The abilities contract of skills (optional typo3-abilities). Public for
+  # other extensions that run skills through their own engines.
+  Webconsulting\Skillflow\Service\SkillAbilityResolver:
+    public: true
+
   # Instantiated via GeneralUtility::makeInstance() by the DataHandler hook registry
   Webconsulting\Skillflow\Hooks\DataHandlerHook:
     public: true

@@ -284,6 +284,18 @@
         <source>Filters</source>
         <target state="translated">Filter</target>
       </trans-unit>
+      <trans-unit id="tab.abilities" resname="tab.abilities">
+        <source>Skillflow abilities</source>
+        <target state="translated">Skillflow-Abilities</target>
+      </trans-unit>
+      <trans-unit id="skill.abilities" resname="skill.abilities">
+        <source>Abilities</source>
+        <target state="translated">Abilities</target>
+      </trans-unit>
+      <trans-unit id="skill.abilities.description" resname="skill.abilities.description">
+        <source>The abilities this skill declares in its SKILL.md front matter ("abilities:"), stored by skillflow:skills:sync. A Claude CLI run allows exactly these as MCP tools.</source>
+        <target state="translated">Die Abilities, die dieser Skill im Front Matter seiner SKILL.md deklariert („abilities:“), gespeichert von skillflow:skills:sync. Ein Lauf über die Claude-CLI erlaubt genau diese als MCP-Tools.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

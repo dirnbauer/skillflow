@@ -10,6 +10,10 @@ CREATE TABLE sys_workspace_stage (
     tx_skillflow_nrllm_skills varchar(255) DEFAULT '' NOT NULL
 );
 
+CREATE TABLE tx_nrllm_skill (
+    tx_skillflow_abilities text
+);
+
 CREATE TABLE tx_skillflow_run (
     instructions text,
     output mediumtext,

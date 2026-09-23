@@ -28,6 +28,7 @@ use Webconsulting\Skillflow\Runner\RunnerFactory;
 use Webconsulting\Skillflow\Service\ContentCollector;
 use Webconsulting\Skillflow\Service\ContextResolver;
 use Webconsulting\Skillflow\Service\EnvironmentGuard;
+use Webconsulting\Skillflow\Service\SkillAbilityResolver;
 use Webconsulting\Skillflow\Service\SkillExecutionService;
 use Webconsulting\Skillflow\Service\SkillFinder;
 
@@ -250,10 +251,11 @@ final class SkillWorkflowTest extends FunctionalTestCase
         $binary = $this->getInstancePath() . '/fake-claude';
         file_put_contents($binary, "#!/usr/bin/env php\n<?php echo json_encode(\$argv, JSON_THROW_ON_ERROR);\n");
         chmod($binary, 0700);
-        $runner = new ClaudeCliRunner(ExtensionSettings::fromArray([
+        $settings = ExtensionSettings::fromArray([
             'claudeBinary' => $binary,
             'mcpConfigJson' => '{"mcpServers":{"example":{"command":"unused"}}}',
-        ]), new PromptBuilder());
+        ]);
+        $runner = new ClaudeCliRunner($settings, new PromptBuilder(), new SkillAbilityResolver($settings));
         try {
             $result = $runner->run(['name' => 'Review', 'allowed_tools' => '', 'allowed_tools_json' => '[]'], 'Content');
         } finally {
@@ -322,7 +324,7 @@ final class SkillWorkflowTest extends FunctionalTestCase
         $factory = new RunnerFactory(
             $configuration,
             new AnthropicApiRunner($this->get(RequestFactory::class), $configuration, $prompt),
-            new ClaudeCliRunner($configuration, $prompt),
+            new ClaudeCliRunner($configuration, $prompt, new SkillAbilityResolver($configuration)),
             new NrLlmRunner($configuration, $prompt, $llm),
         );
         if ($dispatcher === null) {

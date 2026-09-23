@@ -82,6 +82,16 @@
                                 <f:if condition="{meta.version}">
                                     <div><dt><f:translate key="{ll}skill.version" /></dt><dd>{meta.version}</dd></div>
                                 </f:if>
+                                <f:if condition="{abilities}">
+                                    <div>
+                                        <dt><f:translate key="{ll}skill.abilities" /></dt>
+                                        <dd>
+                                            <ul class="skillflow-skill__tools">
+                                                <f:for each="{abilities}" as="ability"><li><code>{ability}</code></li></f:for>
+                                            </ul>
+                                        </dd>
+                                    </div>
+                                </f:if>
                                 <f:if condition="{allowedTools}">
                                     <div>
                                         <dt><f:translate key="{ll}skill.allowedTools" /></dt>

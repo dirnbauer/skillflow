@@ -331,6 +331,8 @@ final readonly class SkillFinder
         $row['allowed_tools'] = is_array($allowedTools)
             ? implode(',', array_filter($allowedTools, is_string(...)))
             : '';
+        // SKILL.md "abilities:" (list<string>); see SkillAbilityStore.
+        $row['abilities'] = SkillAbilityStore::fromSkillRow($row);
 
         return $row;
     }

@@ -214,6 +214,15 @@
       <trans-unit id="search.ter.filters" resname="search.ter.filters">
         <source>Filters</source>
       </trans-unit>
+      <trans-unit id="tab.abilities" resname="tab.abilities">
+        <source>Skillflow abilities</source>
+      </trans-unit>
+      <trans-unit id="skill.abilities" resname="skill.abilities">
+        <source>Abilities</source>
+      </trans-unit>
+      <trans-unit id="skill.abilities.description" resname="skill.abilities.description">
+        <source>The abilities this skill declares in its SKILL.md front matter ("abilities:"), stored by skillflow:skills:sync. A Claude CLI run allows exactly these as MCP tools.</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>

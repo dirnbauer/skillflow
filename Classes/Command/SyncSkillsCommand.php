@@ -13,6 +13,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Webconsulting\Skillflow\Service\SkillAbilityStore;
 use Webconsulting\Skillflow\Service\SkillAdministrationService;
 use Webconsulting\Skillflow\Support\Typed;
 
@@ -28,6 +29,7 @@ final class SyncSkillsCommand extends Command
 {
     public function __construct(
         private readonly SkillAdministrationService $skills,
+        private readonly SkillAbilityStore $abilityStore,
     ) {
         parent::__construct();
     }
@@ -47,7 +49,9 @@ Runs nr_llm's skill sync for one source or for every enabled source:
 
 New skills are created disabled for review; enable them with
 <info>skillflow:skills:enable</info>. A re-sync disables enabled skills whose body
-changed and orphans skills that disappeared upstream.
+changed and orphans skills that disappeared upstream. The abilities a skill
+declares in its front matter ("abilities:") are stored for the Claude CLI
+runner; check them with <info>skillflow:skills:check</info>.
 
 Exit code 1 when a source ends in status "error" or was skipped because a sync
 is already running for it.
@@ -81,6 +85,9 @@ HELP);
         foreach ($sources as $source) {
             $io->section(sprintf('%s (uid %d, %s)', $source->getTitle(), (int)$source->getUid(), $source->getType()));
             $result = $this->skills->sync($source);
+            // Store the "abilities:" declarations for the module, the
+            // Claude CLI runner and skillflow:skills:check.
+            $declaringAbilities = $this->abilityStore->refreshSource((int)$source->getUid());
             $io->definitionList(
                 ['Status' => $result->status->value],
                 ['Created' => $result->created],
@@ -88,6 +95,7 @@ HELP);
                 ['Disabled on change' => $result->disabledOnChange],
                 ['Orphaned' => $result->orphaned],
                 ['Injection blocked' => $result->injectionBlocked],
+                ['Declaring abilities' => $declaringAbilities],
             );
             if ($result->errors !== []) {
                 $io->listing($result->errors);

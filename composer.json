@@ -41,8 +41,22 @@
         "saschaegerer/phpstan-typo3": "^3.1",
         "ssch/typo3-rector": "^3.16",
         "typo3/coding-standards": "^0.9",
-        "typo3/testing-framework": "^9.7"
+        "typo3/testing-framework": "^9.7",
+        "webconsulting/typo3-abilities": "^1.3"
     },
+    "suggest": {
+        "webconsulting/typo3-abilities": "Skills declare the abilities they need (SKILL.md \"abilities:\"); the Claude CLI runner allows exactly those MCP tools and skillflow:check reports missing or denied ones"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/dirnbauer/typo3-abilities",
+            "canonical": true,
+            "only": [
+                "webconsulting/typo3-abilities"
+            ]
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Webconsulting\\Skillflow\\": "Classes/"
