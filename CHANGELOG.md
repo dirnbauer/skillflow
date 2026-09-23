@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.9.0 — 2026-09-23
+
+### Fixed
+
+- Relative links in a skill body (`references/full-guide.md`,
+  `../typo3-structured-data/SKILL.md`, `assets/diagram.png`) resolved below
+  the detail page's URL and answered 404. A link to another active skill now
+  opens its detail page; any other file opens in the skill's source
+  repository (GitHub or GitLab) at the revision the body was synchronised
+  from. Paths that leave the repository, and files of sources on other hosts,
+  keep their text and lose the link.
+
+### Added
+
+- `<sf:markdown links="…">` and `MarkdownRenderer::toHtml($markdown,
+  $headingOffset, $links)` take a `RelativeLinkResolverInterface` that
+  rewrites relative links and images. `SkillDocumentLinkResolver` implements
+  it for skill bodies; the detail controller assigns one as `{links}`.
+- `SkillFinder::findSource()`, `::findAvailableSkillUidsByPath()` and
+  `::repositoryPath()`.
+
 ## 1.8.1 — 2026-09-23
 
 ### Fixed

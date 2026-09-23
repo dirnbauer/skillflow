@@ -4,6 +4,19 @@
 Upgrading
 =========
 
+..  _upgrade-1-9:
+
+1.9.0
+=====
+
+No database changes. Clear the caches.
+
+*   Relative links in a skill body no longer resolve below the detail page's
+    URL, where they answered 404: they open the linked skill's detail page or
+    the file in the source repository. An overridden
+    :file:`SkillDetail/Show.html` keeps the old links until it passes
+    ``links="{links}"`` to :html:`<sf:markdown>`.
+
 ..  _upgrade-1-8-1:
 
 1.8.1
