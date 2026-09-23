@@ -31,6 +31,9 @@ injection-blocked skills, followed by nr_llm's error list.
 *   New skills are created disabled for review.
 *   A re-sync disables enabled skills whose body changed and orphans skills
     that disappeared upstream.
+*   The ``abilities`` each skill declares are stored for the Claude CLI
+    runner and :ref:`command-skills-check` (``Declaring abilities`` counts
+    the skills that declare any, see :ref:`abilities`).
 *   Exit code ``1`` when the source is unknown or disabled, or when a sync
     ends in status ``error`` or was skipped because another sync holds the
     lock; ``2`` when neither a source nor ``--all`` was given.
@@ -74,6 +77,27 @@ Prints one row per skill: uid, identifier, name, source, enabled, support
 and orphaned state. Support is nr_llm's assessment — ``full``, or
 ``partial`` when the skill declares tools or references scripts; ``-v`` adds
 the assessment notes.
+
+..  _command-skills-check:
+
+skillflow:skills:check
+======================
+
+Alias ``skillflow:check``.
+
+..  code-block:: bash
+    :caption: Usage
+
+    vendor/bin/typo3 skillflow:skills:check [--enabled] [--as-user=<username>] [--json]
+
+Checks the abilities every skill declares (see :ref:`abilities`) and prints
+one row per finding: ``ability_missing`` (not registered, or typo3-abilities
+not active) or ``ability_denied`` (denied by the abilities policy, not
+exposed to MCP, or a scope the backend user lacks). The running backend user
+is checked unless ``--as-user`` names another one. ``--enabled`` limits the
+check to enabled, non-orphaned skills; ``--json`` prints
+``{"checked": <n>, "findings": [...]}``. Exit code ``1`` when there is at
+least one finding, ``2`` for an unknown ``--as-user``.
 
 ..  _command-run:
 

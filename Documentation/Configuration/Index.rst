@@ -23,9 +23,11 @@ Runner
 
 ..  confval:: model
     :type: string
-    :default: ``claude-sonnet-4-6``
+    :default: ``claude-sonnet-5``
 
-    Model id used by the direct Anthropic runner.
+    Model id used by the direct Anthropic runner. A model set before 1.8.0
+    (for example ``claude-sonnet-4-6``) stays; only an empty setting uses
+    the default.
 
 ..  confval:: apiKeyEnvVar
     :type: string
@@ -65,7 +67,18 @@ Runner
 
     Claude Code :file:`.mcp.json` content for the ``cli`` runner, for example
     ``{"mcpServers":{"typo3":{"command":"vendor/bin/typo3","args":["mcp:server"]}}}``.
-    Allow the tools per skill via ``allowed-tools``. Empty disables MCP.
+    Allow the tools per skill via ``allowed-tools`` or ``abilities``
+    (see :ref:`abilities`). Empty disables MCP.
+
+..  confval:: abilitiesMcpServer
+    :type: string
+    :default: ``typo3``
+
+    Name of the server in :confval:`mcpConfigJson` that serves the TYPO3
+    abilities registry. A skill's ``abilities`` become the allowed tools
+    ``mcp__<abilitiesMcpServer>__ability_<namespace>_<name>``. Letters,
+    digits, ``-`` and ``_`` (not ``__``); anything else falls back to
+    ``typo3``.
 
 ..  _configuration-engines:
 

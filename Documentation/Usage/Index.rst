@@ -44,7 +44,12 @@ The Skills module
 *   **Reports** lists the runs of the selected page (the page record and its
     content elements) or, with :guilabel:`All pages`, every run you may read,
     newest first and paginated. Status, verdict, score and engine are shown
-    per run.
+    per run. The skill's name links to its nr_llm record for users who may
+    edit it; a run whose skill was deleted in nr_llm is marked
+    :guilabel:`Deleted skill` with the name and identifier it ran under.
+*   **Abilities of the skills** lists the abilities the page's skills declare
+    and whether each is available to you, missing or denied (see
+    :ref:`abilities`).
 *   A report shows the run's metadata, the instructions it received and the
     output rendered as Markdown. Raw HTML in the output is escaped and unsafe
     links are removed; the plain text and any structured engine result are

@@ -47,6 +47,7 @@ skills in a Solr catalogue.
     Configuration/Index
     Usage/Index
     Commands/Index
+    Abilities/Index
     ExecutionEngines/Index
     Upgrade/Index
 

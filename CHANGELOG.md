@@ -1,5 +1,53 @@
 # Changelog
 
+## 1.8.0 — 2026-09-23
+
+### Added
+
+- **Abilities contract.** Skills declare the typo3-abilities they need in
+  their SKILL.md front matter (`abilities: [news/list, solr/index-queue]`).
+  `skillflow:skills:sync` stores the list in
+  `tx_nrllm_skill.tx_skillflow_abilities` (read-only on the skill record's
+  new "Skillflow abilities" tab); skills synchronized elsewhere are read from
+  their front matter.
+- The Claude CLI runner derives `--allowedTools` from the declared abilities:
+  `mcp__<server>__` plus `AbilityDefinition::mcpToolName()`, for every ability
+  the registry knows and exposes to MCP, added to the skill's own
+  `allowed-tools`. `allowed-tools: []` still switches the built-in tools off
+  but keeps the abilities. New setting `abilitiesMcpServer` (default `typo3`)
+  names the server in `mcpConfigJson`.
+- `skillflow:skills:check` (alias `skillflow:check`) reports
+  `ability_missing` (not registered, or typo3-abilities not active) and
+  `ability_denied` (site policy, review required, not exposed to MCP, or a
+  scope the running backend user lacks); `--as-user`, `--enabled`, `--json`;
+  exit code 1 on findings.
+- The Skills module lists the abilities of the page's skills with their
+  status for the logged-in user; a run report lists its skill's abilities;
+  the skill detail plugin lists the declared abilities.
+- typo3-abilities is optional: `SkillAbilityResolver` takes its registry,
+  policy and scope services as nullable constructor arguments. Functional
+  tests boot with and without the extension (installed but not active).
+
+### Changed
+
+- Default model `claude-sonnet-4-6` → `claude-sonnet-5` (Anthropic runner).
+  A configured model is kept.
+- Reports name their skill instead of `#<uid>`: the title links to the nr_llm
+  skill record for users who may edit it, and a run whose skill was deleted
+  shows "Deleted skill" with the name and identifier it ran under. Runs store
+  both (`tx_skillflow_run.skill_name`, `skill_identifier`) from now on;
+  older runs of a deleted skill show their uid.
+- `ClaudeCliRunner` receives `SkillAbilityResolver` (autowired);
+  `ClaudeCliRunner::buildCommand()` and `::allowedTools()` build the CLI
+  invocation.
+- Development: `webconsulting/typo3-abilities` ^1.3 as dev dependency and
+  suggestion.
+
+### Upgrade
+
+- Run `vendor/bin/typo3 extension:setup -e skillflow` for the new columns,
+  then `skillflow:skills:sync --all` once to store existing declarations.
+
 ## 1.7.0 — 2026-09-23
 
 ### Added

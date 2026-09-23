@@ -4,6 +4,27 @@
 Upgrading
 =========
 
+..  _upgrade-1-8:
+
+1.8.0
+=====
+
+Run :bash:`vendor/bin/typo3 extension:setup -e skillflow`: it adds
+:sql:`tx_nrllm_skill.tx_skillflow_abilities` and
+:sql:`tx_skillflow_run.skill_name` / :sql:`skill_identifier`.
+
+*   The default :confval:`model` is ``claude-sonnet-5``. A configured model
+    is kept.
+*   Skills can declare ``abilities`` (see :ref:`abilities`); run
+    ``skillflow:skills:sync`` once to store the declarations, then
+    ``skillflow:skills:check``. typo3-abilities stays optional.
+*   New setting :confval:`abilitiesMcpServer` (default ``typo3``).
+*   The reports name their skill and link the nr_llm record; runs of a
+    deleted skill say so. Runs recorded before 1.8.0 have no stored name and
+    show the skill uid.
+*   For developers: :php:`ClaudeCliRunner` takes :php:`SkillAbilityResolver`
+    as a third constructor argument (autowired).
+
 ..  _upgrade-1-7:
 
 1.7.0
@@ -56,8 +77,9 @@ Skill ownership migration
 
 Older releases imported skills themselves. Since the move to nr_llm ownership
 folder/repository/rule import, attachment materialization, local
-quarantine/license scanning and the commands ``skillflow:sync``,
-``skillflow:import-rules`` and ``skillflow:check`` are gone.
+quarantine/license scanning and the commands ``skillflow:sync`` and
+``skillflow:import-rules`` are gone. The name ``skillflow:check`` returned in
+1.8.0 as an alias of :ref:`command-skills-check`, which checks abilities.
 
 Manage sources and activation in :guilabel:`AI > Authoring > Skills`.
 Skillflow owns assignments and run history. Optional SkillSpector checks
