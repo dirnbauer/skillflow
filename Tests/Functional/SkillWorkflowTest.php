@@ -96,6 +96,41 @@ final class SkillWorkflowTest extends FunctionalTestCase
         self::assertNull($this->finder->findSkillByIdentifier('source:review-5/SKILL.md'));
     }
 
+    public function testTheDetailPageFindsTheSourceRepositoryAndTheSiblingSkills(): void
+    {
+        $this->pool->getConnectionForTable('tx_nrllm_skill_source')->insert('tx_nrllm_skill_source', [
+            'uid' => 7,
+            'title' => 'TYPO3 Skills',
+            'type' => 'repo',
+            'url' => 'https://github.com/dirnbauer/typo3-skills',
+            'ref' => 'main',
+            'pinned_sha' => 'abc123',
+        ]);
+        $skills = $this->pool->getConnectionForTable('tx_nrllm_skill');
+        foreach ([[10, 7, 'typo3-seo', 1], [11, 7, 'typo3-solr', 1], [12, 7, 'typo3-hidden', 0], [13, 8, 'other-source', 1]] as [$uid, $source, $name, $enabled]) {
+            $skills->insert('tx_nrllm_skill', [
+                'uid' => $uid,
+                'source' => $source,
+                'name' => $name,
+                'identifier' => $source . ':skills/' . $name . '/SKILL.md',
+                'body' => 'Body',
+                'enabled' => $enabled,
+            ]);
+        }
+
+        self::assertSame(
+            ['url' => 'https://github.com/dirnbauer/typo3-skills', 'ref' => 'main', 'pinnedSha' => 'abc123'],
+            $this->finder->findSource(7)
+        );
+        self::assertNull($this->finder->findSource(8));
+        self::assertSame(
+            ['skills/typo3-seo/SKILL.md' => 10, 'skills/typo3-solr/SKILL.md' => 11],
+            $this->finder->findAvailableSkillUidsByPath(7)
+        );
+        self::assertSame('skills/typo3-seo/SKILL.md', SkillFinder::repositoryPath('7:skills/typo3-seo/SKILL.md'));
+        self::assertSame('skills/typo3-seo/SKILL.md', SkillFinder::repositoryPath('skills/typo3-seo/SKILL.md'));
+    }
+
     #[DataProvider('unavailableSkills')]
     public function testUnavailableSkillIsRecordedAsBlockedWithoutCallingEngine(int $skillUid): void
     {

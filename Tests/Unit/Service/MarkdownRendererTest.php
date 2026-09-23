@@ -7,6 +7,7 @@ namespace Webconsulting\Skillflow\Tests\Unit\Service;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Webconsulting\Skillflow\Service\MarkdownRenderer;
+use Webconsulting\Skillflow\Service\RelativeLinkResolverInterface;
 
 final class MarkdownRendererTest extends TestCase
 {
@@ -57,6 +58,49 @@ final class MarkdownRendererTest extends TestCase
         self::assertStringNotContainsString('<h1>', $html);
         self::assertStringContainsString('&lt;h1&gt;raw&lt;/h1&gt;', $html);
         self::assertStringNotContainsString('javascript:', $html);
+    }
+
+    public function testTheLinkResolverRewritesLinksAndImages(): void
+    {
+        $links = new class implements RelativeLinkResolverInterface {
+            #[\Override]
+            public function resolve(string $url, bool $isImage): ?string
+            {
+                return match ($url) {
+                    'guide.md' => 'https://example.org/guide.md',
+                    'chart.png' => $isImage ? 'https://example.org/raw/chart.png' : null,
+                    'gone.md', 'gone.png' => '',
+                    default => null,
+                };
+            }
+        };
+
+        $html = new MarkdownRenderer()->toHtml(
+            'See [the *guide*](guide.md), [gone](gone.md), [kept](https://typo3.org) and ![chart](chart.png) ![lost image](gone.png).',
+            0,
+            $links,
+        );
+
+        self::assertStringContainsString('<a href="https://example.org/guide.md">the <em>guide</em></a>', $html);
+        self::assertStringContainsString(', gone, ', $html);
+        self::assertStringNotContainsString('gone.md', $html);
+        self::assertStringContainsString('<a href="https://typo3.org">kept</a>', $html);
+        self::assertStringContainsString('<img src="https://example.org/raw/chart.png" alt="chart" />', $html);
+        self::assertStringContainsString('lost image', $html);
+        self::assertStringNotContainsString('gone.png', $html);
+    }
+
+    public function testRewrittenLinksAreStillCheckedForUnsafeSchemes(): void
+    {
+        $links = new class implements RelativeLinkResolverInterface {
+            #[\Override]
+            public function resolve(string $url, bool $isImage): string
+            {
+                return 'javascript:alert(1)';
+            }
+        };
+
+        self::assertStringNotContainsString('javascript:', new MarkdownRenderer()->toHtml('[x](guide.md)', 0, $links));
     }
 
     public function testEmptyMarkdownRendersNothing(): void

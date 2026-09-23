@@ -8,6 +8,7 @@ use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\MetaTag\MetaTagManagerRegistry;
 use TYPO3\CMS\Core\PageTitle\RecordTitleProvider;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use Webconsulting\Skillflow\Service\SkillDocumentLinkResolver;
 use Webconsulting\Skillflow\Service\SkillFinder;
 use Webconsulting\Skillflow\Support\Typed;
 
@@ -55,8 +56,37 @@ final class SkillDetailController extends ActionController
             'sourceTitle' => $this->skillFinder->findSourceTitle(Typed::int($row['source'] ?? 0)),
             'allowedTools' => array_values(array_filter(explode(',', Typed::string($row['allowed_tools'] ?? '')), static fn(string $tool): bool => trim($tool) !== '')),
             'abilities' => is_array($row['abilities'] ?? null) ? array_values(array_filter($row['abilities'], is_string(...))) : [],
+            'links' => $this->documentLinks($row),
         ]);
         return $this->htmlResponse();
+    }
+
+    /**
+     * Where the SKILL.md's relative links point on this page: other skills to
+     * their detail page, any other file to the skill's source repository.
+     *
+     * @param array<string, mixed> $row
+     */
+    private function documentLinks(array $row): SkillDocumentLinkResolver
+    {
+        $sourceUid = Typed::int($row['source'] ?? 0);
+        $source = $this->skillFinder->findSource($sourceUid);
+        // The revision the body was synchronised from, so every linked file exists as the body describes it.
+        $revision = trim(Typed::string($row['source_sha'] ?? ''));
+        if ($revision === '') {
+            $revision = $source === null ? '' : ($source['pinnedSha'] !== '' ? $source['pinnedSha'] : $source['ref']);
+        }
+        [$fileBaseUrl, $rawBaseUrl] = SkillDocumentLinkResolver::repositoryBaseUrls($source['url'] ?? '', $revision);
+        $skillUids = $this->skillFinder->findAvailableSkillUidsByPath($sourceUid);
+
+        return new SkillDocumentLinkResolver(
+            SkillFinder::repositoryPath(Typed::string($row['identifier'] ?? '')),
+            $fileBaseUrl,
+            $rawBaseUrl,
+            fn(string $path): ?string => isset($skillUids[$path])
+                ? $this->uriBuilder->reset()->uriFor('show', ['skill' => $skillUids[$path]])
+                : null,
+        );
     }
 
     /** The skill, not the detail page, names the document for browsers, bookmarks and search engines. */

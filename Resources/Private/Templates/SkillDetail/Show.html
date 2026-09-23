@@ -44,8 +44,8 @@
 
                 <div class="skillflow-skill__layout">
                     <div class="skillflow-skill__body">
-                        <f:comment>The skill title above is the page's h1; the body's headings start at h2.</f:comment>
-                        <sf:markdown source="{skill.body}" headingOffset="1" />
+                        <f:comment>The skill title above is the page's h1; the body's headings start at h2. Relative links point to other skills' pages or the source repository.</f:comment>
+                        <sf:markdown source="{skill.body}" headingOffset="1" links="{links}" />
                     </div>
 
                     <aside class="skillflow-skill__aside" aria-label="{f:translate(key: '{ll}skill.details')}">

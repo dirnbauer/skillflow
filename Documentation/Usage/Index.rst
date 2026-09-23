@@ -113,6 +113,12 @@ ID with a copy button, license, version, allowed tools and the Markdown body.
 *   The skill's name is the page's only :html:`<h1>`. The Markdown body is
     rendered one level lower, so a SKILL.md ``# Title`` becomes an
     :html:`<h2>` and ``##`` an :html:`<h3>` (capped at :html:`<h6>`).
+*   Relative links in the SKILL.md point where they can be followed: a link
+    to another skill (``../typo3-seo/SKILL.md``) opens that skill's detail
+    page when the skill is active, and any other file (``references/guide.md``,
+    ``assets/diagram.png``) opens in the skill's source repository at the
+    synchronised revision. GitHub and GitLab repositories are supported; for
+    other sources the link text stays and the link goes.
 *   Themes that print the page title as an :html:`<h1>` of their own can step
     aside on these pages: Skillflow adds an entry to the TypoScript registry
     :typoscript:`lib.pageHeadingOwnedByContent` on every page that holds a
@@ -130,6 +136,13 @@ ID with a copy button, license, version, allowed tools and the Markdown body.
     ``headingOffset`` moves every heading down that many levels (``0``, the
     default, keeps them). The backend run report uses ``2`` because it sits
     under the module's :html:`<h1>` and the :guilabel:`Report` :html:`<h2>`.
+    ``links`` takes the controller's ``{links}`` variable (a
+    ``RelativeLinkResolverInterface``); without it relative links are left
+    as they are:
+
+    ..  code-block:: html
+
+        <sf:markdown source="{skill.body}" headingOffset="1" links="{links}" />
 
 ..  _usage-heading-registry:
 

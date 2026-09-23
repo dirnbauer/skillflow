@@ -6,6 +6,7 @@ namespace Webconsulting\Skillflow\ViewHelpers;
 
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use Webconsulting\Skillflow\Service\MarkdownRenderer;
+use Webconsulting\Skillflow\Service\RelativeLinkResolverInterface;
 use Webconsulting\Skillflow\Support\Typed;
 
 /**
@@ -33,6 +34,14 @@ use Webconsulting\Skillflow\Support\Typed;
  * ```
  *   <sf:markdown source="{skill.body}" headingOffset="1" />
  * ```
+ *
+ * `links` takes a RelativeLinkResolverInterface that rewrites the links and
+ * images relative to the Markdown file, which would not resolve on the page
+ * (the skill detail page passes a SkillDocumentLinkResolver):
+ *
+ * ```
+ *   <sf:markdown source="{skill.body}" headingOffset="1" links="{links}" />
+ * ```
  */
 final class MarkdownViewHelper extends AbstractViewHelper
 {
@@ -49,6 +58,7 @@ final class MarkdownViewHelper extends AbstractViewHelper
     {
         $this->registerArgument('source', 'string', 'Markdown source; defaults to the tag content', false, null, false);
         $this->registerArgument('headingOffset', 'int', 'Levels to move every heading down (0 keeps them, 1 turns # into h2); capped at h6', false, 0);
+        $this->registerArgument('links', RelativeLinkResolverInterface::class, 'Rewrites links and images relative to the Markdown file; relative URLs stay as they are without it', false, null);
     }
 
     #[\Override]
@@ -56,7 +66,13 @@ final class MarkdownViewHelper extends AbstractViewHelper
     {
         $source = $this->arguments['source'] ?? $this->renderChildren();
 
-        return $this->markdownRenderer->toHtml(Typed::string($source), Typed::int($this->arguments['headingOffset'] ?? 0));
+        $links = $this->arguments['links'] ?? null;
+
+        return $this->markdownRenderer->toHtml(
+            Typed::string($source),
+            Typed::int($this->arguments['headingOffset'] ?? 0),
+            $links instanceof RelativeLinkResolverInterface ? $links : null,
+        );
     }
 
     /**

@@ -100,6 +100,70 @@ final readonly class SkillFinder
     }
 
     /**
+     * Repository URL and revisions of an nr_llm skill source; null when it
+     * does not exist (any more).
+     *
+     * @return array{url: string, ref: string, pinnedSha: string}|null
+     */
+    public function findSource(int $sourceUid): ?array
+    {
+        if ($sourceUid <= 0) {
+            return null;
+        }
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_nrllm_skill_source');
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $row = $queryBuilder->select('url', 'ref', 'pinned_sha')->from('tx_nrllm_skill_source')
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($sourceUid, ParameterType::INTEGER)))
+            ->executeQuery()
+            ->fetchAssociative();
+
+        return $row === false ? null : [
+            'url' => Typed::string($row['url'] ?? ''),
+            'ref' => Typed::string($row['ref'] ?? ''),
+            'pinnedSha' => Typed::string($row['pinned_sha'] ?? ''),
+        ];
+    }
+
+    /**
+     * Uids of the available skills of one source, keyed by the path of their
+     * SKILL.md in the source repository (`skills/typo3-seo/SKILL.md`).
+     *
+     * @return array<string, int>
+     */
+    public function findAvailableSkillUidsByPath(int $sourceUid): array
+    {
+        if ($sourceUid <= 0) {
+            return [];
+        }
+        $queryBuilder = $this->skillQuery(false);
+        $rows = $queryBuilder
+            ->select('uid', 'identifier')
+            ->from(self::SKILL_TABLE)
+            ->andWhere($queryBuilder->expr()->eq('source', $queryBuilder->createNamedParameter($sourceUid, ParameterType::INTEGER)))
+            ->executeQuery()
+            ->fetchAllAssociative();
+
+        $uids = [];
+        foreach ($rows as $row) {
+            $path = self::repositoryPath(Typed::string($row['identifier'] ?? ''));
+            if ($path !== '') {
+                $uids[$path] = Typed::int($row['uid'] ?? 0);
+            }
+        }
+
+        return $uids;
+    }
+
+    /**
+     * The repository path in an nr_llm skill identifier, which prefixes it
+     * with the source uid: `2:skills/typo3-seo/SKILL.md`.
+     */
+    public static function repositoryPath(string $identifier): string
+    {
+        return preg_replace('/^\d+:/', '', trim($identifier)) ?? '';
+    }
+
+    /**
      * @return list<array<string, mixed>>
      */
     public function findSkillsByUidList(string $uidList): array
