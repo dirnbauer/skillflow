@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Webconsulting\Skillflow\Runner;
 
-use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Http\RequestFactory;
+use Webconsulting\Skillflow\Configuration\ExtensionSettings;
+use Webconsulting\Skillflow\Domain\RunStatus;
 use Webconsulting\Skillflow\Domain\SkillRunResult;
 use Webconsulting\Skillflow\Exception\ExecutionBlockedException;
 use Webconsulting\Skillflow\Support\Typed;
@@ -15,54 +16,53 @@ use Webconsulting\Skillflow\Support\Typed;
  *
  * The API key is read from an environment variable (never stored in the
  * database). Optionally remote MCP servers can be attached through the
- * Anthropic MCP connector by configuring "mcpServersJson" in the
- * extension configuration.
+ * Anthropic MCP connector by configuring "mcpServersJson" in the extension
+ * configuration.
  */
-final class AnthropicApiRunner implements SkillRunnerInterface
+final readonly class AnthropicApiRunner implements SkillRunnerInterface
 {
-    private const ENDPOINT = 'https://api.anthropic.com/v1/messages';
+    private const string ENDPOINT = 'https://api.anthropic.com/v1/messages';
+    private const string API_VERSION = '2023-06-01';
 
     public function __construct(
-        private readonly RequestFactory $requestFactory,
-        private readonly ExtensionConfiguration $extensionConfiguration,
-        private readonly PromptBuilder $promptBuilder,
+        private RequestFactory $requestFactory,
+        private ExtensionSettings $settings,
+        private PromptBuilder $promptBuilder,
     ) {}
 
+    #[\Override]
     public function getName(): string
     {
         return 'anthropic-api';
     }
 
+    #[\Override]
     public function run(array $skill, string $content, array $files = []): SkillRunResult
     {
-        $conf = $this->configuration();
-        $envVar = trim(Typed::string($conf['apiKeyEnvVar'] ?? null)) ?: 'ANTHROPIC_API_KEY';
-        $apiKey = getenv($envVar);
+        $apiKey = getenv($this->settings->apiKeyEnvVar);
         if ($apiKey === false || $apiKey === '') {
             throw new ExecutionBlockedException(
-                sprintf('Anthropic API key env var "%s" is not set. Configure it in your local .ddev environment.', $envVar),
+                sprintf('Anthropic API key env var "%s" is not set. Configure it in your local .ddev environment.', $this->settings->apiKeyEnvVar),
                 1760000030
             );
         }
 
         $payload = [
-            'model' => trim(Typed::string($conf['model'] ?? null)) ?: 'claude-sonnet-4-6',
-            'max_tokens' => max(256, Typed::int($conf['maxTokens'] ?? 2048)),
+            'model' => $this->settings->model,
+            'max_tokens' => $this->settings->maxTokens,
             'system' => $this->promptBuilder->buildSystemPrompt($skill),
             'messages' => [
                 ['role' => 'user', 'content' => $this->promptBuilder->buildUserPrompt($content)],
             ],
         ];
-
         $headers = [
             'Content-Type' => 'application/json',
             'x-api-key' => $apiKey,
-            'anthropic-version' => '2023-06-01',
+            'anthropic-version' => self::API_VERSION,
         ];
 
-        $mcpServersJson = trim(Typed::string($conf['mcpServersJson'] ?? null));
-        if ($mcpServersJson !== '') {
-            $mcpServers = json_decode($mcpServersJson, true);
+        if ($this->settings->mcpServersJson !== '') {
+            $mcpServers = json_decode($this->settings->mcpServersJson, true);
             if (!is_array($mcpServers)) {
                 throw new \RuntimeException('Extension setting "mcpServersJson" is not valid JSON', 1760000031);
             }
@@ -72,7 +72,7 @@ final class AnthropicApiRunner implements SkillRunnerInterface
 
         $response = $this->requestFactory->request(self::ENDPOINT, 'POST', [
             'headers' => $headers,
-            'body' => (string)json_encode($payload),
+            'body' => json_encode($payload, JSON_THROW_ON_ERROR),
             'timeout' => 120,
             'http_errors' => false,
         ]);
@@ -97,18 +97,6 @@ final class AnthropicApiRunner implements SkillRunnerInterface
             throw new \RuntimeException('Anthropic API returned an empty response', 1760000033);
         }
 
-        return new SkillRunResult('success', trim($text), $this->getName());
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function configuration(): array
-    {
-        try {
-            return Typed::stringKeyedArray($this->extensionConfiguration->get('skillflow'));
-        } catch (\Throwable) {
-            return [];
-        }
+        return new SkillRunResult(RunStatus::Success->value, trim($text), $this->getName());
     }
 }

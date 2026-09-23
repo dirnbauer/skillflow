@@ -6,9 +6,10 @@ namespace Webconsulting\Skillflow\Runner;
 
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
-use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use Webconsulting\Skillflow\Configuration\ExtensionSettings;
+use Webconsulting\Skillflow\Domain\RunStatus;
 use Webconsulting\Skillflow\Domain\SkillRunResult;
 use Webconsulting\Skillflow\Exception\ExecutionBlockedException;
 use Webconsulting\Skillflow\Support\Typed;
@@ -26,18 +27,23 @@ use Webconsulting\Skillflow\Support\Typed;
  * This runner is strictly local-only and is additionally protected by the
  * EnvironmentGuard (Development context + DDEV).
  */
-final class ClaudeCliRunner implements SkillRunnerInterface
+final readonly class ClaudeCliRunner implements SkillRunnerInterface
 {
+    private const string MAX_TURNS = '8';
+    private const int TIMEOUT_SECONDS = 300;
+
     public function __construct(
-        private readonly ExtensionConfiguration $extensionConfiguration,
-        private readonly PromptBuilder $promptBuilder,
+        private ExtensionSettings $settings,
+        private PromptBuilder $promptBuilder,
     ) {}
 
+    #[\Override]
     public function getName(): string
     {
         return 'claude-cli';
     }
 
+    #[\Override]
     public function run(array $skill, string $content, array $files = []): SkillRunResult
     {
         $binary = $this->resolveBinary();
@@ -51,7 +57,7 @@ final class ClaudeCliRunner implements SkillRunnerInterface
                 $binary,
                 '-p',
                 '--output-format', 'text',
-                '--max-turns', '8',
+                '--max-turns', self::MAX_TURNS,
                 '--append-system-prompt', $this->promptBuilder->buildSystemPrompt($skill),
             ];
             if ($toolsDisabled) {
@@ -75,7 +81,7 @@ final class ClaudeCliRunner implements SkillRunnerInterface
                 Environment::getProjectPath(),
                 null,
                 $userPrompt,
-                300
+                self::TIMEOUT_SECONDS,
             );
             $process->run();
 
@@ -83,7 +89,7 @@ final class ClaudeCliRunner implements SkillRunnerInterface
                 throw new \RuntimeException(
                     sprintf(
                         'Claude CLI failed (exit %d): %s',
-                        (int)$process->getExitCode(),
+                        $process->getExitCode() ?? -1,
                         mb_substr(trim($process->getErrorOutput() . "\n" . $process->getOutput()), 0, 500)
                     ),
                     1760000040
@@ -95,7 +101,7 @@ final class ClaudeCliRunner implements SkillRunnerInterface
                 throw new \RuntimeException('Claude CLI returned an empty response', 1760000041);
             }
 
-            return new SkillRunResult('success', $output, $this->getName());
+            return new SkillRunResult(RunStatus::Success->value, $output, $this->getName());
         } finally {
             if ($mcpConfigFile !== '' && is_file($mcpConfigFile)) {
                 unlink($mcpConfigFile);
@@ -111,17 +117,11 @@ final class ClaudeCliRunner implements SkillRunnerInterface
      */
     private function writeMcpConfig(): string
     {
-        try {
-            $conf = Typed::stringKeyedArray($this->extensionConfiguration->get('skillflow'));
-        } catch (\Throwable) {
-            $conf = [];
-        }
-        $mcpConfigJson = trim(Typed::string($conf['mcpConfigJson'] ?? null));
-        if ($mcpConfigJson === '') {
+        if ($this->settings->mcpConfigJson === '') {
             return '';
         }
 
-        $decoded = json_decode($mcpConfigJson, true);
+        $decoded = json_decode($this->settings->mcpConfigJson, true);
         if (!is_array($decoded)) {
             throw new ExecutionBlockedException('Extension setting "mcpConfigJson" is not valid JSON.', 1760000044);
         }
@@ -129,21 +129,16 @@ final class ClaudeCliRunner implements SkillRunnerInterface
         $directory = Environment::getVarPath() . '/transient/skillflow';
         GeneralUtility::mkdir_deep($directory);
         $file = $directory . '/mcp-' . bin2hex(random_bytes(8)) . '.json';
-        file_put_contents($file, (string)json_encode($decoded, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        file_put_contents($file, json_encode($decoded, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
         return $file;
     }
 
     private function resolveBinary(): string
     {
-        try {
-            $conf = Typed::stringKeyedArray($this->extensionConfiguration->get('skillflow'));
-        } catch (\Throwable) {
-            $conf = [];
-        }
-        $binary = trim(Typed::string($conf['claudeBinary'] ?? null)) ?: 'claude';
+        $binary = $this->settings->claudeBinary;
         if (!str_contains($binary, '/')) {
-            $resolved = (new ExecutableFinder())->find($binary);
+            $resolved = new ExecutableFinder()->find($binary);
             if ($resolved === null) {
                 throw new ExecutionBlockedException(
                     sprintf('Claude CLI binary "%s" not found in PATH. Install Claude Code or configure "claudeBinary".', $binary),

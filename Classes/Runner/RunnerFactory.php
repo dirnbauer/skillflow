@@ -4,37 +4,28 @@ declare(strict_types=1);
 
 namespace Webconsulting\Skillflow\Runner;
 
-use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use Webconsulting\Skillflow\Configuration\ExtensionSettings;
+use Webconsulting\Skillflow\Configuration\RunnerMode;
 
-final class RunnerFactory
+/** Picks the runner of the classic single-shot chain. */
+final readonly class RunnerFactory
 {
     public function __construct(
-        private readonly ExtensionConfiguration $extensionConfiguration,
-        private readonly AnthropicApiRunner $anthropicApiRunner,
-        private readonly ClaudeCliRunner $claudeCliRunner,
-        private readonly NrLlmRunner $nrLlmRunner,
+        private ExtensionSettings $settings,
+        private AnthropicApiRunner $anthropicApiRunner,
+        private ClaudeCliRunner $claudeCliRunner,
+        private NrLlmRunner $nrLlmRunner,
     ) {}
 
     public function create(): SkillRunnerInterface
     {
-        try {
-            $conf = (array)$this->extensionConfiguration->get('skillflow');
-        } catch (\Throwable) {
-            $conf = [];
-        }
-
-        $runner = $conf['runner'] ?? 'api';
-        if ($runner === 'cli') {
-            return $this->claudeCliRunner;
-        }
-
-        // API mode: prefer the connection configured in nr_llm (AI → Setup)
-        // so no separate ANTHROPIC_API_KEY env var is required;
-        // fall back to the env-var Anthropic Messages API runner when nr_llm has
-        // no usable provider. Set runner=anthropic to force the env-var runner.
-        if ($runner !== 'anthropic' && $this->nrLlmRunner->isAvailable()) {
-            return $this->nrLlmRunner;
-        }
-        return $this->anthropicApiRunner;
+        // "api" prefers the connection configured in nr_llm (AI → Setup), so no
+        // separate ANTHROPIC_API_KEY is required, and falls back to the
+        // env-key Anthropic runner when nr_llm has no usable provider.
+        return match ($this->settings->runner) {
+            RunnerMode::Cli => $this->claudeCliRunner,
+            RunnerMode::Anthropic => $this->anthropicApiRunner,
+            RunnerMode::Api => $this->nrLlmRunner->isAvailable() ? $this->nrLlmRunner : $this->anthropicApiRunner,
+        };
     }
 }

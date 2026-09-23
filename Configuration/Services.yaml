@@ -11,10 +11,17 @@ services:
   Webconsulting\Skillflow\:
     resource: '../Classes/*'
     exclude:
+      - '../Classes/Configuration/*'
       - '../Classes/Domain/*'
       - '../Classes/Event/*'
       - '../Classes/Exception/*'
       - '../Classes/Support/*'
+
+  # The extension configuration, read once per container.
+  Webconsulting\Skillflow\Configuration\ExtensionSettings:
+    factory: ['Webconsulting\Skillflow\Configuration\ExtensionSettings', 'load']
+    arguments:
+      - '@TYPO3\CMS\Core\Configuration\ExtensionConfiguration'
 
   # Instantiated via GeneralUtility::makeInstance() by the DataHandler hook registry
   Webconsulting\Skillflow\Hooks\DataHandlerHook:

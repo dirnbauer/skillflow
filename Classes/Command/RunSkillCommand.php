@@ -34,6 +34,7 @@ final class RunSkillCommand extends Command
         parent::__construct();
     }
 
+    #[\Override]
     protected function configure(): void
     {
         $this
@@ -45,6 +46,7 @@ final class RunSkillCommand extends Command
             ->addOption('instructions', 'i', InputOption::VALUE_REQUIRED, 'Per-run instructions', '');
     }
 
+    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -69,13 +71,16 @@ final class RunSkillCommand extends Command
         if ($result->verdict !== '') {
             $io->writeln(sprintf('Verdict: <info>%s</info>%s', $result->verdict, $result->score >= 0 ? ' (' . $result->score . '/100)' : ''));
         }
+        if ($result->runUid > 0) {
+            $io->writeln('Run: #' . $result->runUid);
+        }
         if ($result->externalRef !== '') {
             $io->writeln('Engine run: ' . $result->externalRef);
         }
         $io->newLine();
         $io->writeln($result->output);
 
-        return in_array($result->status, ['success', 'pending'], true) ? Command::SUCCESS : Command::FAILURE;
+        return $result->runStatus()->isAccepted() ? Command::SUCCESS : Command::FAILURE;
     }
 
     private function resolveSkillUid(string $skill): int

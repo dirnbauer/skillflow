@@ -26,6 +26,7 @@ final class ListSkillsCommand extends Command
         parent::__construct();
     }
 
+    #[\Override]
     protected function configure(): void
     {
         $this
@@ -44,6 +45,7 @@ disappeared upstream and cannot be enabled.
 HELP);
     }
 
+    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);

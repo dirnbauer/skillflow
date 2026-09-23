@@ -10,6 +10,7 @@ use ApacheSolrForTypo3\Solr\IndexQueue\Initializer\Record;
 final class SkillsRecordInitializer extends Record
 {
     /** @return int[] */
+    #[\Override]
     protected function getPages(): array
     {
         /** @var int[] $pages */

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Webconsulting\Skillflow\Service;
 
-use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Core\Environment;
+use Webconsulting\Skillflow\Configuration\ExtensionSettings;
 use Webconsulting\Skillflow\Exception\ExecutionBlockedException;
 
 /**
@@ -13,10 +13,10 @@ use Webconsulting\Skillflow\Exception\ExecutionBlockedException;
  * execute a local CLI with tool access. By default this is only allowed on
  * a local DDEV installation running in Development context.
  */
-final class EnvironmentGuard
+final readonly class EnvironmentGuard
 {
     public function __construct(
-        private readonly ExtensionConfiguration $extensionConfiguration,
+        private ExtensionSettings $settings,
     ) {}
 
     public function isExecutionAllowed(): bool
@@ -50,14 +50,6 @@ final class EnvironmentGuard
 
     public function requiresLocalEnvironment(): bool
     {
-        try {
-            $conf = $this->extensionConfiguration->get('skillflow');
-        } catch (\Throwable) {
-            return true;
-        }
-        if (!is_array($conf)) {
-            return true;
-        }
-        return (bool)($conf['requireLocalEnvironment'] ?? true);
+        return $this->settings->requireLocalEnvironment;
     }
 }

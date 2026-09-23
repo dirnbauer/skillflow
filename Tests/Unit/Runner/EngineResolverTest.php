@@ -7,7 +7,7 @@ namespace Webconsulting\Skillflow\Tests\Unit\Runner;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
-use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use Webconsulting\Skillflow\Configuration\ExtensionSettings;
 use Webconsulting\Skillflow\Domain\SkillRunContext;
 use Webconsulting\Skillflow\Runner\ContextAwareSkillRunnerInterface;
 use Webconsulting\Skillflow\Runner\EngineResolver;
@@ -17,13 +17,11 @@ final class EngineResolverTest extends TestCase
     #[DataProvider('unavailableEngines')]
     public function testUnavailableEngineRespectsFallback(bool $registered, bool $fallback): void
     {
-        $configuration = self::createStub(ExtensionConfiguration::class);
-        $configuration->method('get')->willReturn(['engineFallback' => $fallback ? '1' : '0']);
         $runner = self::createStub(ContextAwareSkillRunnerInterface::class);
         $runner->method('getIdentifier')->willReturn('review');
         $runner->method('canRun')->willReturn(false);
 
-        $resolver = new EngineResolver($registered ? [$runner] : [], $configuration, new NullLogger());
+        $resolver = new EngineResolver($registered ? [$runner] : [], ExtensionSettings::fromArray(['engineFallback' => $fallback ? '1' : '0']), new NullLogger());
         $result = $resolver->resolve([], new SkillRunContext('pages', 1, 0, 0, '', 0, 'review', 1));
 
         self::assertNull($result->contextRunner);
@@ -42,9 +40,7 @@ final class EngineResolverTest extends TestCase
 
     public function testExplicitClassicOverridesSkillAndDefaultEngine(): void
     {
-        $configuration = self::createStub(ExtensionConfiguration::class);
-        $configuration->method('get')->willReturn(['defaultEngine' => 'review']);
-        $resolver = new EngineResolver([], $configuration, new NullLogger());
+        $resolver = new EngineResolver([], new ExtensionSettings(defaultEngine: 'review'), new NullLogger());
 
         $result = $resolver->resolve(
             ['metadata' => '{"engine":"other"}'],

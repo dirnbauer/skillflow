@@ -14,6 +14,7 @@ use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
+use Webconsulting\Skillflow\Configuration\ExtensionSettings;
 use Webconsulting\Skillflow\Domain\SkillRunResult;
 use Webconsulting\Skillflow\Event\AfterSkillRunEvent;
 use Webconsulting\Skillflow\Hooks\DataHandlerHook;
@@ -249,12 +250,10 @@ final class SkillWorkflowTest extends FunctionalTestCase
         $binary = $this->getInstancePath() . '/fake-claude';
         file_put_contents($binary, "#!/usr/bin/env php\n<?php echo json_encode(\$argv, JSON_THROW_ON_ERROR);\n");
         chmod($binary, 0700);
-        $configuration = self::createStub(ExtensionConfiguration::class);
-        $configuration->method('get')->willReturn([
+        $runner = new ClaudeCliRunner(ExtensionSettings::fromArray([
             'claudeBinary' => $binary,
             'mcpConfigJson' => '{"mcpServers":{"example":{"command":"unused"}}}',
-        ]);
-        $runner = new ClaudeCliRunner($configuration, new PromptBuilder());
+        ]), new PromptBuilder());
         try {
             $result = $runner->run(['name' => 'Review', 'allowed_tools' => '', 'allowed_tools_json' => '[]'], 'Content');
         } finally {
@@ -281,7 +280,7 @@ final class SkillWorkflowTest extends FunctionalTestCase
             'uid' => 2, 'pid' => 1, 'header' => 'Draft {table}', 'bodytext' => '<p>Draft body</p>', 't3ver_oid' => 1, 't3ver_wsid' => 7,
         ]);
         $schemaFactory = $this->get(TcaSchemaFactory::class);
-        $content = (new ContentCollector($this->pool, $schemaFactory))->collect('pages', 1, 7);
+        $content = new ContentCollector($this->pool, $schemaFactory)->collect('pages', 1, 7);
 
         self::assertStringContainsString('Draft page', $content);
         self::assertStringContainsString('Draft {table}', $content);
@@ -316,7 +315,7 @@ final class SkillWorkflowTest extends FunctionalTestCase
 
     private function executionService(ContextAwareSkillRunnerInterface $engine, ?EventDispatcherInterface $dispatcher = null): SkillExecutionService
     {
-        $configuration = new ExtensionConfiguration();
+        $configuration = ExtensionSettings::load(new ExtensionConfiguration());
         $prompt = new PromptBuilder();
         $llm = $this->createMock(LlmServiceManagerInterface::class);
         $llm->expects($this->never())->method('chat');

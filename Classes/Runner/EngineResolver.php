@@ -6,7 +6,7 @@ namespace Webconsulting\Skillflow\Runner;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
-use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use Webconsulting\Skillflow\Configuration\ExtensionSettings;
 use Webconsulting\Skillflow\Domain\SkillRunContext;
 use Webconsulting\Skillflow\Support\Typed;
 
@@ -18,18 +18,18 @@ use Webconsulting\Skillflow\Support\Typed;
  * Precedence: per-run request > skill metadata "engine" key > extension setting
  * defaultEngine > classic. 'classic' always forces the built-in chain.
  */
-final class EngineResolver
+final readonly class EngineResolver
 {
-    public const CLASSIC = 'classic';
+    public const string CLASSIC = ExtensionSettings::CLASSIC_ENGINE;
 
     /**
      * @param iterable<ContextAwareSkillRunnerInterface> $contextRunners
      */
     public function __construct(
         #[AutowireIterator('skillflow.context_runner')]
-        private readonly iterable $contextRunners,
-        private readonly ExtensionConfiguration $extensionConfiguration,
-        private readonly LoggerInterface $logger,
+        private iterable $contextRunners,
+        private ExtensionSettings $settings,
+        private LoggerInterface $logger,
     ) {}
 
     /**
@@ -51,7 +51,7 @@ final class EngineResolver
     {
         $requested = trim($context->requestedEngine);
         if ($requested === '') {
-            $requested = $this->engineFromMetadata($skill) ?: $this->defaultEngine();
+            $requested = $this->engineFromMetadata($skill) ?: $this->settings->defaultEngine;
         }
         if ($requested === '' || $requested === self::CLASSIC) {
             return new EngineResolution(null, self::CLASSIC);
@@ -59,7 +59,7 @@ final class EngineResolver
 
         $runner = $this->getRegisteredEngines()[$requested] ?? null;
         if ($runner === null || !$runner->canRun($skill, $context)) {
-            if ($this->fallbackEnabled()) {
+            if ($this->settings->engineFallback) {
                 $this->logger->warning('Skill engine unavailable, falling back to the classic chain', [
                     'engine' => $requested,
                     'skill' => Typed::string($skill['identifier'] ?? ''),
@@ -86,27 +86,5 @@ final class EngineResolver
             return '';
         }
         return trim(Typed::string($metadata['engine'] ?? ''));
-    }
-
-    private function defaultEngine(): string
-    {
-        return trim(Typed::string($this->configuration()['defaultEngine'] ?? self::CLASSIC));
-    }
-
-    private function fallbackEnabled(): bool
-    {
-        return (bool)($this->configuration()['engineFallback'] ?? true);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function configuration(): array
-    {
-        try {
-            return Typed::stringKeyedArray($this->extensionConfiguration->get('skillflow'));
-        } catch (\Throwable) {
-            return [];
-        }
     }
 }

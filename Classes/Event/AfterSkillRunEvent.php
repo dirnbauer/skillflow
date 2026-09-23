@@ -12,17 +12,17 @@ use Webconsulting\Skillflow\Domain\SkillRunResult;
  * Read-only. $engineRequested and $engineUsed diverge when the requested
  * engine was unavailable and the run fell back to the classic chain.
  */
-final class AfterSkillRunEvent
+final readonly class AfterSkillRunEvent
 {
     /**
      * @param array<string, mixed> $skill normalized tx_nrllm_skill row
      */
     public function __construct(
-        public readonly array $skill,
-        public readonly SkillRunContext $context,
-        public readonly SkillRunResult $result,
-        public readonly int $runUid,
-        public readonly string $engineRequested,
-        public readonly string $engineUsed,
+        public array $skill,
+        public SkillRunContext $context,
+        public SkillRunResult $result,
+        public int $runUid,
+        public string $engineRequested,
+        public string $engineUsed,
     ) {}
 }

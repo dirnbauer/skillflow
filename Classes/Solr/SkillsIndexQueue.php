@@ -11,9 +11,10 @@ use ApacheSolrForTypo3\Solr\IndexQueue\Queue;
 /** Restricts the freshly initialized rebuild to the skills configuration. */
 final class SkillsIndexQueue extends Queue
 {
-    public const CONFIGURATION = 'skills';
+    public const string CONFIGURATION = 'skills';
 
     /** @return Item[] */
+    #[\Override]
     public function getItemsToIndex(Site $site, int $limit = 50): array
     {
         return $this->queueItemRepository->findItems(

@@ -18,13 +18,13 @@ use Webconsulting\Skillflow\Support\Typed;
     identifier: 'skillflow/solr-metadata',
     event: BeforeDocumentIsProcessedForIndexingEvent::class,
 )]
-final class AddSkillMetadataToSolrDocument
+final readonly class AddSkillMetadataToSolrDocument
 {
-    private const SKILL_TABLE = 'tx_nrllm_skill';
+    private const string SKILL_TABLE = 'tx_nrllm_skill';
 
     public function __construct(
-        private readonly SkillDocumentFields $skillDocumentFields,
-        private readonly ConnectionPool $connectionPool,
+        private SkillDocumentFields $skillDocumentFields,
+        private ConnectionPool $connectionPool,
     ) {}
 
     public function __invoke(BeforeDocumentIsProcessedForIndexingEvent $event): void

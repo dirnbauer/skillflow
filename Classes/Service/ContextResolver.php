@@ -21,9 +21,9 @@ use Webconsulting\Skillflow\Support\Typed;
  *
  * Supported tokens: {uid} {table} {pid} {title} {workspace}
  */
-final class ContextResolver
+final readonly class ContextResolver
 {
-    public function __construct(private readonly TcaSchemaFactory $schemaFactory) {}
+    public function __construct(private TcaSchemaFactory $schemaFactory) {}
 
     /**
      * @return array<string, string> token => already-stringified value

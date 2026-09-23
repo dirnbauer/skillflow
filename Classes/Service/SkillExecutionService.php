@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Webconsulting\Skillflow\Service;
 
+use Doctrine\DBAL\ParameterType;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use Webconsulting\Skillflow\Domain\RunStatus;
 use Webconsulting\Skillflow\Domain\SkillRunContext;
 use Webconsulting\Skillflow\Domain\SkillRunResult;
 use Webconsulting\Skillflow\Event\AfterSkillRunEvent;
@@ -25,28 +27,29 @@ use Webconsulting\Skillflow\Support\Typed;
  * against a stable run uid and settle asynchronously. Never lets an AI failure
  * escape into the calling editing process.
  */
-final class SkillExecutionService
+final readonly class SkillExecutionService
 {
     /** Runs stuck in the transient 'running' state longer than this are failed lazily. */
-    private const STALE_RUN_SECONDS = 1800;
+    private const int STALE_RUN_SECONDS = 1800;
+    private const string TABLE = 'tx_skillflow_run';
 
     public function __construct(
-        private readonly EnvironmentGuard $environmentGuard,
-        private readonly ContentCollector $contentCollector,
-        private readonly RunnerFactory $runnerFactory,
-        private readonly EngineResolver $engineResolver,
-        private readonly SkillFinder $skillFinder,
-        private readonly ContextResolver $contextResolver,
-        private readonly ConnectionPool $connectionPool,
-        private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly LoggerInterface $logger,
+        private EnvironmentGuard $environmentGuard,
+        private ContentCollector $contentCollector,
+        private RunnerFactory $runnerFactory,
+        private EngineResolver $engineResolver,
+        private SkillFinder $skillFinder,
+        private ContextResolver $contextResolver,
+        private ConnectionPool $connectionPool,
+        private EventDispatcherInterface $eventDispatcher,
+        private LoggerInterface $logger,
     ) {}
 
     public function runSkillOnRecord(int $skillUid, string $table, int $recordUid, int $workspaceId, int $stageUid = 0, string $instructions = '', string $engine = ''): SkillRunResult
     {
         $skill = $this->skillFinder->findSkillByUid($skillUid);
         if ($skill === null) {
-            return new SkillRunResult('failed', 'Skill ' . $skillUid . ' not found', 'none');
+            return SkillRunResult::failed('Skill ' . $skillUid . ' not found');
         }
 
         // Phase 1: the run row exists before anything executes, so engines get
@@ -102,15 +105,16 @@ final class SkillExecutionService
                 $result = $runner->run($skill, $content);
             }
         } catch (ExecutionBlockedException $e) {
-            $result = new SkillRunResult('blocked', $e->getMessage(), 'none');
+            $result = SkillRunResult::blocked($e->getMessage());
             $this->logger->warning('Skill run blocked', ['skill' => $skillUid, 'reason' => $e->getMessage()]);
         } catch (\Throwable $e) {
-            $result = new SkillRunResult('failed', $e->getMessage(), 'none');
+            $result = SkillRunResult::failed($e->getMessage());
             $this->logger->error('Skill run failed', ['skill' => $skillUid, 'exception' => $e]);
         }
 
         // Phase 2: settle the row (a 'pending' result keeps it open — the
         // engine's extension mirrors the final outcome in later).
+        $result = $result->withRunUid($runUid);
         $this->settleRun($runUid, $result, $resolvedInstructions);
         try {
             $this->eventDispatcher->dispatch(new AfterSkillRunEvent(
@@ -139,16 +143,14 @@ final class SkillExecutionService
      */
     public function failStaleRuns(int $maxAgeSeconds = self::STALE_RUN_SECONDS): int
     {
-        $threshold = time() - $maxAgeSeconds;
-        $connection = $this->connectionPool->getConnectionForTable('tx_skillflow_run');
-        $queryBuilder = $connection->createQueryBuilder();
-        return (int)$queryBuilder->update('tx_skillflow_run')
-            ->set('status', 'failed')
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE);
+        return (int)$queryBuilder->update(self::TABLE)
+            ->set('status', RunStatus::Failed->value)
             ->set('output', 'Run did not settle within ' . $maxAgeSeconds . ' seconds and was marked failed.')
             ->set('tstamp', time())
             ->where(
-                $queryBuilder->expr()->eq('status', $queryBuilder->createNamedParameter('running')),
-                $queryBuilder->expr()->lt('tstamp', $queryBuilder->createNamedParameter($threshold, \Doctrine\DBAL\ParameterType::INTEGER))
+                $queryBuilder->expr()->eq('status', $queryBuilder->createNamedParameter(RunStatus::Running->value)),
+                $queryBuilder->expr()->lt('tstamp', $queryBuilder->createNamedParameter(time() - $maxAgeSeconds, ParameterType::INTEGER))
             )
             ->executeStatement();
     }
@@ -188,8 +190,8 @@ final class SkillExecutionService
     private function insertRun(int $skillUid, string $table, int $recordUid, int $workspaceId, int $stageUid, string $instructions): int
     {
         $now = time();
-        $connection = $this->connectionPool->getConnectionForTable('tx_skillflow_run');
-        $connection->insert('tx_skillflow_run', [
+        $connection = $this->connectionPool->getConnectionForTable(self::TABLE);
+        $connection->insert(self::TABLE, [
             'pid' => 0,
             'crdate' => $now,
             'tstamp' => $now,
@@ -198,7 +200,7 @@ final class SkillExecutionService
             'target_uid' => $recordUid,
             'workspace_uid' => $workspaceId,
             'stage_uid' => $stageUid,
-            'status' => 'running',
+            'status' => RunStatus::Running->value,
             'runner' => '',
             'instructions' => mb_substr($instructions, 0, 65535),
             'output' => '',
@@ -208,7 +210,7 @@ final class SkillExecutionService
 
     private function settleRun(int $runUid, SkillRunResult $result, string $instructions): void
     {
-        $this->connectionPool->getConnectionForTable('tx_skillflow_run')->update('tx_skillflow_run', [
+        $this->connectionPool->getConnectionForTable(self::TABLE)->update(self::TABLE, [
             'tstamp' => time(),
             'status' => $result->status,
             'runner' => $result->runner,

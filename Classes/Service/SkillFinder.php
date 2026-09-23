@@ -7,6 +7,7 @@ namespace Webconsulting\Skillflow\Service;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -18,13 +19,14 @@ use Webconsulting\Skillflow\Support\Typed;
  * nr_llm is the only skill importer and owner. Skillflow stores only its
  * page/user/workspace assignments and run history, all keyed by nr_llm UIDs.
  */
-final class SkillFinder
+final readonly class SkillFinder
 {
-    public const ASSIGNMENT_FIELD = 'tx_skillflow_nrllm_skills';
-    private const SKILL_TABLE = 'tx_nrllm_skill';
+    public const string ASSIGNMENT_FIELD = 'tx_skillflow_nrllm_skills';
+    private const string SKILL_TABLE = 'tx_nrllm_skill';
+    private const string RUN_TABLE = 'tx_skillflow_run';
 
     public function __construct(
-        private readonly ConnectionPool $connectionPool,
+        private ConnectionPool $connectionPool,
     ) {}
 
     /**
@@ -80,6 +82,21 @@ final class SkillFinder
             ->fetchAssociative();
 
         return $row === false ? null : $this->normalizeRow($row);
+    }
+
+    /** Title of an nr_llm skill source, '' when it does not exist (any more). */
+    public function findSourceTitle(int $sourceUid): string
+    {
+        if ($sourceUid <= 0) {
+            return '';
+        }
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_nrllm_skill_source');
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+
+        return Typed::string($queryBuilder->select('title')->from('tx_nrllm_skill_source')
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($sourceUid, ParameterType::INTEGER)))
+            ->executeQuery()
+            ->fetchOne());
     }
 
     /**
@@ -158,16 +175,45 @@ final class SkillFinder
      */
     public function findRecentRuns(int $limit = 20): array
     {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_skillflow_run');
-        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        return $this->findRuns($limit);
+    }
 
-        return $queryBuilder
-            ->select('uid', 'crdate', 'skill', 'target_table', 'target_uid', 'workspace_uid', 'status', 'runner')
-            ->from('tx_skillflow_run')
+    /**
+     * Newest runs first, optionally narrowed to one workspace and to one page
+     * (runs against the page record itself and against its content elements).
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function findRuns(int $limit, ?int $workspaceUid = null, ?int $pageUid = null): array
+    {
+        $queryBuilder = $this->runQuery();
+        $queryBuilder
+            ->select('uid', 'crdate', 'skill', 'target_table', 'target_uid', 'workspace_uid', 'stage_uid', 'status', 'runner', 'verdict', 'score', 'external_engine')
+            ->from(self::RUN_TABLE)
             ->orderBy('crdate', 'DESC')
-            ->setMaxResults($limit)
-            ->executeQuery()
-            ->fetchAllAssociative();
+            ->addOrderBy('uid', 'DESC')
+            ->setMaxResults($limit);
+        if ($workspaceUid !== null) {
+            $queryBuilder->andWhere($queryBuilder->expr()->eq('workspace_uid', $queryBuilder->createNamedParameter($workspaceUid, ParameterType::INTEGER)));
+        }
+        if ($pageUid !== null) {
+            $targets = [
+                $queryBuilder->expr()->and(
+                    $queryBuilder->expr()->eq('target_table', $queryBuilder->createNamedParameter('pages')),
+                    $queryBuilder->expr()->eq('target_uid', $queryBuilder->createNamedParameter($pageUid, ParameterType::INTEGER)),
+                ),
+            ];
+            $contentUids = $this->findContentUidsOnPage($pageUid);
+            if ($contentUids !== []) {
+                $targets[] = $queryBuilder->expr()->and(
+                    $queryBuilder->expr()->eq('target_table', $queryBuilder->createNamedParameter('tt_content')),
+                    $queryBuilder->expr()->in('target_uid', $queryBuilder->createNamedParameter($contentUids, ArrayParameterType::INTEGER)),
+                );
+            }
+            $queryBuilder->andWhere($queryBuilder->expr()->or(...$targets));
+        }
+
+        return array_values($queryBuilder->executeQuery()->fetchAllAssociative());
     }
 
     /**
@@ -175,11 +221,10 @@ final class SkillFinder
      */
     public function findRunByUid(int $uid): ?array
     {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_skillflow_run');
-        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $queryBuilder = $this->runQuery();
         $row = $queryBuilder
             ->select('*')
-            ->from('tx_skillflow_run')
+            ->from(self::RUN_TABLE)
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, ParameterType::INTEGER)))
             ->executeQuery()
             ->fetchAssociative();
@@ -187,7 +232,34 @@ final class SkillFinder
         return $row === false ? null : $row;
     }
 
-    private function skillQuery(bool $includeUnavailable): \TYPO3\CMS\Core\Database\Query\QueryBuilder
+    private function runQuery(): QueryBuilder
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::RUN_TABLE);
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+
+        return $queryBuilder;
+    }
+
+    /**
+     * Content elements on a page in every workspace: a run may target a draft.
+     *
+     * @return list<int>
+     */
+    private function findContentUidsOnPage(int $pageUid): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tt_content');
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+
+        return array_map(
+            Typed::int(...),
+            $queryBuilder->select('uid')->from('tt_content')
+                ->where($queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($pageUid, ParameterType::INTEGER)))
+                ->executeQuery()
+                ->fetchFirstColumn(),
+        );
+    }
+
+    private function skillQuery(bool $includeUnavailable): QueryBuilder
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::SKILL_TABLE);
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));

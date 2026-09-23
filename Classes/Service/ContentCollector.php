@@ -18,13 +18,13 @@ use Webconsulting\Skillflow\Support\Typed;
  * Workspace-aware: live records are fetched first and the requested
  * workspace version is overlaid on top.
  */
-final class ContentCollector
+final readonly class ContentCollector
 {
-    private const MAX_FIELD_LENGTH = 6000;
+    private const int MAX_FIELD_LENGTH = 6000;
 
     public function __construct(
-        private readonly ConnectionPool $connectionPool,
-        private readonly TcaSchemaFactory $schemaFactory,
+        private ConnectionPool $connectionPool,
+        private TcaSchemaFactory $schemaFactory,
     ) {}
 
     public function collect(string $table, int $uid, int $workspaceId): string

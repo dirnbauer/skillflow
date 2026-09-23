@@ -30,14 +30,14 @@ use Webconsulting\Skillflow\Domain\SkillEnableOutcome;
  * the only class using them, limited to the base Extbase repository methods
  * (findAll, findByUid, update) and SkillRepository::findBySource().
  */
-final class SkillAdministrationService
+final readonly class SkillAdministrationService
 {
     public function __construct(
-        private readonly SkillSourceRepository $sourceRepository,
-        private readonly SkillRepository $skillRepository,
-        private readonly SkillSyncService $syncService,
-        private readonly SkillAuditService $auditService,
-        private readonly PersistenceManagerInterface $persistenceManager,
+        private SkillSourceRepository $sourceRepository,
+        private SkillRepository $skillRepository,
+        private SkillSyncService $syncService,
+        private SkillAuditService $auditService,
+        private PersistenceManagerInterface $persistenceManager,
     ) {}
 
     /**

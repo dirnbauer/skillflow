@@ -6,10 +6,10 @@ namespace Webconsulting\Skillflow\Runner;
 
 use Netresearch\NrLlm\Service\LlmServiceManagerInterface;
 use Netresearch\NrLlm\Service\Option\ChatOptions;
-use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use Webconsulting\Skillflow\Configuration\ExtensionSettings;
+use Webconsulting\Skillflow\Domain\RunStatus;
 use Webconsulting\Skillflow\Domain\SkillRunResult;
 use Webconsulting\Skillflow\Exception\ExecutionBlockedException;
-use Webconsulting\Skillflow\Support\Typed;
 
 /**
  * Runs a skill through the nr_llm extension, reusing the LLM connection already
@@ -17,14 +17,15 @@ use Webconsulting\Skillflow\Support\Typed;
  * API key). nr_llm's chat() prefers its backend-managed default configuration,
  * so no skillflow-specific key or env var is needed.
  */
-final class NrLlmRunner implements SkillRunnerInterface
+final readonly class NrLlmRunner implements SkillRunnerInterface
 {
     public function __construct(
-        private readonly ExtensionConfiguration $extensionConfiguration,
-        private readonly PromptBuilder $promptBuilder,
-        private readonly LlmServiceManagerInterface $llmServiceManager,
+        private ExtensionSettings $settings,
+        private PromptBuilder $promptBuilder,
+        private LlmServiceManagerInterface $llmServiceManager,
     ) {}
 
+    #[\Override]
     public function getName(): string
     {
         return 'nr-llm';
@@ -42,6 +43,7 @@ final class NrLlmRunner implements SkillRunnerInterface
         }
     }
 
+    #[\Override]
     public function run(array $skill, string $content, array $files = []): SkillRunResult
     {
         if (!$this->isAvailable()) {
@@ -51,14 +53,15 @@ final class NrLlmRunner implements SkillRunnerInterface
             );
         }
 
-        $system = $this->promptBuilder->buildSystemPrompt($skill);
-        $user = $this->promptBuilder->buildUserPrompt($content);
-
-        $maxTokens = max(256, Typed::int($this->configuration()['maxTokens'] ?? 2048));
-        $options = (new ChatOptions())->withSystemPrompt($system)->withMaxTokens($maxTokens);
+        $options = new ChatOptions()
+            ->withSystemPrompt($this->promptBuilder->buildSystemPrompt($skill))
+            ->withMaxTokens($this->settings->maxTokens);
 
         try {
-            $response = $this->llmServiceManager->chat([['role' => 'user', 'content' => $user]], $options);
+            $response = $this->llmServiceManager->chat(
+                [['role' => 'user', 'content' => $this->promptBuilder->buildUserPrompt($content)]],
+                $options,
+            );
         } catch (\Throwable $e) {
             throw new \RuntimeException('nr_llm chat request failed: ' . $e->getMessage(), 1760002001, $e);
         }
@@ -68,18 +71,6 @@ final class NrLlmRunner implements SkillRunnerInterface
             throw new \RuntimeException('nr_llm returned an empty response', 1760002002);
         }
 
-        return new SkillRunResult('success', $text, $this->getName());
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function configuration(): array
-    {
-        try {
-            return Typed::stringKeyedArray($this->extensionConfiguration->get('skillflow'));
-        } catch (\Throwable) {
-            return [];
-        }
+        return new SkillRunResult(RunStatus::Success->value, $text, $this->getName());
     }
 }
