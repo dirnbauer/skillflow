@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.8.1 — 2026-09-23
+
+### Fixed
+
+- The skill detail page has exactly one `<h1>`, the skill title. The Markdown
+  body is rendered one level lower (`# Title` → `<h2>`, `##` → `<h3>`, capped
+  at `<h6>`); its stylesheet sizes the shifted levels as before.
+- Themes that print the page title as an `<h1>` can step aside on skill
+  detail pages: `ext_localconf.php` adds an entry to the TypoScript registry
+  `lib.pageHeadingOwnedByContent` on every page holding a `skillflow_skilldetail`
+  element (read by Desiderio 4.4; no dependency on any theme).
+- The backend run report renders the Markdown output from `<h3>` on, below the
+  module `<h1>` and the "Report" `<h2>`.
+
+### Added
+
+- `<sf:markdown headingOffset="1">` and `MarkdownRenderer::toHtml($markdown,
+  $headingOffset)` move every heading down by the offset (default 0).
+
 ## 1.8.0 — 2026-09-23
 
 ### Added

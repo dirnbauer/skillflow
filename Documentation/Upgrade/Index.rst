@@ -4,6 +4,23 @@
 Upgrading
 =========
 
+..  _upgrade-1-8-1:
+
+1.8.1
+=====
+
+No database changes. Clear the caches.
+
+*   The skill detail body starts at :html:`<h2>`: SKILL.md headings move one
+    level down, so the skill title stays the page's only :html:`<h1>`. An
+    overridden :file:`SkillDetail/Show.html` keeps the old levels until it
+    passes ``headingOffset="1"`` to :html:`<sf:markdown>`.
+*   Pages holding a :guilabel:`Skill detail` element register themselves in
+    :typoscript:`lib.pageHeadingOwnedByContent` (see
+    :ref:`usage-heading-registry`). With Desiderio 4.4 the theme's page-title
+    :html:`<h1>` disappears there; a site package condition that did the same
+    can go.
+
 ..  _upgrade-1-8:
 
 1.8.0
