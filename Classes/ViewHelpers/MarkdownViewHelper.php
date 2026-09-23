@@ -24,6 +24,15 @@ use Webconsulting\Skillflow\Support\Typed;
  *   <sf:markdown>{skill.body}</sf:markdown>
  *   <sf:markdown source="{skill.body}" />
  * ```
+ *
+ * `headingOffset` moves every Markdown heading down that many levels (capped
+ * at h6). Where the page already has its h1 — the skill title on the detail
+ * page — `headingOffset="1"` turns the document's `# Title` into an h2, so the
+ * page keeps exactly one h1:
+ *
+ * ```
+ *   <sf:markdown source="{skill.body}" headingOffset="1" />
+ * ```
  */
 final class MarkdownViewHelper extends AbstractViewHelper
 {
@@ -39,6 +48,7 @@ final class MarkdownViewHelper extends AbstractViewHelper
     public function initializeArguments(): void
     {
         $this->registerArgument('source', 'string', 'Markdown source; defaults to the tag content', false, null, false);
+        $this->registerArgument('headingOffset', 'int', 'Levels to move every heading down (0 keeps them, 1 turns # into h2); capped at h6', false, 0);
     }
 
     #[\Override]
@@ -46,7 +56,7 @@ final class MarkdownViewHelper extends AbstractViewHelper
     {
         $source = $this->arguments['source'] ?? $this->renderChildren();
 
-        return $this->markdownRenderer->toHtml(Typed::string($source));
+        return $this->markdownRenderer->toHtml(Typed::string($source), Typed::int($this->arguments['headingOffset'] ?? 0));
     }
 
     /**
