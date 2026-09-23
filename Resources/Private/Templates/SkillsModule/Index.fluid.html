@@ -1,0 +1,228 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+<f:layout name="Module" />
+
+<f:section name="Content">
+    <f:asset.css identifier="skillflow-module" href="EXT:skillflow/Resources/Public/Css/module.css" />
+    <f:asset.module identifier="@webconsulting/skillflow/run-form.js" />
+
+    <h1><f:translate key="module.title" domain="skillflow.messages" /></h1>
+
+    <f:if condition="{executionBlockReason}">
+        <f:be.infobox
+            title="{f:translate(key: 'security.blocked.title', domain: 'skillflow.messages')}"
+            state="{f:constant(name: 'TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::WARNING')}"
+        >
+            <p>{executionBlockReason}</p>
+        </f:be.infobox>
+    </f:if>
+
+    <f:if condition="{page}">
+        <f:then>
+            <f:render section="RunForm" arguments="{_all}" />
+        </f:then>
+        <f:else>
+            <f:be.infobox
+                title="{f:translate(key: 'page.none.title', domain: 'skillflow.messages')}"
+                state="{f:constant(name: 'TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::INFO')}"
+            >
+                <p><f:translate key="page.none.message" domain="skillflow.messages" /></p>
+            </f:be.infobox>
+        </f:else>
+    </f:if>
+
+    <f:render section="Runs" arguments="{_all}" />
+</f:section>
+
+<f:section name="RunForm">
+    <h2><f:translate key="run.headline" domain="skillflow.messages" arguments="{0: page.title}" /></h2>
+    <p class="text-variant">
+        <f:translate key="run.context" domain="skillflow.messages" arguments="{0: pageUid, 1: workspaceTitle}" />
+    </p>
+
+    <f:if condition="{skillGroups}">
+        <f:then>
+            <f:if condition="!{executionBlockReason}">
+                <form action="{formUri}" method="post" class="skillflow-run-form" data-skillflow-run-form="">
+                    <input type="hidden" name="page" value="{pageUid}" />
+                    <div class="form-row">
+                        <div class="form-group skillflow-run-form__skill">
+                            <label class="form-label" for="skillflow-skill"><f:translate key="run.skill" domain="skillflow.messages" /></label>
+                            <select id="skillflow-skill" name="skill" class="form-select">
+                                <f:for each="{skillGroups}" as="group">
+                                    <optgroup label="{group.label}">
+                                        <f:for each="{group.skills}" as="skill">
+                                            <option value="{skill.uid}">{skill.name}</option>
+                                        </f:for>
+                                    </optgroup>
+                                </f:for>
+                            </select>
+                        </div>
+                        <f:if condition="{engines}">
+                            <div class="form-group">
+                                <label class="form-label" for="skillflow-engine"><f:translate key="run.engine" domain="skillflow.messages" /></label>
+                                <select id="skillflow-engine" name="engine" class="form-select">
+                                    <option value=""><f:translate key="run.engine.auto" domain="skillflow.messages" /></option>
+                                    <option value="classic"><f:translate key="run.engine.classic" domain="skillflow.messages" /></option>
+                                    <f:for each="{engines}" as="engine">
+                                        <option value="{engine}">{engine}</option>
+                                    </f:for>
+                                </select>
+                            </div>
+                        </f:if>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="skillflow-instructions"><f:translate key="run.instructions" domain="skillflow.messages" /></label>
+                        <textarea id="skillflow-instructions" name="instructions" class="form-control" rows="3" aria-describedby="skillflow-instructions-help"></textarea>
+                        <div id="skillflow-instructions-help" class="form-text">
+                            <f:translate key="run.instructions.help" domain="skillflow.messages" />
+                        </div>
+                    </div>
+                    <div class="skillflow-run-form__actions">
+                        <button type="submit" name="action" value="run" class="btn btn-primary">
+                            <core:icon identifier="actions-play" size="small" />
+                            <f:translate key="run.submitSelected" domain="skillflow.messages" />
+                        </button>
+                        <button type="submit" name="action" value="runPageSkills" class="btn btn-default"{f:if(condition: '!{assignedSkills}', then: ' disabled="disabled"')}>
+                            <core:icon identifier="actions-play" size="small" />
+                            <f:translate key="run.submitAssigned" domain="skillflow.messages" arguments="{0: '{assignedSkills -> f:count()}'}" />
+                        </button>
+                        <span class="skillflow-run-form__status" role="status" aria-live="polite" data-skillflow-run-status="">
+                            <span class="skillflow-run-form__progress" hidden="hidden" data-skillflow-run-progress="">
+                                <core:icon identifier="spinner-circle" size="small" />
+                                <f:translate key="run.progress" domain="skillflow.messages" />
+                            </span>
+                        </span>
+                    </div>
+                </form>
+            </f:if>
+            <f:render section="AssignedSkills" arguments="{_all}" />
+        </f:then>
+        <f:else>
+            <f:be.infobox
+                title="{f:translate(key: 'skills.empty.title', domain: 'skillflow.messages')}"
+                state="{f:constant(name: 'TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::NOTICE')}"
+            >
+                <p><f:translate key="skills.empty.message" domain="skillflow.messages" /></p>
+                <f:if condition="{skillSourcesUri}">
+                    <a href="{skillSourcesUri}" class="btn btn-primary"><f:translate key="skills.manage" domain="skillflow.messages" /></a>
+                </f:if>
+            </f:be.infobox>
+        </f:else>
+    </f:if>
+</f:section>
+
+<f:section name="AssignedSkills">
+    <p class="skillflow-assigned">
+        <f:if condition="{assignedSkills}">
+            <f:then>
+                <span class="skillflow-assigned__label"><f:translate key="run.assigned" domain="skillflow.messages" /></span>
+                <f:for each="{assignedSkills}" as="skill">
+                    <span class="badge badge-default">{skill.name}</span>
+                </f:for>
+            </f:then>
+            <f:else>
+                <span class="skillflow-assigned__label"><f:translate key="run.assigned.none" domain="skillflow.messages" /></span>
+            </f:else>
+        </f:if>
+        <a href="{editPageUri}" class="btn btn-sm btn-link">
+            <core:icon identifier="actions-open" size="small" />
+            <f:translate key="run.assigned.edit" domain="skillflow.messages" />
+        </a>
+    </p>
+</f:section>
+
+<f:section name="Runs">
+    <div class="skillflow-runs-header">
+        <h2><f:translate key="runs.headline" domain="skillflow.messages" /></h2>
+        <f:if condition="{pageUid}">
+            <div class="btn-group" role="group" aria-label="{f:translate(key: 'runs.scope', domain: 'skillflow.messages')}">
+                <a href="{pageScopeUri}" class="btn btn-sm btn-default{f:if(condition: '!{allPages}', then: ' active')}"{f:if(condition: '!{allPages}', then: ' aria-current="true"')}>
+                    <f:translate key="runs.scope.page" domain="skillflow.messages" />
+                </a>
+                <a href="{allPagesUri}" class="btn btn-sm btn-default{f:if(condition: allPages, then: ' active')}"{f:if(condition: allPages, then: ' aria-current="true"')}>
+                    <f:translate key="runs.scope.all" domain="skillflow.messages" />
+                </a>
+            </div>
+        </f:if>
+    </div>
+
+    <f:if condition="{runs}">
+        <f:then>
+            <div class="table-fit">
+                <table class="table table-striped table-hover">
+                    <caption class="visually-hidden"><f:translate key="runs.caption" domain="skillflow.messages" arguments="{0: runCount}" /></caption>
+                    <thead>
+                        <tr>
+                            <th scope="col"><f:translate key="runs.col.date" domain="skillflow.messages" /></th>
+                            <th scope="col"><f:translate key="runs.col.skill" domain="skillflow.messages" /></th>
+                            <th scope="col"><f:translate key="runs.col.target" domain="skillflow.messages" /></th>
+                            <th scope="col"><f:translate key="runs.col.status" domain="skillflow.messages" /></th>
+                            <th scope="col"><f:translate key="runs.col.verdict" domain="skillflow.messages" /></th>
+                            <th scope="col"><f:translate key="runs.col.engine" domain="skillflow.messages" /></th>
+                            <th scope="col" class="col-control"><span class="visually-hidden"><f:translate key="runs.col.actions" domain="skillflow.messages" /></span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <f:for each="{runs}" as="run">
+                            <tr>
+                                <td class="text-nowrap">
+                                    <time datetime="{run.crdate -> f:format.date(format: 'c')}">{run.crdate -> f:format.date(format: '{dateFormat} {timeFormat}')}</time>
+                                </td>
+                                <td>{run.skillTitle}</td>
+                                <td>
+                                    <f:if condition="{run.targetRecord}">
+                                        <core:iconForRecord table="{run.targetTable}" row="{run.targetRecord}" size="small" />
+                                    </f:if>
+                                    <f:if condition="{run.targetUri}">
+                                        <f:then><a href="{run.targetUri}">{run.targetTitle}</a></f:then>
+                                        <f:else>{run.targetTitle}</f:else>
+                                    </f:if>
+                                    <span class="text-variant">[{run.targetUid}]</span>
+                                </td>
+                                <td><span class="badge badge-{run.severity.cssClass}">{run.statusLabel}</span></td>
+                                <td>
+                                    <f:if condition="{run.verdict}">
+                                        <f:then>
+                                            {run.verdict}<f:if condition="{run.score} > -1"> <span class="text-variant">{run.score}/100</span></f:if>
+                                        </f:then>
+                                        <f:else><span class="text-variant">–</span></f:else>
+                                    </f:if>
+                                </td>
+                                <td>
+                                    <f:if condition="{run.engine}">
+                                        <f:then>{run.engine}</f:then>
+                                        <f:else><span class="text-variant">–</span></f:else>
+                                    </f:if>
+                                </td>
+                                <td class="col-control">
+                                    <a href="{run.showUri}" class="btn btn-default btn-sm">
+                                        <core:icon identifier="actions-document-view" size="small" />
+                                        <f:translate key="runs.show" domain="skillflow.messages" />
+                                        <span class="visually-hidden"><f:translate key="runs.show.target" domain="skillflow.messages" arguments="{0: run.uid}" /></span>
+                                    </a>
+                                </td>
+                            </tr>
+                        </f:for>
+                    </tbody>
+                </table>
+            </div>
+            <f:render partial="SkillsModule/Pagination" arguments="{paginator: paginator, pagination: pagination, paginationUri: paginationUri}" />
+        </f:then>
+        <f:else>
+            <div class="skillflow-empty">
+                <core:icon identifier="skillflow-run" size="large" />
+                <p>
+                    <f:if condition="{allPages}">
+                        <f:then><f:translate key="runs.empty.all" domain="skillflow.messages" /></f:then>
+                        <f:else><f:translate key="runs.empty.page" domain="skillflow.messages" /></f:else>
+                    </f:if>
+                </p>
+            </div>
+        </f:else>
+    </f:if>
+</f:section>
+</html>

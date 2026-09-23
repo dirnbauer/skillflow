@@ -1,157 +1,113 @@
 /*
- * Skillflow backend module – layout helpers.
- * Colours/surfaces come from TYPO3 backend tokens so light & dark themes
- * stay correct; this file only adds spacing, the run form and report layout.
+ * Skillflow backend module. Layout and colours come from the TYPO3 backend
+ * (form-row, table, card, badge); this file only arranges the run form and
+ * gives rendered Markdown reports readable tables and code blocks. Only core
+ * --typo3-* tokens are used, so light and dark mode follow the backend theme.
  */
 
-.skf-module {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    max-width: 1100px;
+.skillflow-run-form__skill {
+  flex: 1 1 20rem;
 }
 
-.skf-module .card {
-    margin: 0;
+.skillflow-run-form__actions,
+.skillflow-assigned,
+.skillflow-runs-header,
+.skillflow-run-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--typo3-spacing) / 2);
 }
 
-/* Section headings inside cards */
-.skf-card-title {
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    margin: 0;
-    font-size: 1.05rem;
-    font-weight: 600;
+.skillflow-run-form__actions {
+  margin-bottom: var(--typo3-spacing);
 }
 
-/* Status/verdict badges next to a heading: keep them clearly smaller than
- * the heading text instead of scaling with it. */
-.skf-card-title .badge {
-    font-size: .7rem;
-    font-weight: 600;
-    padding: .35em .7em;
+.skillflow-run-form[aria-busy="true"] .btn {
+  pointer-events: none;
+  opacity: .65;
 }
 
-
-/* ---- Primary "Run a skill" panel ---- */
-.skf-run .card-body {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+.skillflow-assigned__label {
+  color: var(--typo3-text-color-variant);
 }
 
-.skf-run-grid {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: 1rem;
+.skillflow-runs-header {
+  justify-content: space-between;
+  margin-top: calc(var(--typo3-spacing) * 2);
 }
 
-.skf-field {
-    display: flex;
-    flex-direction: column;
-    gap: .35rem;
+.skillflow-runs-header > h2 {
+  margin: 0;
 }
 
-.skf-field--page {
-    width: 9rem;
+.skillflow-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--typo3-spacing) / 2);
+  padding: calc(var(--typo3-spacing) * 2) var(--typo3-spacing);
+  color: var(--typo3-text-color-variant);
+  text-align: center;
 }
 
-.skf-field--skill {
-    flex: 1 1 16rem;
-    min-width: 14rem;
+.skillflow-run-meta th {
+  width: 12rem;
 }
 
-.skf-field .form-label {
-    margin: 0;
-    font-weight: 600;
+.skillflow-run-meta__ref {
+  margin-inline-start: calc(var(--typo3-spacing) / 2);
 }
 
-.skf-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .5rem;
+.skillflow-pre {
+  max-height: 60vh;
+  overflow: auto;
+  padding: var(--typo3-spacing);
+  border: var(--typo3-component-border-width) solid var(--typo3-component-border-color);
+  border-radius: var(--typo3-component-border-radius);
+  background: var(--typo3-surface-container-low);
+  color: var(--typo3-text-color-base);
+  font-family: var(--typo3-font-family-monospace);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
-/* Leading button row in the run-detail view: tuck it closer to the
- * docheader and give it extra breathing room before the first card. */
-.skf-module > .skf-actions:first-child {
-    margin-top: -.5rem;
-    margin-bottom: .5rem;
+.skillflow-details {
+  margin-block: var(--typo3-spacing);
 }
 
-/* Selected-page target line */
-.skf-target {
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    padding: .5rem .75rem;
-    border-radius: 6px;
-    background: var(--typo3-surface-container, rgba(125, 125, 125, .12));
-    border: 1px solid var(--typo3-component-border-color, rgba(125, 125, 125, .25));
+.skillflow-details > summary {
+  cursor: pointer;
+  margin-bottom: calc(var(--typo3-spacing) / 2);
 }
 
-.skf-target__title {
-    font-weight: 600;
+.skillflow-report .card-body > :last-child {
+  margin-bottom: 0;
 }
 
-/* Muted helper text */
-.skf-muted {
-    color: var(--typo3-text-color-variant, #8a8a8a);
-    margin: 0;
+.skillflow-report table {
+  width: 100%;
+  margin-bottom: var(--typo3-spacing);
+  border-collapse: collapse;
 }
 
-/* ---- Badges ----
- * Uniform height and centered icon + text. Icons are sized to 1em so a badge
- * with an icon is exactly as tall as a text-only one. Pill shape keeps
- * icon + text combinations looking tidy. */
-.skf-module .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: .4em;
-    padding: .35em .65em;
-    line-height: 1;
-    font-weight: 600;
-    border-radius: 999px;
-    vertical-align: middle;
-    text-decoration: none;
+.skillflow-report :is(th, td) {
+  padding: calc(var(--typo3-spacing) / 2);
+  border: var(--typo3-component-border-width) solid var(--typo3-component-border-color);
+  text-align: start;
+  vertical-align: top;
 }
 
-/* Centre row content vertically — badges and buttons sit mid-row instead of
- * hugging the top edge of tall cells. */
-.skf-module .table td {
-    vertical-align: middle;
+.skillflow-report pre {
+  padding: var(--typo3-spacing);
+  border-radius: var(--typo3-component-border-radius);
+  background: var(--typo3-surface-container-low);
+  overflow: auto;
 }
 
-/* ---- Run report ---- */
-.skf-report {
-    white-space: pre-wrap;
-    word-break: break-word;
-    margin: 0;
-    padding: 1rem 1.25rem;
-    border-radius: 6px;
-    background: var(--typo3-surface-container-low, #f4f4f4);
-    border: 1px solid var(--typo3-component-border-color, rgba(125, 125, 125, .25));
-    font-size: .85rem;
-    line-height: 1.55;
-    max-height: 70vh;
-    overflow: auto;
-}
-
-.skf-meta {
-    display: grid;
-    grid-template-columns: max-content 1fr;
-    gap: .35rem 1.25rem;
-    margin: 0 0 1.25rem;
-    max-width: 760px;
-}
-
-.skf-meta dt {
-    color: var(--typo3-text-color-variant, #8a8a8a);
-    font-weight: 600;
-}
-
-.skf-meta dd {
-    margin: 0;
+.skillflow-report blockquote {
+  margin-inline: 0;
+  padding-inline-start: var(--typo3-spacing);
+  border-inline-start: 3px solid var(--typo3-component-border-color);
+  color: var(--typo3-text-color-variant);
 }

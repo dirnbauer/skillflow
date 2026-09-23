@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff
+  xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="de" datatype="plaintext" original="EXT:skillflow/Resources/Private/Language/Modules/skills.xlf" date="2026-09-23T00:00:00Z" product-name="skillflow">
+    <header/>
+    <body>
+      <trans-unit id="title" resname="title">
+        <source>Skills</source>
+        <target state="translated">Skills</target>
+      </trans-unit>
+      <trans-unit id="description" resname="description">
+        <source>Run skills managed by nr_llm on the page selected in the page tree and read their reports. Skill execution is restricted to local DDEV installations by default.</source>
+        <target state="translated">Von nr_llm verwaltete Skills auf der im Seitenbaum gewählten Seite ausführen und ihre Berichte lesen. Standardmäßig nur in lokalen DDEV-Installationen.</target>
+      </trans-unit>
+      <trans-unit id="short_description" resname="short_description">
+        <source>Run skills on pages and read their reports</source>
+        <target state="translated">Skills auf Seiten ausführen und Berichte lesen</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

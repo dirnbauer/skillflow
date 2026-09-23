@@ -1,236 +1,312 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xliff
   xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
-  <file source-language="en" datatype="plaintext" original="EXT:skillflow/Resources/Private/Language/locallang.xlf" date="2026-09-23T00:00:00Z" product-name="skillflow">
+  <file source-language="en" target-language="de" datatype="plaintext" original="EXT:skillflow/Resources/Private/Language/locallang.xlf" date="2026-09-23T00:00:00Z" product-name="skillflow">
     <header/>
     <body>
       <trans-unit id="module.title" resname="module.title">
         <source>Skills</source>
+        <target state="translated">Skills</target>
       </trans-unit>
       <trans-unit id="security.blocked.title" resname="security.blocked.title">
         <source>Skill execution is blocked on this installation</source>
+        <target state="translated">Die Ausführung von Skills ist in dieser Installation gesperrt</target>
       </trans-unit>
       <trans-unit id="page.none.title" resname="page.none.title">
         <source>Select a page</source>
+        <target state="translated">Seite auswählen</target>
       </trans-unit>
       <trans-unit id="page.none.message" resname="page.none.message">
         <source>Choose a page in the page tree to run skills on it and to see its reports.</source>
+        <target state="translated">Wählen Sie im Seitenbaum eine Seite aus, um Skills darauf auszuführen und ihre Berichte zu sehen.</target>
       </trans-unit>
       <trans-unit id="run.headline" resname="run.headline">
         <source>Run skills on “%s”</source>
+        <target state="translated">Skills auf „%s“ ausführen</target>
       </trans-unit>
       <trans-unit id="run.context" resname="run.context">
         <source>Page ID %1$s · Workspace: %2$s</source>
+        <target state="translated">Seiten-ID %1$s · Arbeitsumgebung: %2$s</target>
       </trans-unit>
       <trans-unit id="run.skill" resname="run.skill">
         <source>Skill</source>
+        <target state="translated">Skill</target>
       </trans-unit>
       <trans-unit id="run.skill.group.page" resname="run.skill.group.page">
         <source>Assigned to this page</source>
+        <target state="translated">Dieser Seite zugewiesen</target>
       </trans-unit>
       <trans-unit id="run.skill.group.user" resname="run.skill.group.user">
         <source>Assigned to you</source>
+        <target state="translated">Ihnen zugewiesen</target>
       </trans-unit>
       <trans-unit id="run.skill.group.other" resname="run.skill.group.other">
         <source>Other skills</source>
+        <target state="translated">Weitere Skills</target>
       </trans-unit>
       <trans-unit id="run.skill.group.all" resname="run.skill.group.all">
         <source>All active skills</source>
+        <target state="translated">Alle aktiven Skills</target>
       </trans-unit>
       <trans-unit id="run.engine" resname="run.engine">
         <source>Engine</source>
+        <target state="translated">Engine</target>
       </trans-unit>
       <trans-unit id="run.engine.auto" resname="run.engine.auto">
         <source>Automatic (skill or default)</source>
+        <target state="translated">Automatisch (Skill oder Standard)</target>
       </trans-unit>
       <trans-unit id="run.engine.classic" resname="run.engine.classic">
         <source>Quick (single call)</source>
+        <target state="translated">Schnell (einzelner Aufruf)</target>
       </trans-unit>
       <trans-unit id="run.instructions" resname="run.instructions">
         <source>Additional instructions for this run (optional)</source>
+        <target state="translated">Zusätzliche Anweisungen für diesen Lauf (optional)</target>
       </trans-unit>
       <trans-unit id="run.instructions.help" resname="run.instructions.help">
         <source>The placeholders {uid}, {table}, {pid}, {title} and {workspace} are replaced with the page’s values.</source>
+        <target state="translated">Die Platzhalter {uid}, {table}, {pid}, {title} und {workspace} werden durch die Werte der Seite ersetzt.</target>
       </trans-unit>
       <trans-unit id="run.submitSelected" resname="run.submitSelected">
         <source>Run selected skill</source>
+        <target state="translated">Ausgewählten Skill ausführen</target>
       </trans-unit>
       <trans-unit id="run.submitAssigned" resname="run.submitAssigned">
         <source>Run assigned skills (%s)</source>
+        <target state="translated">Zugewiesene Skills ausführen (%s)</target>
       </trans-unit>
       <trans-unit id="run.progress" resname="run.progress">
         <source>Running … the report appears as soon as the model has answered.</source>
+        <target state="translated">Läuft … Der Bericht erscheint, sobald das Modell geantwortet hat.</target>
       </trans-unit>
       <trans-unit id="run.assigned" resname="run.assigned">
         <source>Assigned to this page:</source>
+        <target state="translated">Dieser Seite zugewiesen:</target>
       </trans-unit>
       <trans-unit id="run.assigned.none" resname="run.assigned.none">
         <source>No skills are assigned to this page.</source>
+        <target state="translated">Dieser Seite sind keine Skills zugewiesen.</target>
       </trans-unit>
       <trans-unit id="run.assigned.edit" resname="run.assigned.edit">
         <source>Edit assignments</source>
+        <target state="translated">Zuweisungen bearbeiten</target>
       </trans-unit>
       <trans-unit id="skills.empty.title" resname="skills.empty.title">
         <source>No active skills</source>
+        <target state="translated">Keine aktiven Skills</target>
       </trans-unit>
       <trans-unit id="skills.empty.message" resname="skills.empty.message">
         <source>Add a skill source in nr_llm, synchronize it and enable the reviewed skills you want to run.</source>
+        <target state="translated">Legen Sie in nr_llm eine Skill-Quelle an, synchronisieren Sie sie und aktivieren Sie die geprüften Skills, die ausgeführt werden sollen.</target>
       </trans-unit>
       <trans-unit id="skills.manage" resname="skills.manage">
         <source>Manage skills and sources</source>
+        <target state="translated">Skills und Quellen verwalten</target>
       </trans-unit>
       <trans-unit id="runs.headline" resname="runs.headline">
         <source>Reports</source>
+        <target state="translated">Berichte</target>
       </trans-unit>
       <trans-unit id="runs.scope" resname="runs.scope">
         <source>Show reports for</source>
+        <target state="translated">Berichte anzeigen für</target>
       </trans-unit>
       <trans-unit id="runs.scope.page" resname="runs.scope.page">
         <source>This page</source>
+        <target state="translated">Diese Seite</target>
       </trans-unit>
       <trans-unit id="runs.scope.all" resname="runs.scope.all">
         <source>All pages</source>
+        <target state="translated">Alle Seiten</target>
       </trans-unit>
       <trans-unit id="runs.caption" resname="runs.caption">
         <source>%s skill runs, newest first</source>
+        <target state="translated">%s Skill-Läufe, neueste zuerst</target>
       </trans-unit>
       <trans-unit id="runs.col.date" resname="runs.col.date">
         <source>Date</source>
+        <target state="translated">Datum</target>
       </trans-unit>
       <trans-unit id="runs.col.skill" resname="runs.col.skill">
         <source>Skill</source>
+        <target state="translated">Skill</target>
       </trans-unit>
       <trans-unit id="runs.col.target" resname="runs.col.target">
         <source>Record</source>
+        <target state="translated">Datensatz</target>
       </trans-unit>
       <trans-unit id="runs.col.status" resname="runs.col.status">
         <source>Status</source>
+        <target state="translated">Status</target>
       </trans-unit>
       <trans-unit id="runs.col.verdict" resname="runs.col.verdict">
         <source>Verdict</source>
+        <target state="translated">Bewertung</target>
       </trans-unit>
       <trans-unit id="runs.col.engine" resname="runs.col.engine">
         <source>Engine</source>
+        <target state="translated">Engine</target>
       </trans-unit>
       <trans-unit id="runs.col.actions" resname="runs.col.actions">
         <source>Actions</source>
+        <target state="translated">Aktionen</target>
       </trans-unit>
       <trans-unit id="runs.show" resname="runs.show">
         <source>Show report</source>
+        <target state="translated">Bericht anzeigen</target>
       </trans-unit>
       <trans-unit id="runs.show.target" resname="runs.show.target">
         <source>of run #%s</source>
+        <target state="translated">von Lauf #%s</target>
       </trans-unit>
       <trans-unit id="runs.empty.all" resname="runs.empty.all">
         <source>No skill has run yet.</source>
+        <target state="translated">Bisher wurde noch kein Skill ausgeführt.</target>
       </trans-unit>
       <trans-unit id="runs.empty.page" resname="runs.empty.page">
         <source>No skill has run on this page yet. Choose a skill above to create the first report.</source>
+        <target state="translated">Auf dieser Seite wurde noch kein Skill ausgeführt. Wählen Sie oben einen Skill, um den ersten Bericht zu erstellen.</target>
       </trans-unit>
       <trans-unit id="status.running" resname="status.running">
         <source>Running</source>
+        <target state="translated">Läuft</target>
       </trans-unit>
       <trans-unit id="status.pending" resname="status.pending">
         <source>Pending</source>
+        <target state="translated">Ausstehend</target>
       </trans-unit>
       <trans-unit id="status.success" resname="status.success">
         <source>Success</source>
+        <target state="translated">Erfolgreich</target>
       </trans-unit>
       <trans-unit id="status.failed" resname="status.failed">
         <source>Failed</source>
+        <target state="translated">Fehlgeschlagen</target>
       </trans-unit>
       <trans-unit id="status.blocked" resname="status.blocked">
         <source>Blocked</source>
+        <target state="translated">Blockiert</target>
       </trans-unit>
       <trans-unit id="pagination.label" resname="pagination.label">
         <source>Report pages</source>
+        <target state="translated">Seiten der Berichtsliste</target>
       </trans-unit>
       <trans-unit id="pagination.first" resname="pagination.first">
         <source>First page</source>
+        <target state="translated">Erste Seite</target>
       </trans-unit>
       <trans-unit id="pagination.previous" resname="pagination.previous">
         <source>Previous page</source>
+        <target state="translated">Vorherige Seite</target>
       </trans-unit>
       <trans-unit id="pagination.next" resname="pagination.next">
         <source>Next page</source>
+        <target state="translated">Nächste Seite</target>
       </trans-unit>
       <trans-unit id="pagination.last" resname="pagination.last">
         <source>Last page</source>
+        <target state="translated">Letzte Seite</target>
       </trans-unit>
       <trans-unit id="pagination.range" resname="pagination.range">
         <source>Reports %1$s–%2$s · page %3$s of %4$s</source>
+        <target state="translated">Berichte %1$s–%2$s · Seite %3$s von %4$s</target>
       </trans-unit>
       <trans-unit id="run.title" resname="run.title">
         <source>Skill run #%s</source>
+        <target state="translated">Skill-Lauf #%s</target>
       </trans-unit>
       <trans-unit id="run.openEngine" resname="run.openEngine">
         <source>Open engine run</source>
+        <target state="translated">Lauf in der Engine öffnen</target>
       </trans-unit>
       <trans-unit id="run.meta" resname="run.meta">
         <source>Run details</source>
+        <target state="translated">Details des Laufs</target>
       </trans-unit>
       <trans-unit id="run.workspace" resname="run.workspace">
         <source>Workspace</source>
+        <target state="translated">Arbeitsumgebung</target>
       </trans-unit>
       <trans-unit id="run.stage" resname="run.stage">
         <source>stage “%s”</source>
+        <target state="translated">Stufe „%s“</target>
       </trans-unit>
       <trans-unit id="run.instructions.headline" resname="run.instructions.headline">
         <source>Instructions for this run</source>
+        <target state="translated">Anweisungen für diesen Lauf</target>
       </trans-unit>
       <trans-unit id="run.report" resname="run.report">
         <source>Report</source>
+        <target state="translated">Bericht</target>
       </trans-unit>
       <trans-unit id="run.report.raw" resname="run.report.raw">
         <source>Show the report as plain text</source>
+        <target state="translated">Bericht als reinen Text anzeigen</target>
       </trans-unit>
       <trans-unit id="run.report.empty" resname="run.report.empty">
         <source>The run produced no output.</source>
+        <target state="translated">Der Lauf hat keine Ausgabe erzeugt.</target>
       </trans-unit>
       <trans-unit id="run.resultJson" resname="run.resultJson">
         <source>Structured result (JSON)</source>
+        <target state="translated">Strukturiertes Ergebnis (JSON)</target>
       </trans-unit>
       <trans-unit id="run.back" resname="run.back">
         <source>Back to the reports</source>
+        <target state="translated">Zurück zu den Berichten</target>
       </trans-unit>
       <trans-unit id="workspace.live" resname="workspace.live">
         <source>Live</source>
+        <target state="translated">Live</target>
       </trans-unit>
       <trans-unit id="flash.runNotFound.title" resname="flash.runNotFound.title">
         <source>Report not found</source>
+        <target state="translated">Bericht nicht gefunden</target>
       </trans-unit>
       <trans-unit id="flash.runNotFound.message" resname="flash.runNotFound.message">
         <source>Run %s does not exist, or you have no access to its record.</source>
+        <target state="translated">Lauf %s existiert nicht, oder Sie haben keinen Zugriff auf seinen Datensatz.</target>
       </trans-unit>
       <trans-unit id="flash.missingInput.title" resname="flash.missingInput.title">
         <source>Missing input</source>
+        <target state="translated">Angaben fehlen</target>
       </trans-unit>
       <trans-unit id="flash.missingInput.message" resname="flash.missingInput.message">
         <source>Select a page in the page tree and a skill to run.</source>
+        <target state="translated">Wählen Sie im Seitenbaum eine Seite und einen Skill aus.</target>
       </trans-unit>
       <trans-unit id="flash.accessDenied.title" resname="flash.accessDenied.title">
         <source>Access denied</source>
+        <target state="translated">Zugriff verweigert</target>
       </trans-unit>
       <trans-unit id="flash.accessDenied.message" resname="flash.accessDenied.message">
         <source>You do not have access to this page.</source>
+        <target state="translated">Sie haben keinen Zugriff auf diese Seite.</target>
       </trans-unit>
       <trans-unit id="flash.nothingAssigned.title" resname="flash.nothingAssigned.title">
         <source>Nothing to run</source>
+        <target state="translated">Nichts auszuführen</target>
       </trans-unit>
       <trans-unit id="flash.nothingAssigned.message" resname="flash.nothingAssigned.message">
         <source>No active skills are assigned to this page.</source>
+        <target state="translated">Dieser Seite sind keine aktiven Skills zugewiesen.</target>
       </trans-unit>
       <trans-unit id="flash.run.title" resname="flash.run.title">
         <source>%1$s: %2$s</source>
+        <target state="translated">%1$s: %2$s</target>
       </trans-unit>
       <trans-unit id="flash.run.success" resname="flash.run.success">
         <source>The report is stored.</source>
+        <target state="translated">Der Bericht wurde gespeichert.</target>
       </trans-unit>
       <trans-unit id="flash.run.pending" resname="flash.run.pending">
         <source>The engine continues in the background; the report appears when it has finished.</source>
+        <target state="translated">Die Engine arbeitet im Hintergrund weiter; der Bericht erscheint, sobald sie fertig ist.</target>
       </trans-unit>
       <trans-unit id="flash.run.verdict" resname="flash.run.verdict">
         <source>Verdict: %1$s (%2$s).</source>
+        <target state="translated">Bewertung: %1$s (%2$s).</target>
       </trans-unit>
     </body>
   </file>

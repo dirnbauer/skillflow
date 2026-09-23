@@ -15,6 +15,8 @@ use TYPO3\CMS\Core\Http\ResponseFactory;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Http\StreamFactory;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\MetaTag\MetaTagManagerRegistry;
 use TYPO3\CMS\Core\PageTitle\RecordTitleProvider;
 use TYPO3\CMS\Core\View\ViewInterface;
@@ -72,8 +74,60 @@ final class ControllerAccessTest extends FunctionalTestCase
         ]);
         $response = $this->get(SkillsModuleController::class)->handleRequest($request);
 
-        self::assertStringContainsString('Access denied', (string)$response->getBody());
+        self::assertSame(303, $response->getStatusCode());
+        self::assertContains('Access denied', $this->flashMessageTitles());
         self::assertSame(0, $this->getConnectionPool()->getConnectionForTable('tx_skillflow_run')->count('*', 'tx_skillflow_run', []));
+    }
+
+    public function testSingleRunRedirectsToItsReport(): void
+    {
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['skillflow']['requireLocalEnvironment'] = '0';
+        // An unset key variable keeps the classic chain from reaching a real provider.
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['skillflow']['runner'] = 'anthropic';
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['skillflow']['apiKeyEnvVar'] = 'SKILLFLOW_TEST_UNSET_KEY';
+        $request = $this->request()->withMethod('POST')->withParsedBody([
+            'action' => 'run', 'skill' => 1, 'page' => 2,
+        ]);
+        $response = $this->get(SkillsModuleController::class)->handleRequest($request);
+
+        $run = $this->getConnectionPool()->getConnectionForTable('tx_skillflow_run')->select(['uid', 'status'], 'tx_skillflow_run')->fetchAssociative();
+        self::assertIsArray($run);
+        self::assertSame('blocked', $run['status']);
+        self::assertSame(303, $response->getStatusCode());
+        parse_str((string)parse_url($response->getHeaderLine('Location'), PHP_URL_QUERY), $parameters);
+        self::assertSame(['showRun', (string)$run['uid']], [$parameters['action'] ?? null, $parameters['run'] ?? null]);
+        self::assertContains('Test skill: Blocked', $this->flashMessageTitles());
+    }
+
+    public function testIndexListsReadableRunsWithStatus(): void
+    {
+        $this->login(2);
+        $this->insertRun('pages', 2, 0);
+        $body = (string)$this->get(SkillsModuleController::class)->handleRequest(
+            $this->request()->withQueryParams(['id' => 2]),
+        )->getBody();
+
+        self::assertStringContainsString('<h1>Skills</h1>', $body);
+        self::assertStringContainsString('badge badge-success', $body);
+        self::assertStringContainsString('Readable page', $body);
+        self::assertStringContainsString('action=showRun', html_entity_decode($body));
+    }
+
+    public function testReportIsRenderedAsSafeMarkdown(): void
+    {
+        $this->login(2);
+        $this->insertRun('pages', 2, 0, "## Findings\n\n<script>alert(1)</script>\n\n[x](javascript:alert(1))\n\n> Quoted \"note\"\n\n```\ngenerate-test.sh <Type>\n```");
+        $body = (string)$this->get(SkillsModuleController::class)->handleRequest(
+            $this->request()->withQueryParams(['action' => 'showRun', 'run' => 1]),
+        )->getBody();
+
+        self::assertStringContainsString('<h2>Findings</h2>', $body);
+        self::assertStringNotContainsString('<script>alert(1)</script>', $body);
+        self::assertStringNotContainsString('href="javascript:', $body);
+        // The Markdown reaches the converter verbatim: one level of escaping, real quotes and blocks.
+        self::assertMatchesRegularExpression('#<blockquote>\s*<p>Quoted (&quot;|")note(&quot;|")</p>\s*</blockquote>#', $body);
+        self::assertStringContainsString('generate-test.sh &lt;Type&gt;', $body);
+        self::assertStringNotContainsString('&amp;lt;', $body);
     }
 
     /** @return iterable<string, array{int, int}> */
@@ -177,11 +231,11 @@ final class ControllerAccessTest extends FunctionalTestCase
 
     private function request(): ServerRequestInterface
     {
-        $request = (new ServerRequest('https://typo3-testing.local/typo3/module/content/skillflow', 'GET', null, [], [
+        $request = new ServerRequest('https://typo3-testing.local/typo3/module/content/skillflow', 'GET', null, [], [
             'HTTP_HOST' => 'typo3-testing.local', 'HTTPS' => 'on', 'SERVER_PORT' => 443,
             'SCRIPT_NAME' => '/typo3/index.php', 'SCRIPT_FILENAME' => $this->instancePath . '/typo3/index.php',
             'DOCUMENT_ROOT' => $this->instancePath, 'REQUEST_URI' => '/typo3/module/content/skillflow',
-        ]))
+        ])
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE)
             ->withAttribute('backend.user', $GLOBALS['BE_USER'])
             ->withAttribute('module', $this->get(ModuleProvider::class)->getModule('content_skillflow'))
@@ -191,13 +245,22 @@ final class ControllerAccessTest extends FunctionalTestCase
         return $request;
     }
 
-    private function insertRun(string $table, int $targetUid, int $workspaceUid): void
+    private function insertRun(string $table, int $targetUid, int $workspaceUid, string $output = 'PRIVATE_RUN_OUTPUT'): void
     {
         $this->getConnectionPool()->getConnectionForTable('tx_skillflow_run')->insert('tx_skillflow_run', [
-            'uid' => 1, 'skill' => 1, 'target_table' => $table, 'target_uid' => $targetUid,
+            'uid' => 1, 'crdate' => 1_790_000_000, 'skill' => 1, 'target_table' => $table, 'target_uid' => $targetUid,
             'workspace_uid' => $workspaceUid, 'status' => 'success', 'runner' => 'test',
-            'output' => 'PRIVATE_RUN_OUTPUT',
+            'output' => $output,
         ]);
+    }
+
+    /** @return list<string> */
+    private function flashMessageTitles(): array
+    {
+        return array_values(array_map(
+            static fn(FlashMessage $message): string => $message->getTitle(),
+            $this->get(FlashMessageService::class)->getMessageQueueByIdentifier()->getAllMessages(),
+        ));
     }
 
     private function detailController(): SkillDetailController
@@ -226,7 +289,7 @@ final class ControllerAccessTest extends FunctionalTestCase
                 return json_encode($this->values, JSON_THROW_ON_ERROR);
             }
         };
-        (new \ReflectionProperty($controller, 'view'))->setValue($controller, $view);
+        new \ReflectionProperty($controller, 'view')->setValue($controller, $view);
         return $controller;
     }
 }

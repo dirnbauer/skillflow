@@ -1,0 +1,61 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+<f:if condition="{paginator.numberOfPages} > 1">
+    <nav class="pagination-wrap" aria-label="{f:translate(key: 'pagination.label', domain: 'skillflow.messages')}">
+        <ul class="pagination">
+            <f:if condition="{pagination.previousPageNumber}">
+                <f:then>
+                    <li class="page-item">
+                        <a href="{paginationUri}&page={pagination.firstPageNumber}" class="page-link" title="{f:translate(key: 'pagination.first', domain: 'skillflow.messages')}">
+                            <core:icon identifier="actions-view-paging-first" size="small" />
+                            <span class="visually-hidden"><f:translate key="pagination.first" domain="skillflow.messages" /></span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a href="{paginationUri}&page={pagination.previousPageNumber}" class="page-link" title="{f:translate(key: 'pagination.previous', domain: 'skillflow.messages')}">
+                            <core:icon identifier="actions-view-paging-previous" size="small" />
+                            <span class="visually-hidden"><f:translate key="pagination.previous" domain="skillflow.messages" /></span>
+                        </a>
+                    </li>
+                </f:then>
+                <f:else>
+                    <li class="page-item disabled"><span class="page-link"><core:icon identifier="actions-view-paging-first" size="small" /></span></li>
+                    <li class="page-item disabled"><span class="page-link"><core:icon identifier="actions-view-paging-previous" size="small" /></span></li>
+                </f:else>
+            </f:if>
+            <li class="page-item">
+                <span class="page-link">
+                    <f:translate
+                        key="pagination.range"
+                        domain="skillflow.messages"
+                        arguments="{0: pagination.startRecordNumber, 1: pagination.endRecordNumber, 2: paginator.currentPageNumber, 3: pagination.lastPageNumber}"
+                    />
+                </span>
+            </li>
+            <f:if condition="{pagination.nextPageNumber}">
+                <f:then>
+                    <li class="page-item">
+                        <a href="{paginationUri}&page={pagination.nextPageNumber}" class="page-link" title="{f:translate(key: 'pagination.next', domain: 'skillflow.messages')}">
+                            <core:icon identifier="actions-view-paging-next" size="small" />
+                            <span class="visually-hidden"><f:translate key="pagination.next" domain="skillflow.messages" /></span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a href="{paginationUri}&page={pagination.lastPageNumber}" class="page-link" title="{f:translate(key: 'pagination.last', domain: 'skillflow.messages')}">
+                            <core:icon identifier="actions-view-paging-last" size="small" />
+                            <span class="visually-hidden"><f:translate key="pagination.last" domain="skillflow.messages" /></span>
+                        </a>
+                    </li>
+                </f:then>
+                <f:else>
+                    <li class="page-item disabled"><span class="page-link"><core:icon identifier="actions-view-paging-next" size="small" /></span></li>
+                    <li class="page-item disabled"><span class="page-link"><core:icon identifier="actions-view-paging-last" size="small" /></span></li>
+                </f:else>
+            </f:if>
+        </ul>
+    </nav>
+</f:if>
+</html>

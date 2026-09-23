@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Webconsulting\Skillflow\Controller\SkillsModuleController;
 
 /**
- * Backend module "Skills" in the Content module group.
+ * Content → Skills: run skills on the page selected in the page tree.
  */
 return [
     'content_skillflow' => [
@@ -15,7 +15,7 @@ return [
         'workspaces' => '*',
         'path' => '/module/content/skillflow',
         'iconIdentifier' => 'skillflow-module',
-        'labels' => 'LLL:EXT:skillflow/Resources/Private/Language/locallang_mod.xlf',
+        'labels' => 'skillflow.modules.skills',
         'routes' => [
             '_default' => [
                 'target' => SkillsModuleController::class . '::handleRequest',

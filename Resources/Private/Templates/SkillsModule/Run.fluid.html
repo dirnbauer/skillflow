@@ -1,0 +1,96 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    xmlns:sf="http://typo3.org/ns/Webconsulting/Skillflow/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+<f:layout name="Module" />
+
+<f:section name="Content">
+    <f:asset.css identifier="skillflow-module" href="EXT:skillflow/Resources/Public/Css/module.css" />
+
+    <h1>{title}: {item.skillTitle}</h1>
+    <p class="skillflow-run-badges">
+        <span class="badge badge-{item.severity.cssClass}">{item.statusLabel}</span>
+        <f:if condition="{item.verdict}">
+            <span class="badge badge-default">
+                {item.verdict}<f:if condition="{item.score} > -1"> · {item.score}/100</f:if>
+            </span>
+        </f:if>
+    </p>
+
+    <div class="table-fit">
+        <table class="table table-striped skillflow-run-meta">
+            <caption class="visually-hidden"><f:translate key="run.meta" domain="skillflow.messages" /></caption>
+            <tbody>
+                <tr>
+                    <th scope="row"><f:translate key="runs.col.skill" domain="skillflow.messages" /></th>
+                    <td>{item.skillTitle}</td>
+                </tr>
+                <tr>
+                    <th scope="row"><f:translate key="runs.col.date" domain="skillflow.messages" /></th>
+                    <td><time datetime="{item.crdate -> f:format.date(format: 'c')}">{item.crdate -> f:format.date(format: '{dateFormat} {timeFormat}')}</time></td>
+                </tr>
+                <tr>
+                    <th scope="row"><f:translate key="runs.col.target" domain="skillflow.messages" /></th>
+                    <td>
+                        <f:if condition="{item.targetRecord}">
+                            <core:iconForRecord table="{item.targetTable}" row="{item.targetRecord}" size="small" />
+                        </f:if>
+                        <f:if condition="{item.targetUri}">
+                            <f:then><a href="{item.targetUri}">{item.targetTitle}</a></f:then>
+                            <f:else>{item.targetTitle}</f:else>
+                        </f:if>
+                        <code class="skillflow-run-meta__ref">{item.targetTable}:{item.targetUid}</code>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><f:translate key="run.workspace" domain="skillflow.messages" /></th>
+                    <td>{workspaceTitle}<f:if condition="{stageTitle}"> · <f:translate key="run.stage" domain="skillflow.messages" arguments="{0: stageTitle}" /></f:if></td>
+                </tr>
+                <tr>
+                    <th scope="row"><f:translate key="runs.col.engine" domain="skillflow.messages" /></th>
+                    <td>{f:if(condition: item.engine, then: item.engine, else: '–')}<f:if condition="{run.external_ref}"> · <code>{run.external_ref}</code></f:if></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <f:if condition="{run.instructions}">
+        <h2><f:translate key="run.instructions.headline" domain="skillflow.messages" /></h2>
+        <pre class="skillflow-pre">{run.instructions}</pre>
+    </f:if>
+
+    <h2><f:translate key="run.report" domain="skillflow.messages" /></h2>
+    <f:if condition="{run.output}">
+        <f:then>
+            <div class="card skillflow-report">
+                <div class="card-body">
+                    <sf:markdown source="{run.output}" />
+                </div>
+            </div>
+            <details class="skillflow-details">
+                <summary><f:translate key="run.report.raw" domain="skillflow.messages" /></summary>
+                <pre class="skillflow-pre">{run.output}</pre>
+            </details>
+        </f:then>
+        <f:else>
+            <p class="text-variant"><f:translate key="run.report.empty" domain="skillflow.messages" /></p>
+        </f:else>
+    </f:if>
+
+    <f:if condition="{resultJson}">
+        <details class="skillflow-details">
+            <summary><f:translate key="run.resultJson" domain="skillflow.messages" /></summary>
+            <pre class="skillflow-pre">{resultJson}</pre>
+        </details>
+    </f:if>
+
+    <p>
+        <a href="{returnUri}" class="btn btn-default">
+            <core:icon identifier="actions-arrow-left-alt" size="small" />
+            <f:translate key="run.back" domain="skillflow.messages" />
+        </a>
+    </p>
+</f:section>
+</html>
