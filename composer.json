@@ -96,7 +96,7 @@
     "extra": {
         "typo3/cms": {
             "extension-key": "skillflow",
-            "version": "1.9.0"
+            "version": "1.9.1"
         }
     }
 }
