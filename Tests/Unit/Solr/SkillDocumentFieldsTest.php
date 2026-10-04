@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webconsulting\Skillflow\Tests\Unit\Solr;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Webconsulting\Skillflow\Solr\SkillDocumentFields;
 
@@ -40,6 +41,47 @@ final class SkillDocumentFieldsTest extends TestCase
             'sourceType_stringS' => 'github',
             'sourceTitle_stringS' => 'webconsulting skills',
         ], $this->fields->fromRecord($record, ['type' => 'github', 'title' => 'webconsulting skills']));
+    }
+
+    public function testAllowedToolsAreToolNames(): void
+    {
+        // As nr_llm stores them: a rule with a space arrives in two pieces.
+        $record = ['allowed_tools' => json_encode([
+            'Bash(${CLAUDE_SKILL_DIR}/scripts/*)',
+            'Bash(bash',
+            '${CLAUDE_SKILL_DIR}/scripts/*)',
+            'Bash(gh:*)',
+            'Read',
+            'mcp__typo3__pages',
+            'Write',
+        ], JSON_THROW_ON_ERROR)];
+
+        self::assertSame(
+            ['allowedTools_stringM' => ['Bash', 'Read', 'mcp__typo3__pages', 'Write']],
+            $this->fields->fromRecord($record)
+        );
+    }
+
+    /**
+     * @return iterable<string, array{string, string}>
+     */
+    public static function licences(): iterable
+    {
+        yield 'plain' => ['MIT', 'MIT'];
+        yield 'dual with a slash' => ['MIT / CC-BY-SA-4.0', 'MIT / CC-BY-SA-4.0'];
+        yield 'note after a semicolon' => ['MIT / CC-BY-SA-4.0; adapted sources retain their original licences', 'MIT / CC-BY-SA-4.0'];
+        yield 'parentheses and a sentence' => ['(MIT AND CC-BY-SA-4.0). See LICENSE-MIT and LICENSE-CC-BY-SA-4.0', 'MIT AND CC-BY-SA-4.0'];
+        yield 'parentheses only' => ['(MIT AND CC-BY-SA-4.0)', 'MIT AND CC-BY-SA-4.0'];
+        yield 'versions keep their dots' => ['Apache-2.0 OR CC-BY-SA-4.0', 'Apache-2.0 OR CC-BY-SA-4.0'];
+        yield 'nested parentheses stay' => ['(MIT OR (Apache-2.0 AND BSD-3-Clause))', '(MIT OR (Apache-2.0 AND BSD-3-Clause))'];
+    }
+
+    #[DataProvider('licences')]
+    public function testLicenceIsTheExpressionWithoutItsNote(string $license, string $expected): void
+    {
+        $record = ['raw_frontmatter' => json_encode(['license' => $license], JSON_THROW_ON_ERROR)];
+
+        self::assertSame(['license_stringS' => $expected], $this->fields->fromRecord($record));
     }
 
     public function testNormalizesTagsAndDropsEmptyMetadataValues(): void

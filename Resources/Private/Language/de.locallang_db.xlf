@@ -284,6 +284,10 @@
         <source>Filters</source>
         <target state="translated">Filter</target>
       </trans-unit>
+      <trans-unit id="search.ter.bySource" resname="search.ter.bySource">
+        <source>by %s</source>
+        <target state="translated">von %s</target>
+      </trans-unit>
       <trans-unit id="tab.abilities" resname="tab.abilities">
         <source>Skillflow abilities</source>
         <target state="translated">Skillflow-Abilities</target>

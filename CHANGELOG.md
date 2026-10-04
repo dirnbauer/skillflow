@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.9.2 — 2026-10-04
+
+### Fixed
+
+- Search results no longer print the skill file's storage path
+  (`2:skills/<name>/SKILL.md`) under the title.
+- The typo3.org-style results show the skill's description instead of the
+  start of its raw Markdown body, name the source as "by …" in English and
+  German, and leave out the free-text license note and empty card footers.
+- Facet values are readable: the allowed-tool facet lists tool names
+  (`Bash(gh:*)` and `Bash(php:*)` are both Bash, fragments of a rule that
+  nr_llm split at a space are dropped) and the license facet lists the
+  license expression without its explanatory note. Reindex the catalogue to
+  see them.
+- A results page without facets has no empty filter column: the
+  typo3.org-style results then use the full width, three cards per row, and
+  the default results leave out the empty filter block.
+- On pages that also load a Tailwind build, the typo3.org-style filter
+  sidebar is visible again; Tailwind's `collapse` utility hid it.
+
+## 1.9.1 — 2026-09-24
+
+### Changed
+
+- Backend icons redrawn in the TYPO3 v14 style.
+
 ## 1.9.0 — 2026-09-23
 
 ### Fixed

@@ -85,7 +85,10 @@ into the ``skills`` index queue (see :ref:`installation-solr`).
 *   Category and tags come from the editable catalogue fields on the nr_llm
     record, falling back to front matter; license and version come from front
     matter.
-*   Source, allowed-tool, trust and support facets are available.
+*   Source, allowed-tool, license, trust and support facets are available.
+    The allowed-tool facet lists tool names (``Bash(gh:*)`` counts as
+    ``Bash``) and the license facet the license expression without the note a
+    skill may add; the detail view shows both in full.
 *   Filter search listings with ``type:tx_nrllm_skill`` and use
     ``tx_nrllm_skill`` in detail route enhancers. The detail plugin accepts an
     nr_llm skill UID.

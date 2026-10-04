@@ -26,7 +26,7 @@ final class SkillDocumentFields
         ] as $key => $field) {
             $value = $this->normalizeScalar($frontmatter[$key] ?? $metadata[$key] ?? null);
             if ($value !== null) {
-                $fields[$field] = $value;
+                $fields[$field] = $key === 'license' ? $this->licenseExpression($value) : $value;
             }
         }
 
@@ -95,6 +95,11 @@ final class SkillDocumentFields
     }
 
     /**
+     * The tools a skill may use, by name: "Bash(gh:*)" and "Bash(php:*)" are
+     * both Bash. nr_llm splits a rule at its spaces, so
+     * "Bash(bash ${CLAUDE_SKILL_DIR}/scripts/*)" arrives as "Bash(bash" and
+     * "${CLAUDE_SKILL_DIR}/scripts/*)"; a piece without a tool name is dropped.
+     *
      * @return list<string>
      */
     private function normalizeAllowedTools(mixed $raw): array
@@ -104,6 +109,29 @@ final class SkillDocumentFields
         }
 
         $decoded = json_decode($raw, true);
-        return $this->normalizeList(is_array($decoded) ? $decoded : $raw);
+        $tools = [];
+        foreach ($this->normalizeList(is_array($decoded) ? $decoded : $raw) as $rule) {
+            if (preg_match('/^([A-Za-z][A-Za-z0-9_-]*)(?:\(|$)/', $rule, $match) === 1) {
+                $tools[$match[1]] = $match[1];
+            }
+        }
+
+        return array_values($tools);
+    }
+
+    /**
+     * The licence expression without the note some skills add, so one licence
+     * is one facet value: "(MIT AND CC-BY-SA-4.0). See LICENSE-MIT …" and
+     * "(MIT AND CC-BY-SA-4.0)" both become "MIT AND CC-BY-SA-4.0". The skill's
+     * page keeps the full text.
+     */
+    private function licenseExpression(string $license): string
+    {
+        $expression = trim(preg_split('/;\s|\.\s+(?=[A-Z])/', $license, 2)[0] ?? $license, " \t.");
+        if (preg_match('/^\(([^()]*)\)$/', $expression, $match) === 1) {
+            $expression = trim($match[1]);
+        }
+
+        return $expression !== '' ? $expression : $license;
     }
 }

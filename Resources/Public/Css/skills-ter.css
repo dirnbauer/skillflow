@@ -26,6 +26,15 @@ span.ter-ext-state-expiremental {
 	width: 100%;
 }
 
+/*
+ * Bootstrap's "collapse" class shares its name with Tailwind's "collapse"
+ * utility (visibility: collapse). On a page that also loads a Tailwind build,
+ * the filter sidebar kept its space and showed nothing.
+ */
+#tx-solr-faceting.collapse {
+	visibility: visible;
+}
+
 .tx_solr .solr-filter-sidebar {
 	margin-top: 3px;
 }
@@ -181,6 +190,13 @@ span.ter-ext-state-expiremental {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		grid-gap: 30px;
+	}
+}
+
+/* Without filters the results take the full width: three cards per row. */
+@media (min-width: 1200px) {
+	.solr-results-layout__results--wide #tx-solr-search .results-list {
+		grid-template-columns: repeat(3, 1fr);
 	}
 }
 

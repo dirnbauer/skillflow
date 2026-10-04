@@ -42,49 +42,45 @@
                         </f:if>
                     </span>
                 </h3>
-                <f:if condition="{document.identifier_stringS} || {document.sourceTitle_stringS}">
+                <f:if condition="{document.sourceTitle_stringS}">
                     <div class="mb-3 small text-muted">
-                        <f:if condition="{document.identifier_stringS}">
-                            {document.identifier_stringS}
-                        </f:if>
-                        <f:if condition="{document.sourceTitle_stringS}">
-                            <f:if condition="{document.identifier_stringS}">
-                                /
-                            </f:if>
-                            by
-                            <f:format.crop maxCharacters="{f:if(condition:exactMatchFound, then: '100', else: '50')}">{document.sourceTitle_stringS}</f:format.crop>
-                        </f:if>
+                        <f:translate key="LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:search.ter.bySource" arguments="{0: document.sourceTitle_stringS}" />
                     </div>
                 </f:if>
             </div>
         </div>
 
         <p class="mb-3">
-            <f:format.crop maxCharacters="{f:if(condition:exactMatchFound, then: '360', else: '220')}" respectWordBoundaries="true">{s:document.highlightResult(resultSet:resultSet, document:document, fieldName:'content')}</f:format.crop>
+            <f:if condition="{document.description}">
+                <f:then>
+                    <f:format.crop maxCharacters="{f:if(condition:exactMatchFound, then: '360', else: '220')}" respectWordBoundaries="true">{document.description}</f:format.crop>
+                </f:then>
+                <f:else>
+                    <f:format.crop maxCharacters="{f:if(condition:exactMatchFound, then: '360', else: '220')}" respectWordBoundaries="true">{s:document.highlightResult(resultSet:resultSet, document:document, fieldName:'content')}</f:format.crop>
+                </f:else>
+            </f:if>
         </p>
 
 	</div>
-	<div class="card-footer search-result-card__meta">
-		<f:if condition="{document.category_stringS}">
-			<span class="badge bg-primary">{document.category_stringS}</span>
-		</f:if>
-		<f:if condition="{document.tags_stringM}">
-			<f:for each="{document.tags_stringM}" as="tag" iteration="tagIterator">
-				<f:if condition="{tagIterator.cycle} <= 6">
-					<f:if condition="{tag}">
-						<span class="badge bg-light text-dark">{tag}</span>
+	<f:comment>The licence is a free-text frontmatter note ("MIT / CC-BY-SA-4.0; adapted sources retain …"); the detail page shows it in full.</f:comment>
+	<f:if condition="{document.category_stringS} || {document.tags_stringM} || {document.version_stringS}">
+		<div class="card-footer search-result-card__meta">
+			<f:if condition="{document.category_stringS}">
+				<span class="badge bg-primary">{document.category_stringS}</span>
+			</f:if>
+			<f:if condition="{document.tags_stringM}">
+				<f:for each="{document.tags_stringM}" as="tag" iteration="tagIterator">
+					<f:if condition="{tagIterator.cycle} <= 6">
+						<f:if condition="{tag}">
+							<span class="badge bg-light text-dark">{tag}</span>
+						</f:if>
 					</f:if>
-				</f:if>
-			</f:for>
-		</f:if>
-		<f:if condition="{document.version_stringS}">
-			<span>&bull;</span>
-			<span>v{document.version_stringS}</span>
-		</f:if>
-		<f:if condition="{document.license_stringS}">
-			<span>&bull;</span>
-			<span>{document.license_stringS}</span>
-		</f:if>
-	</div>
+				</f:for>
+			</f:if>
+			<f:if condition="{document.version_stringS}">
+				<span>v{document.version_stringS}</span>
+			</f:if>
+		</div>
+	</f:if>
 </f:section>
 </html>
