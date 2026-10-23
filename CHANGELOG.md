@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.3] - 2026-10-23
+
+### Changed
+
+- Allow nr-llm 0.41.3 alongside the previously supported releases.
+- Declare the Install Tool package explicitly for the functional test runtime.
+
 ## 1.9.2 — 2026-10-04
 
 ### Fixed
