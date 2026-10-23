@@ -1,7 +1,10 @@
 # Keep development files out of Composer dist archives.
 /.ddev/                     export-ignore
 /.github/                   export-ignore
-/Build/                     export-ignore
+/Build/*                    export-ignore
+# This development dependency is complete source owned by this repository.
+# Keep its runtime package in dist archives so its committed path resolves.
+/Build/Tooling              -export-ignore
 /Tests/                     export-ignore
 /.gitattributes             export-ignore
 /.gitignore                 export-ignore

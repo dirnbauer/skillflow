@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.9.4] - 2026-10-23
+
+### Changed
+
+- Update Fractor to 1.1 and maintain its complete RuleDocGenerator 11.2.0
+  compatibility contracts under `Build/Tooling`, with the original MIT license.
+  This development-only package preserves the existing public namespace and API
+  while replacing the abandoned upstream dependency with source owned by this
+  repository. It adds no site runtime dependency.
+- Keep Composer audit enabled and run a cold Fractor dry-run in CI. Add
+  behavioral and public API compatibility checks for the contracts on PHP 8.1
+  through 8.5. Retain their source, license and package metadata in dist archives
+  so the committed local path repository resolves there too.
+
 ## [1.9.3] - 2026-10-23
 
 ### Changed

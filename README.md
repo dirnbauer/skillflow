@@ -121,6 +121,20 @@ more with the lowest supported nr_llm line (0.34). Set the
 locally. `ddev setup-site` creates a disposable browser test site at
 `https://skillflow.ddev.site/typo3/`.
 
+Fractor's development dependency on the abandoned RuleDocGenerator contracts is
+implemented by the complete MIT-licensed compatibility package in
+`Build/Tooling/rule-doc-generator-contracts`. Its public API stays compatible
+with upstream 11.2.0; this repository owns the source and maintenance. Composer
+audit remains enabled, and CI runs both a cold Fractor dry-run and the contract
+checks on PHP 8.1 through 8.5. The site runtime has no additional dependency.
+
+To run the independent contract checks locally:
+
+```bash
+composer install --working-dir=Build/Tooling/rule-doc-generator-contracts
+composer --working-dir=Build/Tooling/rule-doc-generator-contracts check
+```
+
 ## Docs
 
 `Documentation/` is a TYPO3 RST manual (`guides.xml`): introduction,
