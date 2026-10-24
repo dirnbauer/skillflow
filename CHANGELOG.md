@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.9.5 — 2026-10-24
+
+### Changed
+
+- Give local analysis/test processes a bounded 1 GiB PHP memory limit and run Fractor with a cold cache.
+- Pin the existing Solr 10.0.0 development image to its verified registry digest.
+- Refresh compatible Composer development tools and dependency audit coverage.
+- Test the current nr_llm 0.41 line alongside the retained 0.34 and 0.35 lines.
+- Pin current CI action releases and patched MariaDB images; require PHP 8.4 and 8.5 checks.
+
 ## [1.9.4] - 2026-10-23
 
 ### Changed

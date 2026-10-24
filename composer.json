@@ -34,10 +34,10 @@
     },
     "require-dev": {
         "a9f/typo3-fractor": "^1.1",
-        "friendsofphp/php-cs-fixer": "^3.95",
-        "phpstan/phpstan": "^2.2",
-        "phpstan/phpstan-phpunit": "^2.0.18",
-        "phpunit/phpunit": "^13.3",
+        "friendsofphp/php-cs-fixer": "^3.95.27",
+        "phpstan/phpstan": "^2.3.1",
+        "phpstan/phpstan-phpunit": "^2.1.1",
+        "phpunit/phpunit": "^13.4.3",
         "saschaegerer/phpstan-typo3": "^3.1",
         "ssch/typo3-rector": "^3.16",
         "typo3/cms-install": "^14.3.7",
@@ -111,7 +111,7 @@
     "extra": {
         "typo3/cms": {
             "extension-key": "skillflow",
-            "version": "1.9.4"
+            "version": "1.9.5"
         }
     }
 }

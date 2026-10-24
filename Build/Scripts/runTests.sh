@@ -20,10 +20,10 @@ case "$suite" in
     lint) find Classes Configuration Tests Build/phpunit ext_localconf.php -name '*.php' -print0 | xargs -0 -n1 -P4 php -l >/dev/null && echo "Lint OK" ;;
     cgl) exec vendor/bin/php-cs-fixer check --diff ;;
     cgl:fix) exec vendor/bin/php-cs-fixer fix ;;
-    phpstan) exec vendor/bin/phpstan analyse --no-progress ;;
-    unit) exec vendor/bin/phpunit -c Build/phpunit/UnitTests.xml ;;
-    functional) exec vendor/bin/phpunit -c Build/phpunit/FunctionalTests.xml ;;
-    rector) exec vendor/bin/rector process --dry-run ;;
-    fractor) exec vendor/bin/fractor process --dry-run ;;
+    phpstan) exec vendor/bin/phpstan analyse --no-progress --memory-limit=1G ;;
+    unit) exec php -d memory_limit=1G vendor/bin/phpunit -c Build/phpunit/UnitTests.xml ;;
+    functional) exec php -d memory_limit=1G vendor/bin/phpunit -c Build/phpunit/FunctionalTests.xml ;;
+    rector) exec php -d memory_limit=1G vendor/bin/rector process --dry-run ;;
+    fractor) exec php -d memory_limit=1G vendor/bin/fractor process --dry-run --clear-cache ;;
     *) echo "Unknown suite: $suite" >&2; exit 2 ;;
 esac

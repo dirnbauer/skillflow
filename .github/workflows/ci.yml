@@ -28,16 +28,16 @@ jobs:
       run:
         working-directory: Build/Tooling/rule-doc-generator-contracts
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: ${{ matrix.php }}
           extensions: dom, mbstring, xml, xmlwriter
           coverage: none
           tools: composer:v2
-      - uses: ramsey/composer-install@v4
+      - uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
         with:
           working-directory: Build/Tooling/rule-doc-generator-contracts
       - run: composer check
@@ -46,10 +46,10 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: '8.4'
           extensions: ${{ env.PHP_EXTENSIONS }}
@@ -62,33 +62,33 @@ jobs:
     name: Coding guidelines
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: '8.4'
           extensions: ${{ env.PHP_EXTENSIONS }}
           coverage: none
           tools: composer:v2
-      - uses: ramsey/composer-install@v4
+      - uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
       - run: Build/Scripts/runTests.sh -s cgl
 
   phpstan:
     name: PHPStan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: '8.4'
           extensions: ${{ env.PHP_EXTENSIONS }}
           coverage: none
           tools: composer:v2
-      - uses: ramsey/composer-install@v4
-      - run: composer audit
+      - uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
+      - run: composer audit --abandoned=fail
       - run: Build/Scripts/runTests.sh -s phpstan
       - run: vendor/bin/fractor process --dry-run --clear-cache
 
@@ -100,16 +100,16 @@ jobs:
       matrix:
         php: ['8.4', '8.5']
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: ${{ matrix.php }}
           extensions: ${{ env.PHP_EXTENSIONS }}
           coverage: none
           tools: composer:v2
-      - uses: ramsey/composer-install@v4
+      - uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
       - run: Build/Scripts/runTests.sh -s unit -p ${{ matrix.php }}
 
   functional:
@@ -123,12 +123,17 @@ jobs:
             nr-llm: '0.35'
           - php: '8.5'
             nr-llm: '0.35'
+          # The current nr_llm line is tested alongside the retained older lines.
+          - php: '8.4'
+            nr-llm: '0.41'
+          - php: '8.5'
+            nr-llm: '0.41'
           # The lowest nr_llm line composer.json still allows.
           - php: '8.4'
             nr-llm: '0.34'
     services:
       mariadb:
-        image: mariadb:10.11
+        image: mariadb:10.11.19@sha256:0d0945c57f75b3a3b9ebe71aedaaad005fa5305054e8fca3d2e42a8c92b43b5e
         env:
           MARIADB_ROOT_PASSWORD: root
         ports:
@@ -146,16 +151,16 @@ jobs:
       typo3DatabasePassword: root
       typo3DatabaseName: skillflow_functional
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: ${{ matrix.php }}
           extensions: ${{ env.PHP_EXTENSIONS }}
           coverage: none
           tools: composer:v2
-      - uses: ramsey/composer-install@v4
+      - uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
         with:
           composer-options: --with netresearch/nr-llm:~${{ matrix.nr-llm }}.0
       - run: Build/Scripts/runTests.sh -s functional -p ${{ matrix.php }}
