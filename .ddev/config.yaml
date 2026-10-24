@@ -1,7 +1,7 @@
 name: skillflow
 type: typo3
 docroot: .Build/site/public
-php_version: "8.4"
+php_version: "8.5"
 webserver_type: nginx-fpm
 database:
   type: mariadb
