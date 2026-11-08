@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+<xliff
+  xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="hu" datatype="plaintext" original="EXT:skillflow/Resources/Private/Language/catalog.xlf" date="2026-11-08T00:00:00Z" product-name="skillflow">
     <header/>
     <body>

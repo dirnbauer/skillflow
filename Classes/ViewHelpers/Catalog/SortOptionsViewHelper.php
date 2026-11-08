@@ -42,7 +42,7 @@ final class SortOptionsViewHelper extends AbstractCatalogViewHelper
                 $options[] = $option;
             }
         }
-        $order = array_flip(array_map(static fn(AbstractOptionFacetItem $option): string => spl_object_hash($option), $options));
+        $order = array_flip(array_map(spl_object_hash(...), $options));
         usort($options, static fn(AbstractOptionFacetItem $a, AbstractOptionFacetItem $b): int => [$positions[(string)$a->getValue()] ?? PHP_INT_MAX, $order[spl_object_hash($a)]]
             <=> [$positions[(string)$b->getValue()] ?? PHP_INT_MAX, $order[spl_object_hash($b)]]);
 

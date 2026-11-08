@@ -101,7 +101,7 @@ plugin.tx_solr.view {
 # -----------------------------------------------------------------------------
 # (3) The skills search, on the configured pages only
 # -----------------------------------------------------------------------------
-[page["uid"] in [{$skillflow.search.pages}] || page["uid"] in [{$skillflow.search.typo3Pages}]]
+[traverse(page, "uid") in [{$skillflow.search.pages}] || traverse(page, "uid") in [{$skillflow.search.typo3Pages}]]
 plugin.tx_solr.search {
   # The whole catalogue on the empty query.
   initializeWithEmptyQuery = 1
@@ -258,17 +258,17 @@ plugin.tx_solr.search {
   frequentSearches = 0
 }
 plugin.tx_solr.view.templateFiles.results = Skills
-[END]
+[end]
 
 # Browsing without a query and without a chosen order: showcase skills first,
 # then the topics in the catalogue's order ("relevance" has nothing to rank).
-[(page["uid"] in [{$skillflow.search.pages}] || page["uid"] in [{$skillflow.search.typo3Pages}]) && traverse(request.getQueryParams(), 'tx_solr/q') == '' && traverse(request.getQueryParams(), 'tx_solr/sort') == '']
+[(traverse(page, "uid") in [{$skillflow.search.pages}] || traverse(page, "uid") in [{$skillflow.search.typo3Pages}]) && traverse(request.getQueryParams(), 'tx_solr/q') == '' && traverse(request.getQueryParams(), 'tx_solr/sort') == '']
 plugin.tx_solr.search.query.sortBy = skillRank_intS asc
-[END]
+[end]
 
-[page["uid"] in [{$skillflow.search.typo3Pages}]]
+[traverse(page, "uid") in [{$skillflow.search.typo3Pages}]]
 plugin.tx_solr.view.templateFiles.results = SkillsTypo3
-[END]
+[end]
 
 # -----------------------------------------------------------------------------
 # (4) Skill detail plugin (skillflow_skilldetail) rendering

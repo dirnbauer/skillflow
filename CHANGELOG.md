@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.10.0 — 2026-11-08
 
 ### Added
 
@@ -27,7 +27,7 @@
   kind, audience, version, licence, evals, last change, source, upstream),
   copy buttons, related skills of the topic, links to the source and to
   suggest an improvement.
-- Labels in English and German; Chinese and Hungarian files to translate.
+- Labels in English, German, Chinese and Hungarian.
 
 ### Changed
 
@@ -37,6 +37,8 @@
 - `skillflow.detailPage` site setting for result links (the constant still
   works); result URLs carry no `L` parameter.
 - The licence facet writes split licensing as `MIT AND CC-BY-SA-4.0`.
+- Best match lifts the superfeature skills a little (`skillSuperfeature_intS:1^4`).
+- Install commands wrap instead of scrolling sideways.
 
 ### Removed
 
