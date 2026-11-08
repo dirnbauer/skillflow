@@ -1,0 +1,14 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+<f:comment>
+    Skills search in the site's theme (shadcn/ui tokens such as --card,
+    --muted-foreground, --primary, --ring and --radius; Desiderio provides
+    them). No layout: the theme's Solr layout adds a sidebar this search
+    does not use.
+</f:comment>
+<f:asset.css identifier="skillflow-skills-search" href="EXT:skillflow/Resources/Public/Css/skills-search.css" />
+<f:asset.script identifier="skillflow-skills-search" src="EXT:skillflow/Resources/Public/JavaScript/skills-search.js" defer="1" />
+<div class="tx_solr sf-site" id="tx-solr-search">
+    <f:render partial="Skills/Search" arguments="{resultSet: resultSet, pagination: pagination, currentPage: currentPage, searchPageUid: contentObjectData.pid, pluginNamespace: pluginNamespace, look: 'site'}" />
+</div>
+</html>

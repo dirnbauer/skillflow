@@ -20,10 +20,14 @@ use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\MetaTag\MetaTagManagerRegistry;
 use TYPO3\CMS\Core\PageTitle\RecordTitleProvider;
 use TYPO3\CMS\Core\View\ViewInterface;
+use TYPO3\CMS\Extbase\Mvc\ExtbaseRequestParameters;
+use TYPO3\CMS\Extbase\Mvc\Request as ExtbaseRequest;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 use Webconsulting\Skillflow\Controller\SkillDetailController;
 use Webconsulting\Skillflow\Controller\SkillsModuleController;
+use Webconsulting\Skillflow\Service\SkillCatalogRepository;
 use Webconsulting\Skillflow\Service\SkillFinder;
+use Webconsulting\Skillflow\Service\SkillGroupPresenter;
 
 final class ControllerAccessTest extends FunctionalTestCase
 {
@@ -364,7 +368,13 @@ final class ControllerAccessTest extends FunctionalTestCase
 
     private function detailController(): SkillDetailController
     {
-        $controller = new SkillDetailController($this->get(SkillFinder::class), new RecordTitleProvider(), $this->get(MetaTagManagerRegistry::class));
+        $controller = new SkillDetailController(
+            $this->get(SkillFinder::class),
+            new RecordTitleProvider(),
+            $this->get(MetaTagManagerRegistry::class),
+            $this->get(SkillCatalogRepository::class),
+            $this->get(SkillGroupPresenter::class),
+        );
         $controller->injectResponseFactory(new ResponseFactory());
         $controller->injectStreamFactory(new StreamFactory());
         $view = new class implements ViewInterface {
@@ -389,6 +399,10 @@ final class ControllerAccessTest extends FunctionalTestCase
             }
         };
         new \ReflectionProperty($controller, 'view')->setValue($controller, $view);
+        // A frontend request without a site: no search page, no catalogue links.
+        new \ReflectionProperty($controller, 'request')->setValue($controller, new ExtbaseRequest(
+            new ServerRequest('https://typo3-testing.local/skill/test-skill')->withAttribute('extbase', new ExtbaseRequestParameters(SkillDetailController::class)),
+        ));
         return $controller;
     }
 }

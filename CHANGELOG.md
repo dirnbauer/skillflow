@@ -1,5 +1,49 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Skills search on the pages of the new site settings `skillflow.search.pages`
+  (site theme) and `skillflow.search.typo3Pages` (typo3.org look): results
+  while typing from two characters (debounced, cancelled, query in the URL,
+  back/forward), `/` and type-anywhere, Esc, arrow keys and Enter, marked
+  matches, the matching part of SKILL.md, a count in a polite live region,
+  an empty state with spelling suggestions and topics, topics with counts,
+  publisher/audience/maintenance/kind/licence filters and the orders best
+  match, name, recently updated and superfeatures first; filters, topics and
+  paging load in place. Works as plain Solr search without JavaScript.
+- Packs: every topic installs with one line; an agent switch writes the
+  commands for Claude Code, Codex, Cursor, Gemini CLI or Windsurf.
+- Skill catalogues (`Resources/Private/Catalog/*.yaml`, site setting
+  `skillflow.catalogs`): topics, showcase skills, audiences, publishers,
+  maintained or vendored, evals and last change per skill, indexed into Solr
+  fields; the catalogue of github.com/dirnbauer/typo3-skills ships with it,
+  refreshed by `Build/Scripts/refresh-skill-catalog.php`.
+- typo3.org look: Source Sans 3 (self-hosted, SIL OFL 1.1), Stage Orange and
+  Petrol, 1rem cards with layered shadows, colours adjusted to WCAG 2.2 AA.
+- Skill detail: Command and Prompt install tabs, how to call the skill per
+  agent, SKILL.md with "Show more", facts (topic, publisher, maintenance,
+  kind, audience, version, licence, evals, last change, source, upstream),
+  copy buttons, related skills of the topic, links to the source and to
+  suggest an improvement.
+- Labels in English and German; Chinese and Hungarian files to translate.
+
+### Changed
+
+- The set's facets, sorting and templates apply to the skills search pages
+  only; a general site search keeps its own. List the set after the sets that
+  bring EXT:solr's default TypoScript.
+- `skillflow.detailPage` site setting for result links (the constant still
+  works); result URLs carry no `L` parameter.
+- The licence facet writes split licensing as `MIT AND CC-BY-SA-4.0`.
+
+### Removed
+
+- The TER look (`Resources/Private/SolrTer/`, `skills-ter.css`) with its
+  Bootstrap and Font Awesome from a CDN, and the global `Search/Results.html`
+  and `Result/Document.html` overrides.
+
 ## 1.9.5 — 2026-10-24
 
 ### Changed

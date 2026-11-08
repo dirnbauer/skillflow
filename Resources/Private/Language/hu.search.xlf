@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="hu" datatype="plaintext" original="EXT:skillflow/Resources/Private/Language/search.xlf" date="2026-11-08T00:00:00Z" product-name="skillflow">
+    <header/>
+    <body>
+      <trans-unit id="form.label" resname="form.label">
+        <source>Search the skills</source>
+        <target state="needs-translation">Search the skills</target>
+      </trans-unit>
+      <trans-unit id="form.placeholder" resname="form.placeholder">
+        <source>Search by name, task or topic</source>
+        <target state="needs-translation">Search by name, task or topic</target>
+      </trans-unit>
+      <trans-unit id="form.submit" resname="form.submit">
+        <source>Search</source>
+        <target state="needs-translation">Search</target>
+      </trans-unit>
+      <trans-unit id="keys.focus" resname="keys.focus">
+        <source>search</source>
+        <target state="needs-translation">search</target>
+      </trans-unit>
+      <trans-unit id="keys.move" resname="keys.move">
+        <source>move</source>
+        <target state="needs-translation">move</target>
+      </trans-unit>
+      <trans-unit id="keys.open" resname="keys.open">
+        <source>open</source>
+        <target state="needs-translation">open</target>
+      </trans-unit>
+      <trans-unit id="keys.clear" resname="keys.clear">
+        <source>clear</source>
+        <target state="needs-translation">clear</target>
+      </trans-unit>
+      <trans-unit id="status.none" resname="status.none">
+        <source>No skills for ‘%s’</source>
+        <target state="needs-translation">No skills for ‘%s’</target>
+      </trans-unit>
+      <trans-unit id="status.query.one" resname="status.query.one">
+        <source>1 skill for ‘%s’</source>
+        <target state="needs-translation">1 skill for ‘%s’</target>
+      </trans-unit>
+      <trans-unit id="status.query.other" resname="status.query.other">
+        <source>%1$s skills for ‘%2$s’</source>
+        <target state="needs-translation">%1$s skills for ‘%2$s’</target>
+      </trans-unit>
+      <trans-unit id="status.count.one" resname="status.count.one">
+        <source>1 skill</source>
+        <target state="needs-translation">1 skill</target>
+      </trans-unit>
+      <trans-unit id="status.count.other" resname="status.count.other">
+        <source>%s skills</source>
+        <target state="needs-translation">%s skills</target>
+      </trans-unit>
+      <trans-unit id="status.corrected" resname="status.corrected">
+        <source>Nothing found for ‘%1$s’, so these are the skills for ‘%2$s’.</source>
+        <target state="needs-translation">Nothing found for ‘%1$s’, so these are the skills for ‘%2$s’.</target>
+      </trans-unit>
+      <trans-unit id="topics.label" resname="topics.label">
+        <source>Topics</source>
+        <target state="needs-translation">Topics</target>
+      </trans-unit>
+      <trans-unit id="topics.all" resname="topics.all">
+        <source>All</source>
+        <target state="needs-translation">All</target>
+      </trans-unit>
+      <trans-unit id="filters.label" resname="filters.label">
+        <source>Filters</source>
+        <target state="needs-translation">Filters</target>
+      </trans-unit>
+      <trans-unit id="filters.active" resname="filters.active">
+        <source>Active filters</source>
+        <target state="needs-translation">Active filters</target>
+      </trans-unit>
+      <trans-unit id="filters.clear" resname="filters.clear">
+        <source>Clear filters</source>
+        <target state="needs-translation">Clear filters</target>
+      </trans-unit>
+      <trans-unit id="filter.active" resname="filter.active">
+        <source>active</source>
+        <target state="needs-translation">active</target>
+      </trans-unit>
+      <trans-unit id="filter.selected" resname="filter.selected">
+        <source>selected</source>
+        <target state="needs-translation">selected</target>
+      </trans-unit>
+      <trans-unit id="filter.remove" resname="filter.remove">
+        <source>Remove filter</source>
+        <target state="needs-translation">Remove filter</target>
+      </trans-unit>
+      <trans-unit id="agent.label" resname="agent.label">
+        <source>Commands for</source>
+        <target state="needs-translation">Commands for</target>
+      </trans-unit>
+      <trans-unit id="sort.label" resname="sort.label">
+        <source>Sort: %s</source>
+        <target state="needs-translation">Sort: %s</target>
+      </trans-unit>
+      <trans-unit id="sort.relevance" resname="sort.relevance">
+        <source>Best match</source>
+        <target state="needs-translation">Best match</target>
+      </trans-unit>
+      <trans-unit id="sort.name" resname="sort.name">
+        <source>Name</source>
+        <target state="needs-translation">Name</target>
+      </trans-unit>
+      <trans-unit id="sort.updated" resname="sort.updated">
+        <source>Recently updated</source>
+        <target state="needs-translation">Recently updated</target>
+      </trans-unit>
+      <trans-unit id="sort.showcase" resname="sort.showcase">
+        <source>Superfeatures first</source>
+        <target state="needs-translation">Superfeatures first</target>
+      </trans-unit>
+      <trans-unit id="results.heading" resname="results.heading">
+        <source>Skills</source>
+        <target state="needs-translation">Skills</target>
+      </trans-unit>
+      <trans-unit id="empty.title" resname="empty.title">
+        <source>No skills match ‘%s’.</source>
+        <target state="needs-translation">No skills match ‘%s’.</target>
+      </trans-unit>
+      <trans-unit id="empty.filtered" resname="empty.filtered">
+        <source>No skills match these filters.</source>
+        <target state="needs-translation">No skills match these filters.</target>
+      </trans-unit>
+      <trans-unit id="empty.didYouMean" resname="empty.didYouMean">
+        <source>Did you mean</source>
+        <target state="needs-translation">Did you mean</target>
+      </trans-unit>
+      <trans-unit id="empty.hint" resname="empty.hint">
+        <source>Try fewer or other words, or browse a topic:</source>
+        <target state="needs-translation">Try fewer or other words, or browse a topic:</target>
+      </trans-unit>
+      <trans-unit id="empty.reset" resname="empty.reset">
+        <source>Show all skills</source>
+        <target state="needs-translation">Show all skills</target>
+      </trans-unit>
+      <trans-unit id="packs.title" resname="packs.title">
+        <source>Install a whole topic</source>
+        <target state="needs-translation">Install a whole topic</target>
+      </trans-unit>
+      <trans-unit id="packs.text" resname="packs.text">
+        <source>Each topic installs with one line: it clones the repository once and links the skill folders into your agent's skills folder.</source>
+        <target state="needs-translation">Each topic installs with one line: it clones the repository once and links the skill folders into your agent's skills folder.</target>
+      </trans-unit>
+      <trans-unit id="pack.eyebrow" resname="pack.eyebrow">
+        <source>Pack · %s skills</source>
+        <target state="needs-translation">Pack · %s skills</target>
+      </trans-unit>
+      <trans-unit id="pack.copy" resname="pack.copy">
+        <source>Copy the install command for %s</source>
+        <target state="needs-translation">Copy the install command for %s</target>
+      </trans-unit>
+      <trans-unit id="pack.show" resname="pack.show">
+        <source>Show the %s skills</source>
+        <target state="needs-translation">Show the %s skills</target>
+      </trans-unit>
+      <trans-unit id="pack.page" resname="pack.page">
+        <source>About this topic</source>
+        <target state="needs-translation">About this topic</target>
+      </trans-unit>
+      <trans-unit id="copy.button" resname="copy.button">
+        <source>Copy</source>
+        <target state="needs-translation">Copy</target>
+      </trans-unit>
+      <trans-unit id="copy.done" resname="copy.done">
+        <source>Copied</source>
+        <target state="needs-translation">Copied</target>
+      </trans-unit>
+      <trans-unit id="row.by" resname="row.by">
+        <source>by %s</source>
+        <target state="needs-translation">by %s</target>
+      </trans-unit>
+      <trans-unit id="row.snippet" resname="row.snippet">
+        <source>In SKILL.md:</source>
+        <target state="needs-translation">In SKILL.md:</target>
+      </trans-unit>
+      <trans-unit id="row.facts" resname="row.facts">
+        <source>Facts</source>
+        <target state="needs-translation">Facts</target>
+      </trans-unit>
+      <trans-unit id="badge.superfeature" resname="badge.superfeature">
+        <source>Superfeature</source>
+        <target state="needs-translation">Superfeature</target>
+      </trans-unit>
+      <trans-unit id="badge.evals" resname="badge.evals">
+        <source>Evals: %s reviewed</source>
+        <target state="needs-translation">Evals: %s reviewed</target>
+      </trans-unit>
+      <trans-unit id="origin.maintained" resname="origin.maintained">
+        <source>Maintained here</source>
+        <target state="needs-translation">Maintained here</target>
+      </trans-unit>
+      <trans-unit id="origin.vendored" resname="origin.vendored">
+        <source>Vendored</source>
+        <target state="needs-translation">Vendored</target>
+      </trans-unit>
+      <trans-unit id="kind.capability" resname="kind.capability">
+        <source>Capability</source>
+        <target state="needs-translation">Capability</target>
+      </trans-unit>
+      <trans-unit id="kind.preference" resname="kind.preference">
+        <source>Preference</source>
+        <target state="needs-translation">Preference</target>
+      </trans-unit>
+      <trans-unit id="pagination.label" resname="pagination.label">
+        <source>Pages</source>
+        <target state="needs-translation">Pages</target>
+      </trans-unit>
+      <trans-unit id="pagination.previous" resname="pagination.previous">
+        <source>Previous</source>
+        <target state="needs-translation">Previous</target>
+      </trans-unit>
+      <trans-unit id="pagination.next" resname="pagination.next">
+        <source>Next</source>
+        <target state="needs-translation">Next</target>
+      </trans-unit>
+      <trans-unit id="pagination.page" resname="pagination.page">
+        <source>Page %s</source>
+        <target state="needs-translation">Page %s</target>
+      </trans-unit>
+      <trans-unit id="facet.group" resname="facet.group">
+        <source>Topic</source>
+        <target state="needs-translation">Topic</target>
+      </trans-unit>
+      <trans-unit id="facet.owner" resname="facet.owner">
+        <source>Publisher</source>
+        <target state="needs-translation">Publisher</target>
+      </trans-unit>
+      <trans-unit id="facet.audience" resname="facet.audience">
+        <source>Audience</source>
+        <target state="needs-translation">Audience</target>
+      </trans-unit>
+      <trans-unit id="facet.origin" resname="facet.origin">
+        <source>Maintenance</source>
+        <target state="needs-translation">Maintenance</target>
+      </trans-unit>
+      <trans-unit id="facet.kind" resname="facet.kind">
+        <source>Kind</source>
+        <target state="needs-translation">Kind</target>
+      </trans-unit>
+      <trans-unit id="facet.license" resname="facet.license">
+        <source>Licence</source>
+        <target state="needs-translation">Licence</target>
+      </trans-unit>
+      <trans-unit id="typo3.eyebrow" resname="typo3.eyebrow">
+        <source>Agent skills for TYPO3</source>
+        <target state="needs-translation">Agent skills for TYPO3</target>
+      </trans-unit>
+      <trans-unit id="typo3.title" resname="typo3.title">
+        <source>Find the skill for your next TYPO3 task</source>
+        <target state="needs-translation">Find the skill for your next TYPO3 task</target>
+      </trans-unit>
+      <trans-unit id="typo3.subtitle" resname="typo3.subtitle">
+        <source>Open-source skills that teach coding agents TYPO3 v14: upgrades, content, accessibility, search, security and releases.</source>
+        <target state="needs-translation">Open-source skills that teach coding agents TYPO3 v14: upgrades, content, accessibility, search, security and releases.</target>
+      </trans-unit>
+      <trans-unit id="detail.back" resname="detail.back">
+        <source>All skills</source>
+        <target state="needs-translation">All skills</target>
+      </trans-unit>
+      <trans-unit id="detail.breadcrumb" resname="detail.breadcrumb">
+        <source>Skill</source>
+        <target state="needs-translation">Skill</target>
+      </trans-unit>
+      <trans-unit id="detail.install" resname="detail.install">
+        <source>Install</source>
+        <target state="needs-translation">Install</target>
+      </trans-unit>
+      <trans-unit id="detail.tab.command" resname="detail.tab.command">
+        <source>Command</source>
+        <target state="needs-translation">Command</target>
+      </trans-unit>
+      <trans-unit id="detail.tab.prompt" resname="detail.tab.prompt">
+        <source>Prompt</source>
+        <target state="needs-translation">Prompt</target>
+      </trans-unit>
+      <trans-unit id="detail.install.one" resname="detail.install.one">
+        <source>Only this skill:</source>
+        <target state="needs-translation">Only this skill:</target>
+      </trans-unit>
+      <trans-unit id="detail.install.all" resname="detail.install.all">
+        <source>All skills of the collection, for every supported agent:</source>
+        <target state="needs-translation">All skills of the collection, for every supported agent:</target>
+      </trans-unit>
+      <trans-unit id="detail.install.copy" resname="detail.install.copy">
+        <source>Copy the command</source>
+        <target state="needs-translation">Copy the command</target>
+      </trans-unit>
+      <trans-unit id="detail.prompt.text" resname="detail.prompt.text">
+        <source>Install the agent skill ‘%1$s’ from %2$s: clone the repository, link the whole folder skills/%1$s (not only SKILL.md) into my agent's skills folder, and tell me how to call it.</source>
+        <target state="needs-translation">Install the agent skill ‘%1$s’ from %2$s: clone the repository, link the whole folder skills/%1$s (not only SKILL.md) into my agent's skills folder, and tell me how to call it.</target>
+      </trans-unit>
+      <trans-unit id="detail.prompt.hint" resname="detail.prompt.hint">
+        <source>Paste this into your agent's chat. The agent needs shell access.</source>
+        <target state="needs-translation">Paste this into your agent's chat. The agent needs shell access.</target>
+      </trans-unit>
+      <trans-unit id="detail.prompt.copy" resname="detail.prompt.copy">
+        <source>Copy the prompt</source>
+        <target state="needs-translation">Copy the prompt</target>
+      </trans-unit>
+      <trans-unit id="detail.url.note" resname="detail.url.note">
+        <source>Pasting the raw SKILL.md URL into a chat gives the model only that text, without the scripts and references of the folder.</source>
+        <target state="needs-translation">Pasting the raw SKILL.md URL into a chat gives the model only that text, without the scripts and references of the folder.</target>
+      </trans-unit>
+      <trans-unit id="detail.call.title" resname="detail.call.title">
+        <source>Call it</source>
+        <target state="needs-translation">Call it</target>
+      </trans-unit>
+      <trans-unit id="detail.call.text" resname="detail.call.text">
+        <source>Describe your task and the agent picks the skill by its description, or call it by name:</source>
+        <target state="needs-translation">Describe your task and the agent picks the skill by its description, or call it by name:</target>
+      </trans-unit>
+      <trans-unit id="detail.facts" resname="detail.facts">
+        <source>Facts</source>
+        <target state="needs-translation">Facts</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.topic" resname="detail.fact.topic">
+        <source>Topic</source>
+        <target state="needs-translation">Topic</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.owner" resname="detail.fact.owner">
+        <source>Publisher</source>
+        <target state="needs-translation">Publisher</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.maintenance" resname="detail.fact.maintenance">
+        <source>Maintenance</source>
+        <target state="needs-translation">Maintenance</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.kind" resname="detail.fact.kind">
+        <source>Kind</source>
+        <target state="needs-translation">Kind</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.audience" resname="detail.fact.audience">
+        <source>Audience</source>
+        <target state="needs-translation">Audience</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.version" resname="detail.fact.version">
+        <source>Version</source>
+        <target state="needs-translation">Version</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.license" resname="detail.fact.license">
+        <source>Licence</source>
+        <target state="needs-translation">Licence</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.evals" resname="detail.fact.evals">
+        <source>Evals</source>
+        <target state="needs-translation">Evals</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.evals.value" resname="detail.fact.evals.value">
+        <source>%1$s cases, %2$s reviewed</source>
+        <target state="needs-translation">%1$s cases, %2$s reviewed</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.updated" resname="detail.fact.updated">
+        <source>Last change</source>
+        <target state="needs-translation">Last change</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.source" resname="detail.fact.source">
+        <source>Source</source>
+        <target state="needs-translation">Source</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.upstream" resname="detail.fact.upstream">
+        <source>Upstream</source>
+        <target state="needs-translation">Upstream</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.tools" resname="detail.fact.tools">
+        <source>Allowed tools</source>
+        <target state="needs-translation">Allowed tools</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.abilities" resname="detail.fact.abilities">
+        <source>Abilities</source>
+        <target state="needs-translation">Abilities</target>
+      </trans-unit>
+      <trans-unit id="detail.source.link" resname="detail.source.link">
+        <source>View the source</source>
+        <target state="needs-translation">View the source</target>
+      </trans-unit>
+      <trans-unit id="detail.improve" resname="detail.improve">
+        <source>Suggest an improvement</source>
+        <target state="needs-translation">Suggest an improvement</target>
+      </trans-unit>
+      <trans-unit id="detail.improve.upstream" resname="detail.improve.upstream">
+        <source>Suggest an improvement upstream</source>
+        <target state="needs-translation">Suggest an improvement upstream</target>
+      </trans-unit>
+      <trans-unit id="detail.related" resname="detail.related">
+        <source>More in %s</source>
+        <target state="needs-translation">More in %s</target>
+      </trans-unit>
+      <trans-unit id="detail.related.page" resname="detail.related.page">
+        <source>About this topic</source>
+        <target state="needs-translation">About this topic</target>
+      </trans-unit>
+      <trans-unit id="detail.body" resname="detail.body">
+        <source>SKILL.md</source>
+        <target state="needs-translation">SKILL.md</target>
+      </trans-unit>
+      <trans-unit id="detail.more" resname="detail.more">
+        <source>Show more</source>
+        <target state="needs-translation">Show more</target>
+      </trans-unit>
+      <trans-unit id="detail.less" resname="detail.less">
+        <source>Show less</source>
+        <target state="needs-translation">Show less</target>
+      </trans-unit>
+      <trans-unit id="detail.id" resname="detail.id">
+        <source>Skill ID</source>
+        <target state="needs-translation">Skill ID</target>
+      </trans-unit>
+      <trans-unit id="detail.notfound.title" resname="detail.notfound.title">
+        <source>Skill not found</source>
+        <target state="needs-translation">Skill not found</target>
+      </trans-unit>
+      <trans-unit id="detail.notfound.text" resname="detail.notfound.text">
+        <source>This skill does not exist or is not enabled.</source>
+        <target state="needs-translation">This skill does not exist or is not enabled.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

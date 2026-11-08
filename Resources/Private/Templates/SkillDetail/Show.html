@@ -7,103 +7,193 @@
 
 <f:section name="Main">
     <f:asset.css identifier="skillflow-skill-detail" href="EXT:skillflow/Resources/Public/Css/skill-detail.css" />
-    <f:variable name="ll" value="LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:" />
+    <f:variable name="ll" value="LLL:EXT:skillflow/Resources/Private/Language/search.xlf:" />
     <f:if condition="{notFound}">
         <f:then>
-            <div class="skillflow-skill skillflow-skill--not-found">
-                <h1 class="skillflow-skill__title"><f:translate key="{ll}plugin.skilldetail.notfound.title" /></h1>
-                <p class="skillflow-skill__description"><f:translate key="{ll}plugin.skilldetail.notfound" /></p>
+            <div class="sf-skill sf-skill--not-found">
+                <h1 class="sf-skill__title"><f:translate key="{ll}detail.notfound.title" /></h1>
+                <p class="sf-skill__lead"><f:translate key="{ll}detail.notfound.text" /></p>
+                <f:if condition="{searchUrl}">
+                    <p><a class="sf-skill__back" href="{searchUrl}"><f:translate key="{ll}detail.back" /></a></p>
+                </f:if>
             </div>
         </f:then>
         <f:else>
             <f:asset.script identifier="skillflow-skill-detail" src="EXT:skillflow/Resources/Public/JavaScript/skill-detail.js" defer="1" />
-            <article class="skillflow-skill" aria-labelledby="skillflow-skill-title-{skill.uid}">
-                <header class="skillflow-skill__header">
-                    <f:if condition="{meta.category} || {sourceTitle}">
-                        <p class="skillflow-skill__eyebrow">
-                            <f:if condition="{meta.category}">
-                                <span class="skillflow-skill__badge skillflow-skill__badge--category">{meta.category}</span>
+            <f:variable name="copyCommandLabel" value="{f:translate(key: '{ll}detail.install.copy')}" />
+            <f:variable name="copyPromptLabel" value="{f:translate(key: '{ll}detail.prompt.copy')}" />
+            <f:variable name="copyIdLabel" value="{f:translate(key: '{ll}copy.button')}: {skill.name}" />
+            <article class="sf-skill" aria-labelledby="sf-skill-title-{skill.uid}" data-skillflow-skill="">
+                <header class="sf-skill__header">
+                    <p class="sf-skill__context">
+                        <f:if condition="{searchUrl}">
+                            <a class="sf-skill__back" href="{searchUrl}"><f:translate key="{ll}detail.back" /></a>
+                        </f:if>
+                        <f:if condition="{group}">
+                            <f:if condition="{topicSearchUrl}">
+                                <f:then><a class="sf-skill__chip" href="{topicSearchUrl}">{group.title}</a></f:then>
+                                <f:else><span class="sf-skill__chip">{group.title}</span></f:else>
                             </f:if>
-                            <f:if condition="{sourceTitle}">
-                                <span class="skillflow-skill__badge">{sourceTitle}</span>
-                            </f:if>
-                        </p>
-                    </f:if>
-                    <h1 class="skillflow-skill__title" id="skillflow-skill-title-{skill.uid}">{skill.name}</h1>
+                        </f:if>
+                        <f:if condition="{facts.superfeature}">
+                            <span class="sf-skill__chip sf-skill__chip--feature"><f:render partial="Skills/Icon" arguments="{name: 'sparkles'}" /><f:translate key="{ll}badge.superfeature" /></span>
+                        </f:if>
+                    </p>
+                    <h1 class="sf-skill__title" id="sf-skill-title-{skill.uid}">{skill.name}</h1>
                     <f:if condition="{skill.description}">
-                        <p class="skillflow-skill__description">{skill.description}</p>
+                        <p class="sf-skill__lead">{skill.description}</p>
                     </f:if>
-                    <f:if condition="{meta.tags}">
-                        <ul class="skillflow-skill__tags" aria-label="{f:translate(key: '{ll}skill.tags')}">
-                            <f:for each="{meta.tags}" as="tag">
-                                <li class="skillflow-skill__badge skillflow-skill__badge--tag">{tag}</li>
-                            </f:for>
-                        </ul>
-                    </f:if>
+                    <ul class="sf-skill__badges" role="list" aria-label="{f:translate(key: '{ll}detail.facts')}">
+                        <f:if condition="{facts.owner}"><li class="sf-skill__badge"><f:translate key="{ll}row.by" arguments="{0: facts.owner}" /></li></f:if>
+                        <f:if condition="{facts.origin}"><li class="sf-skill__badge"><f:translate key="{ll}origin.{facts.origin}" /></li></f:if>
+                        <f:if condition="{meta.skill_type}"><li class="sf-skill__badge"><f:translate key="{ll}kind.{meta.skill_type}" /></li></f:if>
+                        <f:if condition="{facts.evalsReviewed}"><li class="sf-skill__badge sf-skill__badge--evals"><f:render partial="Skills/Icon" arguments="{name: 'badge-check'}" /><f:translate key="{ll}badge.evals" arguments="{0: facts.evalsReviewed}" /></li></f:if>
+                    </ul>
                 </header>
 
-                <div class="skillflow-skill__layout">
-                    <div class="skillflow-skill__body">
-                        <f:comment>The skill title above is the page's h1; the body's headings start at h2. Relative links point to other skills' pages or the source repository.</f:comment>
-                        <sf:markdown source="{skill.body}" headingOffset="1" links="{links}" />
-                    </div>
-
-                    <aside class="skillflow-skill__aside" aria-label="{f:translate(key: '{ll}skill.details')}">
-                        <section class="skillflow-skill__card">
-                            <h2 class="skillflow-skill__card-title"><f:translate key="{ll}skill.use" /></h2>
-                            <p class="skillflow-skill__label" id="skillflow-skill-id-label-{skill.uid}"><f:translate key="{ll}skill.identifier" /></p>
-                            <div class="skillflow-skill__identifier">
-                                <code id="skillflow-skill-id-{skill.uid}" aria-labelledby="skillflow-skill-id-label-{skill.uid}">{skill.public_identifier}</code>
-                                <button
-                                    type="button"
-                                    class="skillflow-skill__copy"
-                                    hidden="hidden"
-                                    data-skillflow-copy="skillflow-skill-id-{skill.uid}"
-                                    data-skillflow-copied="{f:translate(key: '{ll}skill.copied')}"
-                                    aria-describedby="skillflow-skill-id-label-{skill.uid}"
-                                >
-                                    <f:translate key="{ll}skill.copy" />
+                <div class="sf-skill__layout">
+                    <div class="sf-skill__main">
+                        <section class="sf-install" aria-labelledby="sf-install-{skill.uid}" data-skillflow-tabs="">
+                            <div class="sf-install__head">
+                                <h2 class="sf-install__title" id="sf-install-{skill.uid}"><f:translate key="{ll}detail.install" /></h2>
+                                <f:if condition="{install.clients -> f:count()} > 1">
+                                    <label class="sf-agent" hidden="hidden" data-skillflow-agent="">
+                                        <span class="sf-agent__label"><f:translate key="{ll}agent.label" /></span>
+                                        <select class="sf-agent__select" data-skillflow-agent-select="" data-skillflow-agent-default="{install.defaultDirectory}">
+                                            <f:for each="{install.clients}" as="client"><option value="{client.directory}">{client.label}</option></f:for>
+                                        </select>
+                                    </label>
+                                </f:if>
+                            </div>
+                            <div class="sf-tabs" role="tablist" aria-labelledby="sf-install-{skill.uid}" hidden="hidden" data-skillflow-tablist="">
+                                <button class="sf-tab" type="button" role="tab" id="sf-tab-command-{skill.uid}" aria-controls="sf-panel-command-{skill.uid}" aria-selected="true" data-skillflow-tab="">
+                                    <f:render partial="Skills/Icon" arguments="{name: 'terminal'}" /><f:translate key="{ll}detail.tab.command" />
+                                </button>
+                                <button class="sf-tab" type="button" role="tab" id="sf-tab-prompt-{skill.uid}" aria-controls="sf-panel-prompt-{skill.uid}" aria-selected="false" tabindex="-1" data-skillflow-tab="">
+                                    <f:render partial="Skills/Icon" arguments="{name: 'message'}" /><f:translate key="{ll}detail.tab.prompt" />
                                 </button>
                             </div>
-                            <p class="skillflow-skill__copy-status" role="status" aria-live="polite" data-skillflow-copy-status=""></p>
+                            <div class="sf-tabpanel" id="sf-panel-command-{skill.uid}" data-skillflow-tabpanel="">
+                                <h3 class="sf-tabpanel__title" data-skillflow-tabpanel-title=""><f:translate key="{ll}detail.tab.command" /></h3>
+                                <f:if condition="{install.skill}">
+                                    <p class="sf-install__label"><f:translate key="{ll}detail.install.one" /></p>
+                                    <f:render partial="Skills/Command" arguments="{command: install.skill, id: 'sf-command-skill-{skill.uid}', label: copyCommandLabel}" />
+                                </f:if>
+                                <f:if condition="{install.all}">
+                                    <p class="sf-install__label"><f:translate key="{ll}detail.install.all" /></p>
+                                    <f:render partial="Skills/Command" arguments="{command: install.all, id: 'sf-command-all-{skill.uid}', label: copyCommandLabel}" />
+                                </f:if>
+                            </div>
+                            <div class="sf-tabpanel" id="sf-panel-prompt-{skill.uid}" data-skillflow-tabpanel="">
+                                <h3 class="sf-tabpanel__title" data-skillflow-tabpanel-title=""><f:translate key="{ll}detail.tab.prompt" /></h3>
+                                <f:variable name="prompt"><f:translate key="{ll}detail.prompt.text" arguments="{0: skill.name, 1: repository}" /></f:variable>
+                                <f:render partial="Skills/Command" arguments="{command: prompt, id: 'sf-prompt-{skill.uid}', label: copyPromptLabel, prompt: 1}" />
+                                <p class="sf-install__hint"><f:translate key="{ll}detail.prompt.hint" /></p>
+                                <p class="sf-install__hint"><f:translate key="{ll}detail.url.note" /></p>
+                            </div>
+                            <f:if condition="{install.calls}">
+                                <div class="sf-call">
+                                    <h3 class="sf-call__title"><f:translate key="{ll}detail.call.title" /></h3>
+                                    <p class="sf-call__text"><f:translate key="{ll}detail.call.text" /></p>
+                                    <ul class="sf-call__list" role="list">
+                                        <f:for each="{install.calls}" as="call">
+                                            <li><code>{call.call}</code> <span>{call.label}</span></li>
+                                        </f:for>
+                                    </ul>
+                                </div>
+                            </f:if>
                         </section>
 
-                        <section class="skillflow-skill__card">
-                            <h2 class="skillflow-skill__card-title"><f:translate key="{ll}skill.details" /></h2>
-                            <dl class="skillflow-skill__meta">
-                                <f:if condition="{meta.category}">
-                                    <div><dt><f:translate key="{ll}skill.category" /></dt><dd>{meta.category}</dd></div>
+                        <section class="sf-doc-section" aria-labelledby="sf-doc-title-{skill.uid}">
+                            <h2 class="sf-doc-section__title" id="sf-doc-title-{skill.uid}"><f:translate key="{ll}detail.body" /></h2>
+                            <div class="sf-doc" id="sf-doc-{skill.uid}" data-skillflow-collapsible="" data-skillflow-more="{f:translate(key: '{ll}detail.more')}" data-skillflow-less="{f:translate(key: '{ll}detail.less')}">
+                                <f:comment>The skill title above is the page's h1; the body's headings start at h2. Relative links point to other skills' pages or the source repository.</f:comment>
+                                <sf:markdown source="{skill.body}" headingOffset="1" links="{links}" />
+                            </div>
+                        </section>
+
+                        <f:if condition="{related}">
+                            <section class="sf-related" aria-labelledby="sf-related-{skill.uid}">
+                                <div class="sf-related__head">
+                                    <h2 class="sf-related__title" id="sf-related-{skill.uid}"><f:translate key="{ll}detail.related" arguments="{0: group.title}" /></h2>
+                                    <f:if condition="{group.url}">
+                                        <a class="sf-related__page" href="{group.url}"><f:translate key="{ll}detail.related.page" /><f:render partial="Skills/Icon" arguments="{name: 'arrow-right'}" /></a>
+                                    </f:if>
+                                </div>
+                                <ul class="sf-related__list" role="list">
+                                    <f:for each="{related}" as="other">
+                                        <li class="sf-related__card">
+                                            <a class="sf-related__link" href="{other.url}">{other.name}</a>
+                                            <p class="sf-related__text"><sf:search.highlight text="{other.description}" maxLength="150" /></p>
+                                        </li>
+                                    </f:for>
+                                </ul>
+                            </section>
+                        </f:if>
+                    </div>
+
+                    <aside class="sf-skill__aside" aria-labelledby="sf-facts-{skill.uid}">
+                        <section class="sf-facts">
+                            <h2 class="sf-facts__title" id="sf-facts-{skill.uid}"><f:translate key="{ll}detail.facts" /></h2>
+                            <dl class="sf-facts__list">
+                                <f:if condition="{group}">
+                                    <div><dt><f:translate key="{ll}detail.fact.topic" /></dt><dd><f:if condition="{group.url}"><f:then><a href="{group.url}">{group.title}</a></f:then><f:else>{group.title}</f:else></f:if></dd></div>
                                 </f:if>
-                                <f:if condition="{sourceTitle}">
-                                    <div><dt><f:translate key="{ll}skill.source" /></dt><dd>{sourceTitle}</dd></div>
+                                <f:if condition="{facts.owner}">
+                                    <div><dt><f:translate key="{ll}detail.fact.owner" /></dt><dd>{facts.owner}</dd></div>
                                 </f:if>
-                                <f:if condition="{meta.license}">
-                                    <div><dt><f:translate key="{ll}skill.license" /></dt><dd>{meta.license}</dd></div>
+                                <f:if condition="{facts.origin}">
+                                    <div><dt><f:translate key="{ll}detail.fact.maintenance" /></dt><dd><f:translate key="{ll}origin.{facts.origin}" /></dd></div>
+                                </f:if>
+                                <f:if condition="{meta.skill_type}">
+                                    <div><dt><f:translate key="{ll}detail.fact.kind" /></dt><dd><f:translate key="{ll}kind.{meta.skill_type}" /></dd></div>
+                                </f:if>
+                                <f:if condition="{audiences}">
+                                    <div><dt><f:translate key="{ll}detail.fact.audience" /></dt><dd><f:for each="{audiences}" as="audience" iteration="audienceIteration">{audience}<f:if condition="!{audienceIteration.isLast}">, </f:if></f:for></dd></div>
                                 </f:if>
                                 <f:if condition="{meta.version}">
-                                    <div><dt><f:translate key="{ll}skill.version" /></dt><dd>{meta.version}</dd></div>
+                                    <div><dt><f:translate key="{ll}detail.fact.version" /></dt><dd>{meta.version}</dd></div>
+                                </f:if>
+                                <f:if condition="{license}">
+                                    <div><dt><f:translate key="{ll}detail.fact.license" /></dt><dd>{license}</dd></div>
+                                </f:if>
+                                <f:if condition="{facts.evals}">
+                                    <div><dt><f:translate key="{ll}detail.fact.evals" /></dt><dd><f:translate key="{ll}detail.fact.evals.value" arguments="{0: facts.evals, 1: facts.evalsReviewed}" /></dd></div>
+                                </f:if>
+                                <f:if condition="{updated}">
+                                    <div><dt><f:translate key="{ll}detail.fact.updated" /></dt><dd><time datetime="{updated -> f:format.date(format: 'Y-m-d')}">{updated -> f:format.date(pattern: 'd MMMM y')}</time></dd></div>
+                                </f:if>
+                                <f:if condition="{sourceTitle}">
+                                    <div><dt><f:translate key="{ll}detail.fact.source" /></dt><dd><f:if condition="{sourceUrl}"><f:then><a href="{sourceUrl}" rel="noopener">{sourceTitle}</a></f:then><f:else>{sourceTitle}</f:else></f:if></dd></div>
+                                </f:if>
+                                <f:if condition="{facts.upstream}">
+                                    <div><dt><f:translate key="{ll}detail.fact.upstream" /></dt><dd><a href="{facts.upstream}" rel="noopener">{facts.upstream -> f:format.crop(maxCharacters: 60, append: '…')}</a></dd></div>
                                 </f:if>
                                 <f:if condition="{abilities}">
                                     <div>
-                                        <dt><f:translate key="{ll}skill.abilities" /></dt>
-                                        <dd>
-                                            <ul class="skillflow-skill__tools">
-                                                <f:for each="{abilities}" as="ability"><li><code>{ability}</code></li></f:for>
-                                            </ul>
-                                        </dd>
+                                        <dt><f:translate key="{ll}detail.fact.abilities" /></dt>
+                                        <dd><ul class="sf-facts__tools" role="list"><f:for each="{abilities}" as="ability"><li><code>{ability}</code></li></f:for></ul></dd>
                                     </div>
                                 </f:if>
                                 <f:if condition="{allowedTools}">
                                     <div>
-                                        <dt><f:translate key="{ll}skill.allowedTools" /></dt>
-                                        <dd>
-                                            <ul class="skillflow-skill__tools">
-                                                <f:for each="{allowedTools}" as="tool"><li><code>{tool}</code></li></f:for>
-                                            </ul>
-                                        </dd>
+                                        <dt><f:translate key="{ll}detail.fact.tools" /></dt>
+                                        <dd><ul class="sf-facts__tools" role="list"><f:for each="{allowedTools}" as="tool"><li><code>{tool}</code></li></f:for></ul></dd>
                                     </div>
                                 </f:if>
                             </dl>
+                            <p class="sf-facts__id">
+                                <span class="sf-facts__label" id="sf-id-label-{skill.uid}"><f:translate key="{ll}detail.id" /></span>
+                                <f:render partial="Skills/Command" arguments="{command: skill.name, id: 'sf-id-{skill.uid}', label: copyIdLabel}" />
+                            </p>
+                            <p class="sf-facts__links">
+                                <f:if condition="{sourceUrl}">
+                                    <a class="sf-facts__link" href="{sourceUrl}" rel="noopener"><f:render partial="Skills/Icon" arguments="{name: 'github'}" /><f:translate key="{ll}detail.source.link" /></a>
+                                </f:if>
+                                <f:if condition="{improveUrl}">
+                                    <a class="sf-facts__link" href="{improveUrl}" rel="noopener"><f:render partial="Skills/Icon" arguments="{name: 'external'}" /><f:if condition="{facts.origin} == 'vendored'"><f:then><f:translate key="{ll}detail.improve.upstream" /></f:then><f:else><f:translate key="{ll}detail.improve" /></f:else></f:if></a>
+                                </f:if>
+                            </p>
                         </section>
                     </aside>
                 </div>

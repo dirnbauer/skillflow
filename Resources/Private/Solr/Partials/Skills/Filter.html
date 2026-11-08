@@ -1,0 +1,44 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:s="http://typo3.org/ns/ApacheSolrForTypo3/Solr/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+<f:comment>
+    One filter (facet) as a disclosure: a button-like summary with the count
+    of active options, a panel of options that toggle. A selected option
+    links to the URL that removes it, an unselected one to the URL that adds
+    it (operator OR: more options widen the list). Plain links, so it works
+    without JavaScript; the skills search script loads them in place.
+</f:comment>
+<f:argument name="facet" type="object"/>
+<f:argument name="look" type="string" optional="true" default="site"/>
+<f:variable name="ll" value="LLL:EXT:skillflow/Resources/Private/Language/search.xlf:" />
+<f:variable name="selectedCount" value="{facet.allFacetItems.selected -> f:count()}" />
+<f:comment>The typo3.org look lists the filters open in its sidebar.</f:comment>
+<f:variable name="openAttribute" value="" />
+<f:if condition="{look} == 'typo3'"><f:variable name="openAttribute" value="open" /></f:if>
+<details class="sf-filter{f:if(condition: selectedCount, then: ' sf-filter--active')}" data-skillflow-filter="{facet.name}" {openAttribute}>
+    <summary class="sf-filter__button">
+        <span class="sf-filter__label">{facet.label}</span>
+        <f:if condition="{selectedCount}">
+            <span class="sf-filter__count">{selectedCount}<span class="sf-sr-only"> <f:translate key="{ll}filter.active" /></span></span>
+        </f:if>
+        <f:render partial="Skills/Icon" arguments="{name: 'chevron-down', class: 'sf-icon sf-filter__chevron'}" />
+    </summary>
+    <div class="sf-filter__panel">
+        <ul class="sf-filter__options" role="list">
+            <f:for each="{facet.options}" as="option">
+                <li>
+                    <f:if condition="{option.selected}">
+                        <f:then><f:variable name="href" value="{s:uri.facet.removeFacetItem(facet: facet, facetItem: option)}" /></f:then>
+                        <f:else><f:variable name="href" value="{s:uri.facet.addFacetItem(facet: facet, facetItem: option)}" /></f:else>
+                    </f:if>
+                    <a class="sf-option{f:if(condition: option.selected, then: ' sf-option--selected')}" href="{href}" data-skillflow-nav="" data-skillflow-key="{facet.name}:{option.value}" rel="nofollow">
+                        <span class="sf-option__box" aria-hidden="true"><f:render partial="Skills/Icon" arguments="{name: 'check', class: 'sf-icon sf-option__check'}" /></span>
+                        <span class="sf-option__label">{option.label}<f:if condition="{option.selected}"><span class="sf-sr-only">, <f:translate key="{ll}filter.selected" /></span></f:if></span>
+                        <span class="sf-option__count">{option.documentCount}</span>
+                    </a>
+                </li>
+            </f:for>
+        </ul>
+    </div>
+</details>
+</html>

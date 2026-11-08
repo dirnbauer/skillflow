@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="de" datatype="plaintext" original="EXT:skillflow/Resources/Private/Language/search.xlf" date="2026-11-08T00:00:00Z" product-name="skillflow">
+    <header/>
+    <body>
+      <trans-unit id="form.label" resname="form.label">
+        <source>Search the skills</source>
+        <target state="translated">Skills durchsuchen</target>
+      </trans-unit>
+      <trans-unit id="form.placeholder" resname="form.placeholder">
+        <source>Search by name, task or topic</source>
+        <target state="translated">Nach Name, Aufgabe oder Thema suchen</target>
+      </trans-unit>
+      <trans-unit id="form.submit" resname="form.submit">
+        <source>Search</source>
+        <target state="translated">Suchen</target>
+      </trans-unit>
+      <trans-unit id="keys.focus" resname="keys.focus">
+        <source>search</source>
+        <target state="translated">suchen</target>
+      </trans-unit>
+      <trans-unit id="keys.move" resname="keys.move">
+        <source>move</source>
+        <target state="translated">wechseln</target>
+      </trans-unit>
+      <trans-unit id="keys.open" resname="keys.open">
+        <source>open</source>
+        <target state="translated">öffnen</target>
+      </trans-unit>
+      <trans-unit id="keys.clear" resname="keys.clear">
+        <source>clear</source>
+        <target state="translated">leeren</target>
+      </trans-unit>
+      <trans-unit id="status.none" resname="status.none">
+        <source>No skills for ‘%s’</source>
+        <target state="translated">Keine Skills für „%s“</target>
+      </trans-unit>
+      <trans-unit id="status.query.one" resname="status.query.one">
+        <source>1 skill for ‘%s’</source>
+        <target state="translated">1 Skill für „%s“</target>
+      </trans-unit>
+      <trans-unit id="status.query.other" resname="status.query.other">
+        <source>%1$s skills for ‘%2$s’</source>
+        <target state="translated">%1$s Skills für „%2$s“</target>
+      </trans-unit>
+      <trans-unit id="status.count.one" resname="status.count.one">
+        <source>1 skill</source>
+        <target state="translated">1 Skill</target>
+      </trans-unit>
+      <trans-unit id="status.count.other" resname="status.count.other">
+        <source>%s skills</source>
+        <target state="translated">%s Skills</target>
+      </trans-unit>
+      <trans-unit id="status.corrected" resname="status.corrected">
+        <source>Nothing found for ‘%1$s’, so these are the skills for ‘%2$s’.</source>
+        <target state="translated">Für „%1$s“ wurde nichts gefunden, hier sind die Skills für „%2$s“.</target>
+      </trans-unit>
+      <trans-unit id="topics.label" resname="topics.label">
+        <source>Topics</source>
+        <target state="translated">Themen</target>
+      </trans-unit>
+      <trans-unit id="topics.all" resname="topics.all">
+        <source>All</source>
+        <target state="translated">Alle</target>
+      </trans-unit>
+      <trans-unit id="filters.label" resname="filters.label">
+        <source>Filters</source>
+        <target state="translated">Filter</target>
+      </trans-unit>
+      <trans-unit id="filters.active" resname="filters.active">
+        <source>Active filters</source>
+        <target state="translated">Aktive Filter</target>
+      </trans-unit>
+      <trans-unit id="filters.clear" resname="filters.clear">
+        <source>Clear filters</source>
+        <target state="translated">Filter zurücksetzen</target>
+      </trans-unit>
+      <trans-unit id="filter.active" resname="filter.active">
+        <source>active</source>
+        <target state="translated">aktiv</target>
+      </trans-unit>
+      <trans-unit id="filter.selected" resname="filter.selected">
+        <source>selected</source>
+        <target state="translated">ausgewählt</target>
+      </trans-unit>
+      <trans-unit id="filter.remove" resname="filter.remove">
+        <source>Remove filter</source>
+        <target state="translated">Filter entfernen</target>
+      </trans-unit>
+      <trans-unit id="agent.label" resname="agent.label">
+        <source>Commands for</source>
+        <target state="translated">Befehle für</target>
+      </trans-unit>
+      <trans-unit id="sort.label" resname="sort.label">
+        <source>Sort: %s</source>
+        <target state="translated">Sortierung: %s</target>
+      </trans-unit>
+      <trans-unit id="sort.relevance" resname="sort.relevance">
+        <source>Best match</source>
+        <target state="translated">Beste Treffer</target>
+      </trans-unit>
+      <trans-unit id="sort.name" resname="sort.name">
+        <source>Name</source>
+        <target state="translated">Name</target>
+      </trans-unit>
+      <trans-unit id="sort.updated" resname="sort.updated">
+        <source>Recently updated</source>
+        <target state="translated">Zuletzt geändert</target>
+      </trans-unit>
+      <trans-unit id="sort.showcase" resname="sort.showcase">
+        <source>Superfeatures first</source>
+        <target state="translated">Superfeatures zuerst</target>
+      </trans-unit>
+      <trans-unit id="results.heading" resname="results.heading">
+        <source>Skills</source>
+        <target state="translated">Skills</target>
+      </trans-unit>
+      <trans-unit id="empty.title" resname="empty.title">
+        <source>No skills match ‘%s’.</source>
+        <target state="translated">Kein Skill passt zu „%s“.</target>
+      </trans-unit>
+      <trans-unit id="empty.filtered" resname="empty.filtered">
+        <source>No skills match these filters.</source>
+        <target state="translated">Kein Skill passt zu diesen Filtern.</target>
+      </trans-unit>
+      <trans-unit id="empty.didYouMean" resname="empty.didYouMean">
+        <source>Did you mean</source>
+        <target state="translated">Meinten Sie</target>
+      </trans-unit>
+      <trans-unit id="empty.hint" resname="empty.hint">
+        <source>Try fewer or other words, or browse a topic:</source>
+        <target state="translated">Versuchen Sie weniger oder andere Wörter, oder stöbern Sie in einem Thema:</target>
+      </trans-unit>
+      <trans-unit id="empty.reset" resname="empty.reset">
+        <source>Show all skills</source>
+        <target state="translated">Alle Skills zeigen</target>
+      </trans-unit>
+      <trans-unit id="packs.title" resname="packs.title">
+        <source>Install a whole topic</source>
+        <target state="translated">Ein ganzes Thema installieren</target>
+      </trans-unit>
+      <trans-unit id="packs.text" resname="packs.text">
+        <source>Each topic installs with one line: it clones the repository once and links the skill folders into your agent's skills folder.</source>
+        <target state="translated">Jedes Thema installiert sich mit einer Zeile: Sie klont das Repository einmal und verlinkt die Skill-Ordner in den Skill-Ordner Ihres Agenten.</target>
+      </trans-unit>
+      <trans-unit id="pack.eyebrow" resname="pack.eyebrow">
+        <source>Pack · %s skills</source>
+        <target state="translated">Paket · %s Skills</target>
+      </trans-unit>
+      <trans-unit id="pack.copy" resname="pack.copy">
+        <source>Copy the install command for %s</source>
+        <target state="translated">Installationsbefehl für %s kopieren</target>
+      </trans-unit>
+      <trans-unit id="pack.show" resname="pack.show">
+        <source>Show the %s skills</source>
+        <target state="translated">Die %s Skills zeigen</target>
+      </trans-unit>
+      <trans-unit id="pack.page" resname="pack.page">
+        <source>About this topic</source>
+        <target state="translated">Mehr zum Thema</target>
+      </trans-unit>
+      <trans-unit id="copy.button" resname="copy.button">
+        <source>Copy</source>
+        <target state="translated">Kopieren</target>
+      </trans-unit>
+      <trans-unit id="copy.done" resname="copy.done">
+        <source>Copied</source>
+        <target state="translated">Kopiert</target>
+      </trans-unit>
+      <trans-unit id="row.by" resname="row.by">
+        <source>by %s</source>
+        <target state="translated">von %s</target>
+      </trans-unit>
+      <trans-unit id="row.snippet" resname="row.snippet">
+        <source>In SKILL.md:</source>
+        <target state="translated">In SKILL.md:</target>
+      </trans-unit>
+      <trans-unit id="row.facts" resname="row.facts">
+        <source>Facts</source>
+        <target state="translated">Fakten</target>
+      </trans-unit>
+      <trans-unit id="badge.superfeature" resname="badge.superfeature">
+        <source>Superfeature</source>
+        <target state="translated">Superfeature</target>
+      </trans-unit>
+      <trans-unit id="badge.evals" resname="badge.evals">
+        <source>Evals: %s reviewed</source>
+        <target state="translated">Evals: %s geprüft</target>
+      </trans-unit>
+      <trans-unit id="origin.maintained" resname="origin.maintained">
+        <source>Maintained here</source>
+        <target state="translated">Hier gepflegt</target>
+      </trans-unit>
+      <trans-unit id="origin.vendored" resname="origin.vendored">
+        <source>Vendored</source>
+        <target state="translated">Übernommen</target>
+      </trans-unit>
+      <trans-unit id="kind.capability" resname="kind.capability">
+        <source>Capability</source>
+        <target state="translated">Fähigkeit</target>
+      </trans-unit>
+      <trans-unit id="kind.preference" resname="kind.preference">
+        <source>Preference</source>
+        <target state="translated">Konvention</target>
+      </trans-unit>
+      <trans-unit id="pagination.label" resname="pagination.label">
+        <source>Pages</source>
+        <target state="translated">Seiten</target>
+      </trans-unit>
+      <trans-unit id="pagination.previous" resname="pagination.previous">
+        <source>Previous</source>
+        <target state="translated">Zurück</target>
+      </trans-unit>
+      <trans-unit id="pagination.next" resname="pagination.next">
+        <source>Next</source>
+        <target state="translated">Weiter</target>
+      </trans-unit>
+      <trans-unit id="pagination.page" resname="pagination.page">
+        <source>Page %s</source>
+        <target state="translated">Seite %s</target>
+      </trans-unit>
+      <trans-unit id="facet.group" resname="facet.group">
+        <source>Topic</source>
+        <target state="translated">Thema</target>
+      </trans-unit>
+      <trans-unit id="facet.owner" resname="facet.owner">
+        <source>Publisher</source>
+        <target state="translated">Herausgeber</target>
+      </trans-unit>
+      <trans-unit id="facet.audience" resname="facet.audience">
+        <source>Audience</source>
+        <target state="translated">Zielgruppe</target>
+      </trans-unit>
+      <trans-unit id="facet.origin" resname="facet.origin">
+        <source>Maintenance</source>
+        <target state="translated">Pflege</target>
+      </trans-unit>
+      <trans-unit id="facet.kind" resname="facet.kind">
+        <source>Kind</source>
+        <target state="translated">Art</target>
+      </trans-unit>
+      <trans-unit id="facet.license" resname="facet.license">
+        <source>Licence</source>
+        <target state="translated">Lizenz</target>
+      </trans-unit>
+      <trans-unit id="typo3.eyebrow" resname="typo3.eyebrow">
+        <source>Agent skills for TYPO3</source>
+        <target state="translated">Agent-Skills für TYPO3</target>
+      </trans-unit>
+      <trans-unit id="typo3.title" resname="typo3.title">
+        <source>Find the skill for your next TYPO3 task</source>
+        <target state="translated">Finden Sie den Skill für Ihre nächste TYPO3-Aufgabe</target>
+      </trans-unit>
+      <trans-unit id="typo3.subtitle" resname="typo3.subtitle">
+        <source>Open-source skills that teach coding agents TYPO3 v14: upgrades, content, accessibility, search, security and releases.</source>
+        <target state="translated">Open-Source-Skills, die Coding-Agenten TYPO3 v14 beibringen: Upgrades, Inhalte, Barrierefreiheit, Suche, Sicherheit und Releases.</target>
+      </trans-unit>
+      <trans-unit id="detail.back" resname="detail.back">
+        <source>All skills</source>
+        <target state="translated">Alle Skills</target>
+      </trans-unit>
+      <trans-unit id="detail.breadcrumb" resname="detail.breadcrumb">
+        <source>Skill</source>
+        <target state="translated">Skill</target>
+      </trans-unit>
+      <trans-unit id="detail.install" resname="detail.install">
+        <source>Install</source>
+        <target state="translated">Installieren</target>
+      </trans-unit>
+      <trans-unit id="detail.tab.command" resname="detail.tab.command">
+        <source>Command</source>
+        <target state="translated">Befehl</target>
+      </trans-unit>
+      <trans-unit id="detail.tab.prompt" resname="detail.tab.prompt">
+        <source>Prompt</source>
+        <target state="translated">Prompt</target>
+      </trans-unit>
+      <trans-unit id="detail.install.one" resname="detail.install.one">
+        <source>Only this skill:</source>
+        <target state="translated">Nur diesen Skill:</target>
+      </trans-unit>
+      <trans-unit id="detail.install.all" resname="detail.install.all">
+        <source>All skills of the collection, for every supported agent:</source>
+        <target state="translated">Alle Skills der Sammlung, für jeden unterstützten Agenten:</target>
+      </trans-unit>
+      <trans-unit id="detail.install.copy" resname="detail.install.copy">
+        <source>Copy the command</source>
+        <target state="translated">Befehl kopieren</target>
+      </trans-unit>
+      <trans-unit id="detail.prompt.text" resname="detail.prompt.text">
+        <source>Install the agent skill ‘%1$s’ from %2$s: clone the repository, link the whole folder skills/%1$s (not only SKILL.md) into my agent's skills folder, and tell me how to call it.</source>
+        <target state="translated">Installiere den Agent-Skill „%1$s“ aus %2$s: Klone das Repository, verlinke den ganzen Ordner skills/%1$s (nicht nur SKILL.md) in den Skill-Ordner meines Agenten und sag mir, wie ich ihn aufrufe.</target>
+      </trans-unit>
+      <trans-unit id="detail.prompt.hint" resname="detail.prompt.hint">
+        <source>Paste this into your agent's chat. The agent needs shell access.</source>
+        <target state="translated">Fügen Sie das in den Chat Ihres Agenten ein. Der Agent braucht Zugriff auf die Shell.</target>
+      </trans-unit>
+      <trans-unit id="detail.prompt.copy" resname="detail.prompt.copy">
+        <source>Copy the prompt</source>
+        <target state="translated">Prompt kopieren</target>
+      </trans-unit>
+      <trans-unit id="detail.url.note" resname="detail.url.note">
+        <source>Pasting the raw SKILL.md URL into a chat gives the model only that text, without the scripts and references of the folder.</source>
+        <target state="translated">Wer nur die URL der SKILL.md in einen Chat einfügt, gibt dem Modell nur diesen Text, ohne die Skripte und Referenzen des Ordners.</target>
+      </trans-unit>
+      <trans-unit id="detail.call.title" resname="detail.call.title">
+        <source>Call it</source>
+        <target state="translated">Aufrufen</target>
+      </trans-unit>
+      <trans-unit id="detail.call.text" resname="detail.call.text">
+        <source>Describe your task and the agent picks the skill by its description, or call it by name:</source>
+        <target state="translated">Beschreiben Sie Ihre Aufgabe, und der Agent wählt den Skill anhand seiner Beschreibung, oder rufen Sie ihn beim Namen auf:</target>
+      </trans-unit>
+      <trans-unit id="detail.facts" resname="detail.facts">
+        <source>Facts</source>
+        <target state="translated">Fakten</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.topic" resname="detail.fact.topic">
+        <source>Topic</source>
+        <target state="translated">Thema</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.owner" resname="detail.fact.owner">
+        <source>Publisher</source>
+        <target state="translated">Herausgeber</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.maintenance" resname="detail.fact.maintenance">
+        <source>Maintenance</source>
+        <target state="translated">Pflege</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.kind" resname="detail.fact.kind">
+        <source>Kind</source>
+        <target state="translated">Art</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.audience" resname="detail.fact.audience">
+        <source>Audience</source>
+        <target state="translated">Zielgruppe</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.version" resname="detail.fact.version">
+        <source>Version</source>
+        <target state="translated">Version</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.license" resname="detail.fact.license">
+        <source>Licence</source>
+        <target state="translated">Lizenz</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.evals" resname="detail.fact.evals">
+        <source>Evals</source>
+        <target state="translated">Evals</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.evals.value" resname="detail.fact.evals.value">
+        <source>%1$s cases, %2$s reviewed</source>
+        <target state="translated">%1$s Fälle, %2$s geprüft</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.updated" resname="detail.fact.updated">
+        <source>Last change</source>
+        <target state="translated">Letzte Änderung</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.source" resname="detail.fact.source">
+        <source>Source</source>
+        <target state="translated">Quelle</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.upstream" resname="detail.fact.upstream">
+        <source>Upstream</source>
+        <target state="translated">Upstream</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.tools" resname="detail.fact.tools">
+        <source>Allowed tools</source>
+        <target state="translated">Erlaubte Werkzeuge</target>
+      </trans-unit>
+      <trans-unit id="detail.fact.abilities" resname="detail.fact.abilities">
+        <source>Abilities</source>
+        <target state="translated">Fähigkeiten (Abilities)</target>
+      </trans-unit>
+      <trans-unit id="detail.source.link" resname="detail.source.link">
+        <source>View the source</source>
+        <target state="translated">Quelle ansehen</target>
+      </trans-unit>
+      <trans-unit id="detail.improve" resname="detail.improve">
+        <source>Suggest an improvement</source>
+        <target state="translated">Verbesserung vorschlagen</target>
+      </trans-unit>
+      <trans-unit id="detail.improve.upstream" resname="detail.improve.upstream">
+        <source>Suggest an improvement upstream</source>
+        <target state="translated">Verbesserung beim Upstream-Projekt vorschlagen</target>
+      </trans-unit>
+      <trans-unit id="detail.related" resname="detail.related">
+        <source>More in %s</source>
+        <target state="translated">Mehr aus %s</target>
+      </trans-unit>
+      <trans-unit id="detail.related.page" resname="detail.related.page">
+        <source>About this topic</source>
+        <target state="translated">Mehr zum Thema</target>
+      </trans-unit>
+      <trans-unit id="detail.body" resname="detail.body">
+        <source>SKILL.md</source>
+        <target state="translated">SKILL.md</target>
+      </trans-unit>
+      <trans-unit id="detail.more" resname="detail.more">
+        <source>Show more</source>
+        <target state="translated">Mehr zeigen</target>
+      </trans-unit>
+      <trans-unit id="detail.less" resname="detail.less">
+        <source>Show less</source>
+        <target state="translated">Weniger zeigen</target>
+      </trans-unit>
+      <trans-unit id="detail.id" resname="detail.id">
+        <source>Skill ID</source>
+        <target state="translated">Skill-ID</target>
+      </trans-unit>
+      <trans-unit id="detail.notfound.title" resname="detail.notfound.title">
+        <source>Skill not found</source>
+        <target state="translated">Skill nicht gefunden</target>
+      </trans-unit>
+      <trans-unit id="detail.notfound.text" resname="detail.notfound.text">
+        <source>This skill does not exist or is not enabled.</source>
+        <target state="translated">Diesen Skill gibt es nicht, oder er ist nicht aktiviert.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

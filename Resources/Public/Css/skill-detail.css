@@ -1,202 +1,456 @@
 /*
- * Skillflow skill detail. Renders inside the site's own theme: text, fonts
- * and link colours are inherited, and colours come from the shadcn-style
- * tokens (--foreground, --muted-foreground, --border, --card, --primary,
- * --radius) when the site defines them. Without those tokens colours derive
- * from currentColor and the system colours (LinkText, Canvas), so light and
- * dark themes both work unchanged.
+ * Skillflow skill detail page. Uses the shadcn/ui tokens of the site theme
+ * (Desiderio defines them) with neutral fallbacks; dark mode comes with the
+ * tokens. The command boxes and copy buttons share their markup with the
+ * skills search (Resources/Private/Partials/Skills/Command.html).
  */
 
-.skillflow-skill {
-  --skillflow-muted: var(--muted-foreground, color-mix(in srgb, currentColor 68%, transparent));
-  --skillflow-border: var(--border, color-mix(in srgb, currentColor 16%, transparent));
-  --skillflow-surface: var(--card, color-mix(in srgb, currentColor 4%, transparent));
-  --skillflow-code: var(--muted, color-mix(in srgb, currentColor 7%, transparent));
-  /* Not currentColor: a filled badge sets its own color, so a currentColor
-   * background would take the text colour and hide the label. */
-  --skillflow-accent: var(--primary, LinkText);
-  --skillflow-accent-text: var(--primary-foreground, Canvas);
-  --skillflow-radius: var(--radius, 0.5rem);
-  --skillflow-gap: clamp(1.25rem, 3vw, 2.5rem);
-
-  margin-inline: auto;
-  max-width: 76rem;
-  line-height: 1.6;
-}
-
-.skillflow-skill__header {
-  margin-bottom: var(--skillflow-gap);
-  padding-bottom: var(--skillflow-gap);
-  border-bottom: 1px solid var(--skillflow-border);
-}
-
-.skillflow-skill__eyebrow,
-.skillflow-skill__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin: 0 0 0.75rem;
-  padding: 0;
-  list-style: none;
-}
-
-.skillflow-skill__title {
-  margin: 0 0 0.5rem;
-  font-size: clamp(1.75rem, 1.2rem + 2vw, 2.5rem);
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
-  overflow-wrap: anywhere;
-}
-
-.skillflow-skill__description {
-  margin: 0 0 1rem;
-  max-width: 65ch;
-  color: var(--skillflow-muted);
-  font-size: 1.125em;
-}
-
-.skillflow-skill__badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.15em 0.65em;
-  border: 1px solid var(--skillflow-border);
-  border-radius: 999px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  line-height: 1.5;
-}
-
-.skillflow-skill__badge--category {
-  border-color: transparent;
-  background: var(--skillflow-accent);
-  color: var(--skillflow-accent-text);
-}
-
-.skillflow-skill__badge--tag {
-  color: var(--skillflow-muted);
-  font-weight: 500;
-}
-
-.skillflow-skill__layout {
+.sf-skill {
+  --sf-fg: var(--foreground, #0a0a0a);
+  --sf-muted-fg: var(--muted-foreground, #5c5c66);
+  --sf-bg: var(--background, #fff);
+  --sf-card: var(--card, #fff);
+  --sf-muted: var(--muted, #f4f4f5);
+  --sf-border: var(--border, #e4e4e7);
+  --sf-input: var(--input, #d4d4d8);
+  --sf-primary: var(--primary, #18181b);
+  --sf-primary-fg: var(--primary-foreground, #fafafa);
+  --sf-primary-text: var(--d-primary-text, var(--primary, #18181b));
+  --sf-link: var(--d-link, var(--primary, #18181b));
+  --sf-ring: var(--ring, #71717a);
+  --sf-radius: var(--radius, 0.625rem);
+  --sf-mono: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  --sf-heading: var(--font-heading, inherit);
+  --sf-shadow: var(--shadow-sm, 0 1px 2px rgb(0 0 0 / 0.06));
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(15rem, 20rem);
-  gap: var(--skillflow-gap);
-  align-items: start;
-}
-
-@media (max-width: 56rem) {
-  .skillflow-skill__layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .skillflow-skill__aside {
-    order: -1;
-  }
-}
-
-.skillflow-skill__aside {
-  display: grid;
-  gap: 1rem;
-}
-
-@media (min-width: 56.0625rem) {
-  .skillflow-skill__aside {
-    position: sticky;
-    top: 1.5rem;
-  }
-}
-
-.skillflow-skill__card {
-  padding: 1rem 1.125rem;
-  border: 1px solid var(--skillflow-border);
-  border-radius: var(--skillflow-radius);
-  background: var(--skillflow-surface);
-}
-
-.skillflow-skill__card-title,
-.skillflow-skill__label {
-  margin: 0 0 0.5rem;
-  color: var(--skillflow-muted);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.skillflow-skill__label {
-  font-weight: 600;
-  letter-spacing: 0;
-  text-transform: none;
-}
-
-.skillflow-skill__identifier {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.skillflow-skill__identifier code {
-  flex: 1 1 auto;
+  gap: 2rem;
   min-width: 0;
-  overflow-wrap: anywhere;
+  color: var(--sf-fg);
 }
 
-.skillflow-skill__copy {
-  flex: 0 0 auto;
-  padding: 0.35rem 0.75rem;
+.sf-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
   border: 0;
-  border-radius: calc(var(--skillflow-radius) - 0.125rem);
-  background: var(--skillflow-accent);
-  color: var(--skillflow-accent-text);
-  font: inherit;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
 }
 
-.skillflow-skill__copy:focus-visible {
-  outline: 2px solid var(--ring, currentColor);
+.sf-icon {
+  flex: 0 0 auto;
+  width: 1rem;
+  height: 1rem;
+}
+
+.sf-skill a:focus-visible,
+.sf-skill button:focus-visible,
+.sf-skill select:focus-visible,
+.sf-skill [tabindex="0"]:focus-visible {
+  outline: 2px solid var(--sf-ring);
   outline-offset: 2px;
 }
 
-.skillflow-skill__copy-status {
-  margin: 0.4rem 0 0;
-  min-height: 1.5em;
-  color: var(--skillflow-muted);
+/* ----- Header ---------------------------------------------------------------- */
+
+.sf-skill__header {
+  display: grid;
+  gap: 0.875rem;
+  max-width: 56rem;
+}
+
+.sf-skill__context {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin: 0;
   font-size: 0.875rem;
 }
 
-.skillflow-skill__meta {
-  display: grid;
-  gap: 0.5rem;
+.sf-skill__back {
+  color: var(--sf-muted-fg);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.sf-skill__back::before {
+  content: "← ";
+}
+
+.sf-skill__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 1.75rem;
+  padding-inline: 0.75rem;
+  color: var(--sf-fg);
+  background: var(--sf-muted);
+  border: 1px solid var(--sf-border);
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+a.sf-skill__chip:hover {
+  border-color: var(--sf-fg);
+}
+
+.sf-skill__chip--feature {
+  background: color-mix(in oklch, var(--sf-primary) 9%, var(--sf-card));
+  border-color: color-mix(in oklch, var(--sf-primary) 45%, var(--sf-border));
+}
+
+.sf-skill__chip--feature .sf-icon {
+  color: var(--sf-primary-text);
+}
+
+.sf-skill__title {
   margin: 0;
-}
-
-.skillflow-skill__meta > div {
-  display: grid;
-  grid-template-columns: minmax(6rem, auto) minmax(0, 1fr);
-  gap: 0.75rem;
-}
-
-.skillflow-skill__meta dt {
-  color: var(--skillflow-muted);
-}
-
-.skillflow-skill__meta dd {
-  margin: 0;
-  font-weight: 600;
+  font-family: var(--sf-mono);
+  font-size: clamp(1.75rem, 1.3rem + 2vw, 2.75rem);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
   overflow-wrap: anywhere;
 }
 
-.skillflow-skill__tools {
+.sf-skill__lead {
+  margin: 0;
+  max-width: 48rem;
+  color: var(--sf-muted-fg);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+.sf-skill__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-/* Rendered SKILL.md body */
-.skillflow-skill__body > :first-child {
+.sf-skill__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  min-height: 1.625rem;
+  padding-inline: 0.625rem;
+  color: var(--sf-fg);
+  background: var(--sf-bg);
+  border: 1px solid var(--sf-border);
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.sf-skill__badge--evals .sf-icon {
+  color: var(--d-success-text, #15803d);
+}
+
+/* ----- Layout ------------------------------------------------------------------ */
+
+.sf-skill__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(17rem, 22rem);
+  align-items: start;
+  gap: 2rem;
+}
+
+.sf-skill__main {
+  display: grid;
+  gap: 2.5rem;
+  min-width: 0;
+}
+
+.sf-skill__aside {
+  position: sticky;
+  top: 6rem;
+  min-width: 0;
+}
+
+/* ----- Install ------------------------------------------------------------------- */
+
+.sf-install {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: var(--sf-card);
+  border: 1px solid var(--sf-border);
+  border-radius: calc(var(--sf-radius) * 1.6);
+  box-shadow: var(--sf-shadow);
+}
+
+.sf-install__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.sf-install__title,
+.sf-doc-section__title,
+.sf-related__title,
+.sf-facts__title {
+  margin: 0;
+  font-family: var(--sf-heading);
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.sf-tabs {
+  display: inline-flex;
+  gap: 0.25rem;
+  width: fit-content;
+  padding: 0.25rem;
+  background: var(--sf-muted);
+  border-radius: calc(var(--sf-radius) * 1.2);
+}
+
+.sf-tabs[hidden] {
+  display: none;
+}
+
+.sf-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4375rem;
+  min-height: 2.125rem;
+  padding-inline: 0.875rem;
+  color: var(--sf-muted-fg);
+  background: transparent;
+  border: 0;
+  border-radius: calc(var(--sf-radius) * 0.95);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.sf-tab[aria-selected="true"] {
+  color: var(--sf-fg);
+  background: var(--sf-card);
+  box-shadow: var(--sf-shadow);
+}
+
+.sf-tabpanel {
+  display: grid;
+  gap: 0.625rem;
+}
+
+.sf-tabpanel[hidden] {
+  display: none;
+}
+
+.sf-tabpanel__title {
+  margin: 0.25rem 0 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.sf-install__label {
+  margin: 0.375rem 0 0;
+  color: var(--sf-muted-fg);
+  font-size: 0.875rem;
+}
+
+.sf-install__hint {
+  margin: 0;
+  color: var(--sf-muted-fg);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.sf-call {
+  display: grid;
+  gap: 0.5rem;
+  padding-block-start: 1rem;
+  border-top: 1px solid var(--sf-border);
+}
+
+.sf-call__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.sf-call__text {
+  margin: 0;
+  color: var(--sf-muted-fg);
+  font-size: 0.875rem;
+}
+
+.sf-call__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8125rem;
+}
+
+.sf-call__list li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--sf-muted-fg);
+}
+
+.sf-call__list code {
+  padding: 0.125rem 0.4375rem;
+  color: var(--sf-fg);
+  background: var(--sf-muted);
+  border-radius: 0.375rem;
+  font-family: var(--sf-mono);
+}
+
+/* Commands and copy buttons (shared partial) */
+.sf-command {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+  background: var(--sf-bg);
+  border: 1px solid var(--sf-border);
+  border-radius: calc(var(--sf-radius) * 1.1);
+}
+
+.sf-command__text {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0.625rem 0.75rem;
+  overflow-x: auto;
+  color: var(--sf-fg);
+  background: none;
+  font-family: var(--sf-mono);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  white-space: pre;
+  scrollbar-width: thin;
+}
+
+.sf-command--prompt .sf-command__text {
+  font-family: inherit;
+  font-size: 0.9375rem;
+  white-space: normal;
+}
+
+.sf-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex: 0 0 auto;
+  padding-inline: 0.75rem;
+  color: var(--sf-fg);
+  background: transparent;
+  border: 0;
+  border-inline-start: 1px solid var(--sf-border);
+  border-radius: 0 calc(var(--sf-radius) * 1.1) calc(var(--sf-radius) * 1.1) 0;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.sf-copy[hidden] {
+  display: none;
+}
+
+.sf-copy:hover {
+  background: var(--sf-muted);
+}
+
+.sf-copy__done,
+.sf-copy--done .sf-copy__icon {
+  display: none;
+}
+
+.sf-copy--done .sf-copy__done {
+  display: inline;
+}
+
+.sf-agent {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--sf-muted-fg);
+  font-size: 0.8125rem;
+}
+
+.sf-agent[hidden] {
+  display: none;
+}
+
+.sf-agent__select {
+  min-height: 2.125rem;
+  padding: 0 2rem 0 0.75rem;
+  color: var(--sf-fg);
+  background: var(--sf-card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 0.625rem center;
+  border: 1px solid var(--sf-input);
+  border-radius: calc(var(--sf-radius) * 1.1);
+  font: inherit;
+  font-size: 0.875rem;
+  appearance: none;
+}
+
+/* ----- SKILL.md --------------------------------------------------------------------- */
+
+.sf-doc-section {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.sf-doc {
+  position: relative;
+  min-width: 0;
+  line-height: 1.7;
+}
+
+.sf-doc--collapsed {
+  max-height: 44rem;
+  overflow: hidden;
+}
+
+.sf-doc--collapsed::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 9rem;
+  background: linear-gradient(to bottom, transparent, var(--sf-bg));
+  pointer-events: none;
+}
+
+.sf-doc__toggle {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding-inline: 1.125rem;
+  color: var(--sf-fg);
+  background: var(--sf-card);
+  border: 1px solid var(--sf-input);
+  border-radius: calc(var(--sf-radius) * 1.2);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.sf-doc__toggle:hover {
+  background: var(--sf-muted);
+}
+
+.sf-doc > :first-child {
   margin-top: 0;
 }
 
@@ -204,116 +458,295 @@
  * list markers, so the Markdown body sets its own, in em to follow the site's
  * type scale. The skill title is the page's h1 and the template renders the
  * body with headingOffset="1": SKILL.md "#" arrives as h2, "##" as h3. */
-.skillflow-skill__body :is(h1, h2, h3, h4, h5, h6) {
+.sf-doc :is(h1, h2, h3, h4, h5, h6) {
   margin: 2rem 0 0.75rem;
   font-weight: 700;
   line-height: 1.25;
-  scroll-margin-top: 1.5rem;
+  scroll-margin-top: 6rem;
 }
 
-.skillflow-skill__body :is(h1, h2, h3) {
+.sf-doc :is(h1, h2, h3) {
   padding-bottom: 0.35rem;
-  border-bottom: 1px solid var(--skillflow-border);
+  border-bottom: 1px solid var(--sf-border);
   font-size: 1.5em;
 }
 
-.skillflow-skill__body h4 {
+.sf-doc h4 {
   font-size: 1.25em;
 }
 
-.skillflow-skill__body :is(h5, h6) {
+.sf-doc :is(h5, h6) {
   font-size: 1.05em;
 }
 
-.skillflow-skill__body ul {
+.sf-doc ul {
   list-style: disc;
 }
 
-.skillflow-skill__body ol {
+.sf-doc ol {
   list-style: decimal;
 }
 
-.skillflow-skill__body li + li {
+.sf-doc li + li {
   margin-top: 0.25rem;
 }
 
-.skillflow-skill__body a {
-  color: var(--skillflow-accent);
+.sf-doc a {
+  color: var(--sf-link);
   text-decoration: underline;
   text-underline-offset: 0.15em;
 }
 
-.skillflow-skill__body strong {
+.sf-doc strong {
   font-weight: 700;
 }
 
-.skillflow-skill__body :is(p, ul, ol, table, pre, blockquote) {
+.sf-doc :is(p, ul, ol, table, pre, blockquote) {
   margin: 0 0 1rem;
 }
 
-.skillflow-skill__body :is(ul, ol) {
+.sf-doc :is(ul, ol) {
   padding-inline-start: 1.4rem;
 }
 
-.skillflow-skill__body code,
-.skillflow-skill__identifier code,
-.skillflow-skill__tools code {
+.sf-doc code,
+.sf-facts__tools code {
   padding: 0.1em 0.35em;
   border-radius: 0.3rem;
-  background: var(--skillflow-code);
+  background: var(--sf-muted);
+  font-family: var(--sf-mono);
   font-size: 0.875em;
 }
 
-.skillflow-skill__body pre {
+.sf-doc pre {
   padding: 1rem;
   overflow-x: auto;
-  border: 1px solid var(--skillflow-border);
-  border-radius: var(--skillflow-radius);
-  background: var(--skillflow-code);
+  border: 1px solid var(--sf-border);
+  border-radius: var(--sf-radius);
+  background: var(--sf-muted);
   font-size: 0.875rem;
   line-height: 1.5;
 }
 
-.skillflow-skill__body pre code {
+.sf-doc pre code {
   padding: 0;
   background: none;
   font-size: inherit;
 }
 
-.skillflow-skill__body table {
+.sf-doc table {
+  display: block;
   width: 100%;
+  overflow-x: auto;
   border-collapse: collapse;
   font-size: 0.9375rem;
 }
 
-.skillflow-skill__body :is(th, td) {
+.sf-doc :is(th, td) {
   padding: 0.5rem 0.75rem;
-  border: 1px solid var(--skillflow-border);
+  border: 1px solid var(--sf-border);
   text-align: start;
   vertical-align: top;
-  overflow-wrap: anywhere;
 }
 
-.skillflow-skill__body th {
-  background: var(--skillflow-surface);
+.sf-doc th {
+  background: var(--sf-muted);
 }
 
-.skillflow-skill__body blockquote {
+.sf-doc blockquote {
   padding: 0.25rem 1rem;
-  border-inline-start: 3px solid var(--skillflow-accent);
-  color: var(--skillflow-muted);
+  border-inline-start: 3px solid var(--sf-border);
+  color: var(--sf-muted-fg);
 }
 
-.skillflow-skill__body img {
+.sf-doc img {
   max-width: 100%;
   height: auto;
 }
 
-.skillflow-skill--not-found {
-  padding-block: var(--skillflow-gap);
+/* ----- Related skills --------------------------------------------------------------- */
+
+.sf-related {
+  display: grid;
+  gap: 1rem;
+}
+
+.sf-related__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+.sf-related__page {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: var(--sf-link);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.sf-related__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sf-related__card {
+  position: relative;
+  display: grid;
+  gap: 0.375rem;
+  padding: 1rem;
+  background: var(--sf-card);
+  border: 1px solid var(--sf-border);
+  border-radius: calc(var(--sf-radius) * 1.4);
+  transition: border-color 150ms ease;
+}
+
+.sf-related__card:hover {
+  border-color: var(--sf-fg);
+}
+
+.sf-related__link {
+  color: var(--sf-fg);
+  font-family: var(--sf-mono);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.sf-related__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.sf-related__link:focus-visible {
+  outline: none;
+}
+
+.sf-related__link:focus-visible::after {
+  outline: 2px solid var(--sf-ring);
+  outline-offset: 2px;
+}
+
+.sf-related__text {
+  margin: 0;
+  color: var(--sf-muted-fg);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+/* ----- Facts ------------------------------------------------------------------------- */
+
+.sf-facts {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: var(--sf-card);
+  border: 1px solid var(--sf-border);
+  border-radius: calc(var(--sf-radius) * 1.6);
+}
+
+.sf-facts__title {
+  font-size: 1rem;
+}
+
+.sf-facts__list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.sf-facts__list > div {
+  display: grid;
+  grid-template-columns: 6.25rem minmax(0, 1fr);
+  gap: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.sf-facts__list dt {
+  color: var(--sf-muted-fg);
+}
+
+.sf-facts__list dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.sf-facts__list a,
+.sf-facts__link {
+  color: var(--sf-link);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.sf-facts__tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sf-facts__id {
+  display: grid;
+  gap: 0.375rem;
+  margin: 0;
+}
+
+.sf-facts__label {
+  color: var(--sf-muted-fg);
+  font-size: 0.8125rem;
+}
+
+.sf-facts__links {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding-block-start: 0.75rem;
+  border-top: 1px solid var(--sf-border);
+  font-size: 0.875rem;
+}
+
+.sf-facts__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+}
+
+/* ----- Not found, small screens ------------------------------------------------------ */
+
+.sf-skill--not-found {
+  justify-items: center;
+  padding-block: 3rem;
   text-align: center;
 }
 
-.skillflow-skill--not-found .skillflow-skill__description {
-  margin-inline: auto;
+@media (max-width: 60rem) {
+  .sf-skill__layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sf-skill__aside {
+    position: static;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sf-skill * {
+    transition: none !important;
+  }
 }

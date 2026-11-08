@@ -1,0 +1,25 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:s="http://typo3.org/ns/ApacheSolrForTypo3/Solr/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+<f:argument name="pagination" type="object"/>
+<f:argument name="currentPage" type="integer" optional="true" default="1"/>
+<f:variable name="ll" value="LLL:EXT:skillflow/Resources/Private/Language/search.xlf:" />
+<nav class="sf-pagination" aria-label="{f:translate(key: '{ll}pagination.label')}">
+    <ul role="list">
+        <f:if condition="{pagination.previousPageNumber}">
+            <li><a class="sf-pagination__link" href="{s:uri.paginate.resultPage(page: pagination.previousPageNumber)}" rel="prev" data-skillflow-nav=""><f:translate key="{ll}pagination.previous" /></a></li>
+        </f:if>
+        <f:for each="{pagination.allPageNumbers}" as="page">
+            <li>
+                <f:if condition="{page} == {currentPage}">
+                    <f:then><span class="sf-pagination__link sf-pagination__link--current" aria-current="page">{page}</span></f:then>
+                    <f:else><a class="sf-pagination__link" href="{s:uri.paginate.resultPage(page: page)}" data-skillflow-nav="" aria-label="{f:translate(key: '{ll}pagination.page', arguments: {0: page})}">{page}</a></f:else>
+                </f:if>
+            </li>
+        </f:for>
+        <f:if condition="{pagination.nextPageNumber}">
+            <li><a class="sf-pagination__link" href="{s:uri.paginate.resultPage(page: pagination.nextPageNumber)}" rel="next" data-skillflow-nav=""><f:translate key="{ll}pagination.next" /></a></li>
+        </f:if>
+    </ul>
+</nav>
+</html>

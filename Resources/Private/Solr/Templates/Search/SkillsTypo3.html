@@ -1,0 +1,23 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+<f:comment>
+    Skills search in the look of the typo3.org relaunch (2025): Source Sans 3
+    (self-hosted, OFL), Stage Orange #ED6D05 and Petrol #006792, grey scale,
+    1rem cards with a #dcdcdc border and soft layered shadows, .25rem
+    buttons, a centred heading with the short orange bar. Colours are
+    adjusted where typo3.org's own pairs miss WCAG AA (dark text on orange,
+    darker orange for text). Same markup as the site look.
+</f:comment>
+<f:variable name="ll" value="LLL:EXT:skillflow/Resources/Private/Language/search.xlf:" />
+<f:asset.css identifier="skillflow-skills-typo3" href="EXT:skillflow/Resources/Public/Css/skills-typo3.css" />
+<f:asset.script identifier="skillflow-skills-search" src="EXT:skillflow/Resources/Public/JavaScript/skills-search.js" defer="1" />
+<div class="tx_solr sf-typo3" id="tx-solr-search">
+    <header class="sf-typo3__hero">
+        <p class="sf-typo3__kicker"><f:translate key="{ll}typo3.eyebrow" /></p>
+        <h2 class="sf-typo3__title"><f:translate key="{ll}typo3.title" /></h2>
+        <span class="sf-typo3__bar" aria-hidden="true"></span>
+        <p class="sf-typo3__subtitle"><f:translate key="{ll}typo3.subtitle" /></p>
+    </header>
+    <f:render partial="Skills/Search" arguments="{resultSet: resultSet, pagination: pagination, currentPage: currentPage, searchPageUid: contentObjectData.pid, pluginNamespace: pluginNamespace, look: 'typo3'}" />
+</div>
+</html>

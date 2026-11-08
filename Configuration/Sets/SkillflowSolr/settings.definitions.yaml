@@ -1,0 +1,39 @@
+categories:
+  skillflow:
+    label: 'Skillflow'
+  skillflow.search:
+    label: 'Skills search'
+    parent: skillflow
+
+settings:
+  skillflow.search.pages:
+    label: 'Skills search pages'
+    description: 'Comma-separated uids of the pages whose Solr results plugin lists skills (themed by the site, e.g. Desiderio). These pages get the skills query, topics, filters, sorting and instant search; the site search elsewhere stays as it is.'
+    type: string
+    default: ''
+    category: skillflow.search
+  skillflow.search.typo3Pages:
+    label: 'Skills search pages, typo3.org look'
+    description: 'Comma-separated uids of skills search pages that use the typo3.org look (Source Sans 3, orange and petrol) instead of the site theme.'
+    type: string
+    default: ''
+    category: skillflow.search
+  skillflow.detailPage:
+    label: 'Skill detail page'
+    description: 'Page with the "Skill detail" content element. Search results link to it; 0 keeps the constant plugin.tx_solr.index.queue.skills.detailPageId.'
+    type: page
+    default: 0
+    category: skillflow.search
+  skillflow.search.groupPages:
+    label: 'Path of the topic pages'
+    description: 'Slug the pages of the catalogue topics are found below, e.g. /ai/agentic-skills: the topic "proven-site-upgrade" links to the page /ai/agentic-skills/proven-site-upgrade when it exists. Empty: topics link nowhere.'
+    type: string
+    default: ''
+    category: skillflow.search
+  skillflow.catalogs:
+    label: 'Skill catalogues'
+    description: 'Catalogue files (EXT: paths) with topics, publishers, evals and install commands of skill collections; matched to skills by repository.'
+    type: stringlist
+    default:
+      - 'EXT:skillflow/Resources/Private/Catalog/typo3-skills.yaml'
+    category: skillflow.search

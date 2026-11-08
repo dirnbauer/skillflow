@@ -1,13 +1,18 @@
 #
 # Skillflow – Solr skills index & search
 #
-# Registers the index queue for tx_nrllm_skill records, the facets,
-# sorting and result-template path overrides for the EXT:skillflow skill
-# documents. Depends on the base "apache-solr-for-typo3/solr" set.
-#
-# NOTE: category/tags/version/license are NOT mapped here on purpose – they
-# are written into the Solr document by the PSR-14 indexing listener from the
-# nr_llm raw_frontmatter column and optional catalogue overrides.
+# (1) Indexes the enabled tx_nrllm_skill records of every site that uses this
+#     set. The PSR-14 listener AddSkillMetadataToSolrDocument adds front
+#     matter values, the type-ahead fields and the facts of the skill
+#     catalogue (Documentation/Search/Catalogue.rst).
+# (2) Registers the skills search templates. They have names of their own
+#     (Search/Skills, Search/SkillsTypo3), so the site search keeps the
+#     theme's Search/Results everywhere.
+# (3) Turns the Solr results plugin into the skills search on the pages of
+#     the site settings skillflow.search.pages and skillflow.search.typo3Pages
+#     only: skills-only query, browse on the empty query, type-ahead fields,
+#     topics and filters, sorting and the template. A site whose general
+#     search also finds skills keeps its own facets there.
 #
 
 # -----------------------------------------------------------------------------
@@ -51,16 +56,19 @@ plugin.tx_solr.index.queue {
       trustLevel_stringS = trust_level
       supportStatus_stringS = support_status
 
+      # The detail page: site setting skillflow.detailPage, else the constant.
+      # The SkillDetail route enhancer turns the skill uid into its name. The
+      # indexing request already runs in the language of the core, so the
+      # link needs no language parameter.
       url = TEXT
       url {
         typolink.parameter = {$plugin.tx_solr.index.queue.skills.detailPageId}
-        typolink.additionalParams = &tx_skillflow_skilldetail[action]=show&tx_skillflow_skilldetail[controller]=SkillDetail&tx_skillflow_skilldetail[skill]={field:uid}&L={field:__solr_index_language}
+        typolink.parameter.override.data = siteSettings:skillflow.detailPage
+        typolink.parameter.override.if.isTrue.data = siteSettings:skillflow.detailPage
+        typolink.additionalParams = &tx_skillflow_skilldetail[skill]={field:uid}
         typolink.additionalParams.insertData = 1
         typolink.returnLast = url
       }
-
-      rootline = {$plugin.tx_solr.index.queue.skills.detailPageId}
-
     }
   }
 
@@ -69,125 +77,202 @@ plugin.tx_solr.index.queue {
 plugin.tx_solr.logging.indexing.queue.skills = 1
 
 # -----------------------------------------------------------------------------
-# (2) Faceting — labels are TEXT objects so they follow the site language.
-# -----------------------------------------------------------------------------
-plugin.tx_solr.search.faceting = 1
-plugin.tx_solr.search.faceting {
-  minimumCount = 1
-  sortBy = count
-  showEmptyFacets = 0
-
-  facets {
-    category {
-      label = TEXT
-      label.data = LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:search.facet.category
-      field = category_stringS
-    }
-    tags {
-      label = TEXT
-      label.data = LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:search.facet.tags
-      field = tags_stringM
-    }
-    source {
-      label = TEXT
-      label.data = LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:search.facet.source
-      field = sourceTitle_stringS
-    }
-    tools {
-      label = TEXT
-      label.data = LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:search.facet.tools
-      field = allowedTools_stringM
-    }
-    license {
-      label = TEXT
-      label.data = LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:search.facet.license
-      field = license_stringS
-    }
-    trust {
-      label = TEXT
-      label.data = LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:search.facet.trust
-      field = trustLevel_stringS
-    }
-    support {
-      label = TEXT
-      label.data = LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:search.facet.support
-      field = supportStatus_stringS
-    }
-    type {
-      label = Content type
-      field = type
-    }
-  }
-}
-
-# -----------------------------------------------------------------------------
-# (3) Sorting
-# -----------------------------------------------------------------------------
-plugin.tx_solr.search.sorting = 1
-plugin.tx_solr.search.sorting {
-  defaultOrder = asc
-
-  options {
-    relevance {
-      field = relevance
-      label = Relevance
-      label.data = LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:search.sort.relevance
-    }
-    title {
-      field = sortTitle_stringS
-      label = Title
-      label.data = LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:search.sort.title
-    }
-    category {
-      field = category_stringS
-      label = Category
-      label.data = LLL:EXT:skillflow/Resources/Private/Language/locallang_db.xlf:search.sort.category
-    }
-  }
-}
-
-# -----------------------------------------------------------------------------
-# (4) Results & highlighting
-# -----------------------------------------------------------------------------
-plugin.tx_solr.search.results {
-  resultsPerPage = 12
-  resultsPerPageSwitchOptions = 12,24,48
-
-  resultsHighlighting = 1
-  resultsHighlighting {
-    highlightFields = content
-  }
-}
-
-# NOTE: "browse the whole catalogue on the empty landing query" is NOT enabled
-# globally here, because initializeWithEmptyQuery / allowEmptyQuery on the global
-# plugin.tx_solr.search path would also force the site's general Solr search to
-# dump all results. Enable it PER skill-listing page with a page-scoped TypoScript
-# condition in the consuming site / site package, e.g.:
-#
-#   [page["uid"] in [<your skill listing page uids>]]
-#   plugin.tx_solr.search {
-#       initializeWithEmptyQuery = 1
-#       showResultsOfInitialEmptyQuery = 1
-#       query.allowEmptyQuery = 1
-#   }
-#   [END]
-
-# -----------------------------------------------------------------------------
-# (5) Skill result template / partial / layout overrides
+# (2) Templates. Editors may also pick them per plugin (Options › Custom
+#     Template); the pages of the settings get them without that.
 # -----------------------------------------------------------------------------
 plugin.tx_solr.view {
   templateRootPaths.200 = EXT:skillflow/Resources/Private/Solr/Templates/
+  # Skills/Icon and Skills/Command are shared with the skill detail plugin.
+  partialRootPaths.150 = EXT:skillflow/Resources/Private/Partials/
   partialRootPaths.200 = EXT:skillflow/Resources/Private/Solr/Partials/
+
+  templateFiles.results.availableTemplates {
+    skillflowSkills {
+      label = Skills search (site theme)
+      file = Skills
+    }
+    skillflowSkillsTypo3 {
+      label = Skills search (typo3.org look)
+      file = SkillsTypo3
+    }
+  }
 }
 
 # -----------------------------------------------------------------------------
-# (6) Skill detail plugin (skillflow_skilldetail) rendering
+# (3) The skills search, on the configured pages only
 # -----------------------------------------------------------------------------
-# On standard fluid_styled_content sites the plugin renders out of the box via
-# ExtensionUtility::configurePlugin() (tt_content.skillflow_skilldetail = the
-# EXTBASEPLUGIN). On sites whose lib.contentElement is a FLUIDTEMPLATE that maps
-# CType -> a content template (e.g. desiderio), add a per-page override, e.g.:
+[page["uid"] in [{$skillflow.search.pages}] || page["uid"] in [{$skillflow.search.typo3Pages}]]
+plugin.tx_solr.search {
+  # The whole catalogue on the empty query.
+  initializeWithEmptyQuery = 1
+  showResultsOfInitialEmptyQuery = 1
+  query.allowEmptyQuery = 1
+
+  # Skills only: the cores of an installation also hold pages and news.
+  query.filter.skillflowSkills = type:tx_nrllm_skill
+
+  # Name, description and topic match as prefixes while a name is typed
+  # ("up" finds typo3-upgrade-run); SKILL.md matches with a low weight.
+  query.queryFields = title^30.0, skillWords_stringEdgeNgramM^20.0, description^12.0, skillPrefix_textEdgeNgramM^6.0, keywords^2.0, content^1.0
+
+  results {
+    # One catalogue, one list: rank numbers and arrow keys run through all
+    # skills; larger collections page.
+    resultsPerPage = 100
+    resultsPerPageSwitchOptions = 25, 50, 100
+    # "Found in SKILL.md": a fragment of the body around the match.
+    resultsHighlighting = 1
+    resultsHighlighting {
+      highlightFields = content
+      fragmentSize = 160
+      wrap = <mark>|</mark>
+    }
+    # EXT:solr's site highlighter adds sword_list[] to result links, which
+    # the strict detail route and the cHash check reject.
+    siteHighlighting = 0
+  }
+
+  faceting = 1
+  faceting {
+    minimumCount = 1
+    keepAllFacetsOnSelection = 1
+    # Only the skills facets: a site's own facets (content type, news
+    # categories) mean nothing in a list of skills.
+    facets >
+    facets {
+      # Topics, as the catalogue orders them (sf:catalog.sortOptions).
+      group {
+        label = TEXT
+        label.data = LLL:EXT:skillflow/Resources/Private/Language/search.xlf:facet.group
+        field = skillGroup_stringS
+        keepAllOptionsOnSelection = 1
+        renderingInstruction = USER
+        renderingInstruction {
+          userFunc = Webconsulting\Skillflow\Solr\CatalogFacetLabel->render
+          kind = group
+        }
+      }
+      owner {
+        label = TEXT
+        label.data = LLL:EXT:skillflow/Resources/Private/Language/search.xlf:facet.owner
+        field = skillOwner_stringS
+        operator = OR
+        keepAllOptionsOnSelection = 1
+        sortBy = count
+      }
+      audience {
+        label = TEXT
+        label.data = LLL:EXT:skillflow/Resources/Private/Language/search.xlf:facet.audience
+        field = skillAudience_stringM
+        operator = OR
+        keepAllOptionsOnSelection = 1
+        manualSortOrder = site, extension, core
+        renderingInstruction = USER
+        renderingInstruction {
+          userFunc = Webconsulting\Skillflow\Solr\CatalogFacetLabel->render
+          kind = audience
+        }
+      }
+      origin {
+        label = TEXT
+        label.data = LLL:EXT:skillflow/Resources/Private/Language/search.xlf:facet.origin
+        field = skillOrigin_stringS
+        operator = OR
+        keepAllOptionsOnSelection = 1
+        manualSortOrder = maintained, vendored
+        renderingInstruction = CASE
+        renderingInstruction {
+          key.field = optionValue
+          default = TEXT
+          default.field = optionValue
+          maintained = TEXT
+          maintained.data = LLL:EXT:skillflow/Resources/Private/Language/search.xlf:origin.maintained
+          vendored = TEXT
+          vendored.data = LLL:EXT:skillflow/Resources/Private/Language/search.xlf:origin.vendored
+        }
+      }
+      kind {
+        label = TEXT
+        label.data = LLL:EXT:skillflow/Resources/Private/Language/search.xlf:facet.kind
+        field = skillType_stringS
+        operator = OR
+        keepAllOptionsOnSelection = 1
+        manualSortOrder = preference, capability
+        renderingInstruction = CASE
+        renderingInstruction {
+          key.field = optionValue
+          default = TEXT
+          default.field = optionValue
+          capability = TEXT
+          capability.data = LLL:EXT:skillflow/Resources/Private/Language/search.xlf:kind.capability
+          preference = TEXT
+          preference.data = LLL:EXT:skillflow/Resources/Private/Language/search.xlf:kind.preference
+        }
+      }
+      license {
+        label = TEXT
+        label.data = LLL:EXT:skillflow/Resources/Private/Language/search.xlf:facet.license
+        field = license_stringS
+        operator = OR
+        keepAllOptionsOnSelection = 1
+        sortBy = count
+      }
+    }
+  }
+
+  sorting = 1
+  sorting {
+    defaultOrder = asc
+    options >
+    options {
+      relevance {
+        field = relevance
+        label = TEXT
+        label.data = LLL:EXT:skillflow/Resources/Private/Language/search.xlf:sort.relevance
+      }
+      name {
+        field = sortTitle_stringS
+        label = TEXT
+        label.data = LLL:EXT:skillflow/Resources/Private/Language/search.xlf:sort.name
+      }
+      updated {
+        field = skillUpdated_dateS
+        defaultOrder = desc
+        label = TEXT
+        label.data = LLL:EXT:skillflow/Resources/Private/Language/search.xlf:sort.updated
+      }
+      showcase {
+        field = skillRank_intS
+        label = TEXT
+        label.data = LLL:EXT:skillflow/Resources/Private/Language/search.xlf:sort.showcase
+      }
+    }
+  }
+
+  # The lists render their own suggestions; no search history boxes.
+  lastSearches = 0
+  frequentSearches = 0
+}
+plugin.tx_solr.view.templateFiles.results = Skills
+[END]
+
+# Browsing without a query and without a chosen order: showcase skills first,
+# then the topics in the catalogue's order ("relevance" has nothing to rank).
+[(page["uid"] in [{$skillflow.search.pages}] || page["uid"] in [{$skillflow.search.typo3Pages}]) && traverse(request.getQueryParams(), 'tx_solr/q') == '' && traverse(request.getQueryParams(), 'tx_solr/sort') == '']
+plugin.tx_solr.search.query.sortBy = skillRank_intS asc
+[END]
+
+[page["uid"] in [{$skillflow.search.typo3Pages}]]
+plugin.tx_solr.view.templateFiles.results = SkillsTypo3
+[END]
+
+# -----------------------------------------------------------------------------
+# (4) Skill detail plugin (skillflow_skilldetail) rendering
+# -----------------------------------------------------------------------------
+# On standard fluid_styled_content sites, and on Desiderio 4.x (its Generic
+# template renders tt_content.<CType>.20), the plugin renders out of the box
+# via ExtensionUtility::configurePlugin(). A theme whose lib.contentElement
+# maps CTypes to templates of its own needs a per-page override, e.g.:
 #   [page["uid"] in [<detail page uids>]]
 #   tt_content.skillflow_skilldetail >
 #   tt_content.skillflow_skilldetail = COA

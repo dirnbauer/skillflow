@@ -16,44 +16,11 @@
       <trans-unit id="plugin.skilldetail.description" resname="plugin.skilldetail.description">
         <source>Display one active skill managed by nr_llm.</source>
       </trans-unit>
-      <trans-unit id="plugin.skilldetail.notfound.title" resname="plugin.skilldetail.notfound.title">
-        <source>Skill not found</source>
-      </trans-unit>
-      <trans-unit id="plugin.skilldetail.notfound" resname="plugin.skilldetail.notfound">
-        <source>No active skill found for this identifier.</source>
-      </trans-unit>
-      <trans-unit id="skill.tags" resname="skill.tags">
-        <source>Tags</source>
-      </trans-unit>
-      <trans-unit id="skill.details" resname="skill.details">
-        <source>Details</source>
-      </trans-unit>
-      <trans-unit id="skill.use" resname="skill.use">
-        <source>Use this skill</source>
-      </trans-unit>
       <trans-unit id="skill.identifier" resname="skill.identifier">
         <source>Skill ID</source>
       </trans-unit>
-      <trans-unit id="skill.copy" resname="skill.copy">
-        <source>Copy</source>
-      </trans-unit>
-      <trans-unit id="skill.copied" resname="skill.copied">
-        <source>Skill ID copied to the clipboard.</source>
-      </trans-unit>
-      <trans-unit id="skill.category" resname="skill.category">
-        <source>Category</source>
-      </trans-unit>
       <trans-unit id="skill.source" resname="skill.source">
         <source>Source</source>
-      </trans-unit>
-      <trans-unit id="skill.license" resname="skill.license">
-        <source>License</source>
-      </trans-unit>
-      <trans-unit id="skill.version" resname="skill.version">
-        <source>Version</source>
-      </trans-unit>
-      <trans-unit id="skill.allowedTools" resname="skill.allowedTools">
-        <source>Allowed tools</source>
       </trans-unit>
       <trans-unit id="tab.skills" resname="tab.skills">
         <source>Skills</source>
@@ -168,54 +135,6 @@
       </trans-unit>
       <trans-unit id="search.tags.description" resname="search.tags.description">
         <source>Comma-separated catalogue tags. These override imported tags for search without changing the skill content.</source>
-      </trans-unit>
-      <trans-unit id="search.noResults.hint" resname="search.noResults.hint">
-        <source>Try a different or more general search term.</source>
-      </trans-unit>
-      <trans-unit id="search.facet.category" resname="search.facet.category">
-        <source>Category</source>
-      </trans-unit>
-      <trans-unit id="search.facet.tags" resname="search.facet.tags">
-        <source>Tags</source>
-      </trans-unit>
-      <trans-unit id="search.facet.source" resname="search.facet.source">
-        <source>Source</source>
-      </trans-unit>
-      <trans-unit id="search.facet.tools" resname="search.facet.tools">
-        <source>Allowed tools</source>
-      </trans-unit>
-      <trans-unit id="search.facet.license" resname="search.facet.license">
-        <source>License</source>
-      </trans-unit>
-      <trans-unit id="search.facet.trust" resname="search.facet.trust">
-        <source>Trust</source>
-      </trans-unit>
-      <trans-unit id="search.facet.support" resname="search.facet.support">
-        <source>Support</source>
-      </trans-unit>
-      <trans-unit id="search.sort.relevance" resname="search.sort.relevance">
-        <source>Relevance</source>
-      </trans-unit>
-      <trans-unit id="search.sort.title" resname="search.sort.title">
-        <source>Title</source>
-      </trans-unit>
-      <trans-unit id="search.sort.category" resname="search.sort.category">
-        <source>Category</source>
-      </trans-unit>
-      <trans-unit id="search.ter.placeholder" resname="search.ter.placeholder">
-        <source>Search for skills, tags, category …</source>
-      </trans-unit>
-      <trans-unit id="search.ter.exactMatch" resname="search.ter.exactMatch">
-        <source>exact match</source>
-      </trans-unit>
-      <trans-unit id="search.ter.activeFilters" resname="search.ter.activeFilters">
-        <source>Active filters</source>
-      </trans-unit>
-      <trans-unit id="search.ter.filters" resname="search.ter.filters">
-        <source>Filters</source>
-      </trans-unit>
-      <trans-unit id="search.ter.bySource" resname="search.ter.bySource">
-        <source>by %s</source>
       </trans-unit>
       <trans-unit id="tab.abilities" resname="tab.abilities">
         <source>Skillflow abilities</source>

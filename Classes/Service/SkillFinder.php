@@ -164,6 +164,39 @@ final readonly class SkillFinder
     }
 
     /**
+     * The available skills of one source with the given names, in the order
+     * of $names (uid, name and description; a name without an available
+     * skill is left out).
+     *
+     * @param list<string> $names
+     * @return list<array{uid: int, name: string, description: string}>
+     */
+    public function findAvailableSkillsByNames(int $sourceUid, array $names): array
+    {
+        if ($sourceUid <= 0 || $names === []) {
+            return [];
+        }
+        $queryBuilder = $this->skillQuery(false);
+        $rows = $queryBuilder
+            ->select('uid', 'name', 'description')
+            ->from(self::SKILL_TABLE)
+            ->andWhere(
+                $queryBuilder->expr()->eq('source', $queryBuilder->createNamedParameter($sourceUid, ParameterType::INTEGER)),
+                $queryBuilder->expr()->in('name', $queryBuilder->createNamedParameter($names, ArrayParameterType::STRING)),
+            )
+            ->executeQuery()
+            ->fetchAllAssociative();
+
+        $byName = [];
+        foreach ($rows as $row) {
+            $name = Typed::string($row['name'] ?? '');
+            $byName[$name] = ['uid' => Typed::int($row['uid'] ?? 0), 'name' => $name, 'description' => Typed::string($row['description'] ?? '')];
+        }
+
+        return array_values(array_filter(array_map(static fn(string $name): ?array => $byName[$name] ?? null, $names)));
+    }
+
+    /**
      * @return list<array<string, mixed>>
      */
     public function findSkillsByUidList(string $uidList): array

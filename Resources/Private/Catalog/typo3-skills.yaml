@@ -1,0 +1,911 @@
+# Skill catalogue of github.com/dirnbauer/typo3-skills for Skillflow's skill
+# search: topics (groups), showcase skills, audiences, publishers, test
+# coverage and install commands. Matched to skills by `repository`.
+#
+# Editorial, edited by hand: groups, and per skill group, superfeature and
+# audience. Facts, rewritten by
+#   php Build/Scripts/refresh-skill-catalog.php <this file> <checkout>
+# owner, origin, upstream, license, evals, updated.
+# Labels are LLL references (Resources/Private/Language/catalog.xlf).
+# Format: Documentation/Search/Catalogue.rst
+
+repository: 'https://github.com/dirnbauer/typo3-skills'
+title: 'TYPO3 agent skills'
+license: 'MIT AND CC-BY-SA-4.0'
+install:
+  all: 'git clone https://github.com/dirnbauer/typo3-skills.git && cd typo3-skills && ./install.sh'
+  skill: 'git clone https://github.com/dirnbauer/typo3-skills.git ~/typo3-skills; mkdir -p {dir} && ln -s ~/typo3-skills/skills/{skill} {dir}/{skill}'
+  pack: 'git clone https://github.com/dirnbauer/typo3-skills.git ~/typo3-skills; mkdir -p {dir} && for s in {skills}; do ln -s ~/typo3-skills/skills/$s {dir}/$s; done'
+clients:
+  -
+    key: claude
+    label: 'Claude Code'
+    directory: ~/.claude/skills
+    call: '/{skill}'
+  -
+    key: codex
+    label: Codex
+    directory: ~/.codex/skills
+    call: '${skill}'
+  -
+    key: cursor
+    label: Cursor
+    directory: ~/.cursor/skills
+    call: '/{skill}'
+  -
+    key: gemini
+    label: 'Gemini CLI'
+    directory: ~/.gemini/skills
+    call: ''
+  -
+    key: windsurf
+    label: Windsurf
+    directory: ~/.codeium/windsurf/skills
+    call: '@{skill}'
+audiences:
+  site: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:audience.site'
+  extension: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:audience.extension'
+  core: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:audience.core'
+groups:
+  proven-site-upgrade:
+    title: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.proven-site-upgrade'
+    description: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.proven-site-upgrade.description'
+    page: proven-site-upgrade
+  upgrade-planning:
+    title: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.upgrade-planning'
+    description: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.upgrade-planning.description'
+    page: upgrade-planning
+  code-migration:
+    title: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.code-migration'
+    description: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.code-migration.description'
+    page: code-migration
+  content-modelling:
+    title: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.content-modelling'
+    description: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.content-modelling.description'
+    page: content-modelling
+  editor-experience:
+    title: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.editor-experience'
+    description: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.editor-experience.description'
+    page: editor-experience
+  design-system:
+    title: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.design-system'
+    description: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.design-system.description'
+    page: design-system
+  v14-development:
+    title: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.v14-development'
+    description: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.v14-development.description'
+    page: v14-development
+  accessibility:
+    title: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.accessibility'
+    description: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.accessibility.description'
+    page: accessibility
+  search-seo-agents:
+    title: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.search-seo-agents'
+    description: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.search-seo-agents.description'
+    page: search-seo-agents
+  security-operations:
+    title: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.security-operations'
+    description: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.security-operations.description'
+    page: security-operations
+  testing-quality:
+    title: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.testing-quality'
+    description: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.testing-quality.description'
+    page: testing-quality
+  release-open-source:
+    title: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.release-open-source'
+    description: 'LLL:EXT:skillflow/Resources/Private/Language/catalog.xlf:group.release-open-source.description'
+    page: release-open-source
+skills:
+  typo3-upgrade-run:
+    group: proven-site-upgrade
+    superfeature: true
+    audience:
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 94
+      reviewed: 25
+    updated: '2026-10-31'
+  typo3-upgrade-intake:
+    group: proven-site-upgrade
+    superfeature: false
+    audience:
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 14
+      reviewed: 1
+    updated: '2026-10-31'
+  typo3-upgrade-baseline:
+    group: proven-site-upgrade
+    superfeature: false
+    audience:
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 10
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-upgrade-closure:
+    group: proven-site-upgrade
+    superfeature: false
+    audience:
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 19
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-upgrade-effort-model:
+    group: upgrade-planning
+    superfeature: false
+    audience:
+      - site
+    owner: Netresearch
+    origin: vendored
+    upstream: 'https://github.com/netresearch/typo3-upgrade-effort-model-skill'
+    license: 'MIT AND CC-BY-SA-4.0'
+    evals:
+      cases: 0
+      reviewed: 0
+    updated: '2026-09-27'
+  typo3-project-upgrade:
+    group: upgrade-planning
+    superfeature: false
+    audience:
+      - site
+    owner: Netresearch
+    origin: vendored
+    upstream: 'https://github.com/netresearch/typo3-project-upgrade-skill'
+    license: 'MIT AND CC-BY-SA-4.0'
+    evals:
+      cases: 20
+      reviewed: 0
+    updated: '2026-09-27'
+  typo3-upgrade-migration:
+    group: upgrade-planning
+    superfeature: false
+    audience:
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 13
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-upgrade-retrospective:
+    group: upgrade-planning
+    superfeature: false
+    audience:
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 9
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-extension-upgrade:
+    group: code-migration
+    superfeature: false
+    audience:
+      - extension
+    owner: Netresearch
+    origin: vendored
+    upstream: 'https://github.com/netresearch/typo3-extension-upgrade-skill'
+    license: 'MIT AND CC-BY-SA-4.0'
+    evals:
+      cases: 0
+      reviewed: 0
+    updated: '2026-10-07'
+  typo3-rector:
+    group: code-migration
+    superfeature: false
+    audience:
+      - extension
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 10
+      reviewed: 8
+    updated: '2026-10-31'
+  typo3-fractor:
+    group: code-migration
+    superfeature: false
+    audience:
+      - extension
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 9
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-batch:
+    group: code-migration
+    superfeature: false
+    audience:
+      - extension
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 9
+      reviewed: 8
+    updated: '2026-10-31'
+  php-modernization:
+    group: code-migration
+    superfeature: false
+    audience:
+      - extension
+    owner: Netresearch
+    origin: vendored
+    upstream: 'https://github.com/netresearch/php-modernization-skill'
+    license: 'MIT AND CC-BY-SA-4.0'
+    evals:
+      cases: 0
+      reviewed: 0
+    updated: '2026-09-26'
+  typo3-content-blocks:
+    group: content-modelling
+    superfeature: true
+    audience:
+      - site
+      - extension
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 12
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-datahandler:
+    group: content-modelling
+    superfeature: false
+    audience:
+      - extension
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 6
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-translations:
+    group: content-modelling
+    superfeature: false
+    audience:
+      - site
+      - extension
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 6
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-news-tags:
+    group: content-modelling
+    superfeature: false
+    audience:
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 9
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-powermail:
+    group: content-modelling
+    superfeature: false
+    audience:
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 13
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-jev:
+    group: content-modelling
+    superfeature: false
+    audience:
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 17
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-visual-editor:
+    group: editor-experience
+    superfeature: true
+    audience:
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 8
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-workspaces:
+    group: editor-experience
+    superfeature: false
+    audience:
+      - site
+      - extension
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 7
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-records-list-types:
+    group: editor-experience
+    superfeature: true
+    audience:
+      - site
+      - extension
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 8
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-ckeditor5:
+    group: editor-experience
+    superfeature: false
+    audience:
+      - extension
+      - site
+    owner: Netresearch
+    origin: vendored
+    upstream: 'https://github.com/netresearch/typo3-ckeditor5-skill'
+    license: 'MIT AND CC-BY-SA-4.0'
+    evals:
+      cases: 0
+      reviewed: 0
+    updated: '2026-10-04'
+  typo3-shadcn-content-elements:
+    group: design-system
+    superfeature: true
+    audience:
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 7
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-design-system-page:
+    group: design-system
+    superfeature: true
+    audience:
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 12
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-vite:
+    group: design-system
+    superfeature: false
+    audience:
+      - site
+    owner: Netresearch
+    origin: vendored
+    upstream: 'https://github.com/netresearch/typo3-vite-skill'
+    license: 'MIT AND CC-BY-SA-4.0'
+    evals:
+      cases: 0
+      reviewed: 0
+    updated: '2026-10-07'
+  typo3-icon14:
+    group: design-system
+    superfeature: false
+    audience:
+      - extension
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 8
+      reviewed: 0
+    updated: '2026-10-31'
+  web-design-guidelines:
+    group: design-system
+    superfeature: false
+    audience:
+      - site
+    owner: Vercel
+    origin: vendored
+    upstream: 'https://github.com/vercel-labs/agent-skills'
+    license: ''
+    evals:
+      cases: 0
+      reviewed: 0
+    updated: '2026-07-27'
+  web-platform-design:
+    group: design-system
+    superfeature: false
+    audience:
+      - site
+    owner: ehmo
+    origin: vendored
+    upstream: 'https://github.com/ehmo/platform-design-skills'
+    license: ''
+    evals:
+      cases: 0
+      reviewed: 0
+    updated: '2026-09-26'
+  webconsulting-branding:
+    group: design-system
+    superfeature: false
+    audience:
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 6
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-v14-reference:
+    group: v14-development
+    superfeature: false
+    audience:
+      - extension
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 12
+      reviewed: 10
+    updated: '2026-10-31'
+  typo3-typoscript-ref:
+    group: v14-development
+    superfeature: false
+    audience:
+      - site
+    owner: Netresearch
+    origin: vendored
+    upstream: 'https://github.com/netresearch/typo3-typoscript-ref-skill'
+    license: 'MIT AND CC-BY-SA-4.0'
+    evals:
+      cases: 23
+      reviewed: 0
+    updated: '2026-09-28'
+  typo3-webcomponents:
+    group: v14-development
+    superfeature: false
+    audience:
+      - extension
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 7
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-ddev:
+    group: v14-development
+    superfeature: false
+    audience:
+      - site
+      - extension
+      - core
+    owner: Netresearch
+    origin: vendored
+    upstream: 'https://github.com/netresearch/typo3-ddev-skill'
+    license: 'MIT AND CC-BY-SA-4.0'
+    evals:
+      cases: 0
+      reviewed: 0
+    updated: '2026-10-21'
+  postgres-best-practices:
+    group: v14-development
+    superfeature: false
+    audience:
+      - site
+      - extension
+    owner: Supabase
+    origin: vendored
+    upstream: 'https://github.com/supabase/agent-skills'
+    license: ''
+    evals:
+      cases: 0
+      reviewed: 0
+    updated: '2026-09-26'
+  typo3-wcag22-aa-agentic:
+    group: accessibility
+    superfeature: true
+    audience:
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: MIT
+    evals:
+      cases: 9
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-accessibility:
+    group: accessibility
+    superfeature: false
+    audience:
+      - site
+      - extension
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 8
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-a11y:
+    group: accessibility
+    superfeature: false
+    audience:
+      - site
+      - extension
+    owner: Netresearch
+    origin: vendored
+    upstream: 'https://github.com/netresearch/typo3-a11y-skill'
+    license: 'MIT AND CC-BY-SA-4.0'
+    evals:
+      cases: 0
+      reviewed: 0
+    updated: '2026-09-26'
+  typo3-seo:
+    group: search-seo-agents
+    superfeature: false
+    audience:
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 8
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-structured-data:
+    group: search-seo-agents
+    superfeature: true
+    audience:
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 13
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-solr:
+    group: search-seo-agents
+    superfeature: false
+    audience:
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 9
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-webmcp:
+    group: search-seo-agents
+    superfeature: true
+    audience:
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 14
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-security:
+    group: security-operations
+    superfeature: false
+    audience:
+      - site
+      - extension
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 10
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-backend-rights:
+    group: security-operations
+    superfeature: true
+    audience:
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 26
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-scheduler-jobs:
+    group: security-operations
+    superfeature: false
+    audience:
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 15
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-site-conformance:
+    group: security-operations
+    superfeature: false
+    audience:
+      - site
+    owner: Netresearch
+    origin: vendored
+    upstream: 'https://github.com/netresearch/typo3-site-conformance-skill'
+    license: 'MIT AND CC-BY-SA-4.0'
+    evals:
+      cases: 0
+      reviewed: 0
+    updated: '2026-09-26'
+  security-audit:
+    group: security-operations
+    superfeature: false
+    audience:
+      - site
+      - extension
+    owner: Netresearch
+    origin: vendored
+    upstream: 'https://github.com/netresearch/security-audit-skill'
+    license: 'MIT AND CC-BY-SA-4.0'
+    evals:
+      cases: 25
+      reviewed: 0
+    updated: '2026-09-27'
+  security-incident-reporting:
+    group: security-operations
+    superfeature: false
+    audience:
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 7
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-testing:
+    group: testing-quality
+    superfeature: false
+    audience:
+      - extension
+      - core
+    owner: Netresearch
+    origin: vendored
+    upstream: 'https://github.com/netresearch/typo3-testing-skill'
+    license: 'MIT AND CC-BY-SA-4.0'
+    evals:
+      cases: 0
+      reviewed: 0
+    updated: '2026-09-26'
+  typo3-playwright:
+    group: testing-quality
+    superfeature: false
+    audience:
+      - site
+      - extension
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 21
+      reviewed: 0
+    updated: '2026-11-01'
+  typo3-conformance:
+    group: testing-quality
+    superfeature: false
+    audience:
+      - extension
+    owner: Netresearch
+    origin: vendored
+    upstream: 'https://github.com/netresearch/typo3-conformance-skill'
+    license: 'MIT AND CC-BY-SA-4.0'
+    evals:
+      cases: 0
+      reviewed: 0
+    updated: '2026-09-26'
+  typo3-simplify:
+    group: testing-quality
+    superfeature: false
+    audience:
+      - extension
+    owner: Anthropic
+    origin: vendored
+    upstream: 'https://github.com/anthropics/claude-plugins-official/tree/main/plugins/code-simplifier'
+    license: ''
+    evals:
+      cases: 0
+      reviewed: 0
+    updated: '2026-07-25'
+  thermo-nuclear-code-quality-review:
+    group: testing-quality
+    superfeature: false
+    audience:
+      - extension
+      - core
+    owner: Cursor
+    origin: maintained
+    upstream: 'https://github.com/cursor/plugins'
+    license: ''
+    evals:
+      cases: 7
+      reviewed: 0
+    updated: '2026-09-06'
+  typo3-initial-release:
+    group: release-open-source
+    superfeature: false
+    audience:
+      - extension
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 7
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-docs:
+    group: release-open-source
+    superfeature: false
+    audience:
+      - extension
+      - core
+    owner: Netresearch
+    origin: vendored
+    upstream: 'https://github.com/netresearch/typo3-docs-skill'
+    license: 'MIT AND CC-BY-SA-4.0'
+    evals:
+      cases: 23
+      reviewed: 0
+    updated: '2026-09-26'
+  typo3-core-contributions:
+    group: release-open-source
+    superfeature: false
+    audience:
+      - core
+    owner: Netresearch
+    origin: vendored
+    upstream: 'https://github.com/netresearch/typo3-core-contributions-skill'
+    license: 'MIT AND CC-BY-SA-4.0'
+    evals:
+      cases: 0
+      reviewed: 0
+    updated: '2026-09-26'
+  enterprise-readiness:
+    group: release-open-source
+    superfeature: false
+    audience:
+      - extension
+    owner: Netresearch
+    origin: vendored
+    upstream: 'https://github.com/netresearch/enterprise-readiness-skill'
+    license: 'MIT AND CC-BY-SA-4.0'
+    evals:
+      cases: 20
+      reviewed: 0
+    updated: '2026-09-26'
+  architecture-decision-records:
+    group: release-open-source
+    superfeature: false
+    audience:
+      - site
+      - extension
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 6
+      reviewed: 0
+    updated: '2026-10-31'
+  webconsulting-create-documentation:
+    group: release-open-source
+    superfeature: false
+    audience:
+      - extension
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 8
+      reviewed: 0
+    updated: '2026-10-31'
+  typo3-idea-extension-blog:
+    group: release-open-source
+    superfeature: false
+    audience:
+      - extension
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 8
+      reviewed: 0
+    updated: '2026-10-31'
+  legal-impressum:
+    group: ''
+    superfeature: false
+    audience:
+      - site
+    owner: webconsulting
+    origin: maintained
+    upstream: ''
+    license: ''
+    evals:
+      cases: 9
+      reviewed: 0
+    updated: '2026-10-31'

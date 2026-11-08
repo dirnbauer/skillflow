@@ -4,6 +4,35 @@
 Upgrading
 =========
 
+..  _upgrade-unreleased:
+
+Next release (skills search)
+============================
+
+No database changes. Clear the caches and reindex the skills
+(``skillflow:solr:index``): the documents get the catalogue fields.
+
+*   The skills search applies only to the pages of the new site settings
+    :yaml:`skillflow.search.pages` (site theme) and
+    :yaml:`skillflow.search.typo3Pages` (typo3.org look); set them, or pick
+    the template per plugin. The set no longer adds its facets, sorting or
+    templates to every Solr page of the site: a general search keeps the
+    theme's :file:`Search/Results.html` and :file:`Result/Document.html`.
+*   List :yaml:`webconsulting/skillflow-solr` after the sets that bring
+    EXT:solr's default TypoScript, so its settings load last.
+*   The typo3.org (TER) look is new and needs no CDN: Bootstrap and Font
+    Awesome page includes for it can go. :file:`Resources/Private/SolrTer/`
+    and :file:`Resources/Public/Css/skills-ter.css` are removed.
+*   :yaml:`skillflow.detailPage` replaces the constant
+    :typoscript:`plugin.tx_solr.index.queue.skills.detailPageId` (still read
+    when the setting is ``0``); result URLs no longer carry ``L``.
+*   The licence facet writes ``MIT / CC-BY-SA-4.0`` as ``MIT AND
+    CC-BY-SA-4.0``.
+*   The detail template is new (install tabs, facts, related skills); an
+    overridden :file:`SkillDetail/Show.html` keeps working with the variables
+    it used, the new ones are listed in :ref:`usage-detail`. Frontend labels
+    moved to :file:`search.xlf`.
+
 ..  _upgrade-1-9:
 
 1.9.0

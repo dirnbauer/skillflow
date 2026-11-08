@@ -20,57 +20,13 @@
         <source>Display one active skill managed by nr_llm.</source>
         <target state="translated">Zeigt einen aktiven, von nr_llm verwalteten Skill an.</target>
       </trans-unit>
-      <trans-unit id="plugin.skilldetail.notfound.title" resname="plugin.skilldetail.notfound.title">
-        <source>Skill not found</source>
-        <target state="translated">Skill nicht gefunden</target>
-      </trans-unit>
-      <trans-unit id="plugin.skilldetail.notfound" resname="plugin.skilldetail.notfound">
-        <source>No active skill found for this identifier.</source>
-        <target state="translated">Für diese Kennung wurde kein aktiver Skill gefunden.</target>
-      </trans-unit>
-      <trans-unit id="skill.tags" resname="skill.tags">
-        <source>Tags</source>
-        <target state="translated">Schlagwörter</target>
-      </trans-unit>
-      <trans-unit id="skill.details" resname="skill.details">
-        <source>Details</source>
-        <target state="translated">Details</target>
-      </trans-unit>
-      <trans-unit id="skill.use" resname="skill.use">
-        <source>Use this skill</source>
-        <target state="translated">Diesen Skill verwenden</target>
-      </trans-unit>
       <trans-unit id="skill.identifier" resname="skill.identifier">
         <source>Skill ID</source>
         <target state="translated">Skill-ID</target>
       </trans-unit>
-      <trans-unit id="skill.copy" resname="skill.copy">
-        <source>Copy</source>
-        <target state="translated">Kopieren</target>
-      </trans-unit>
-      <trans-unit id="skill.copied" resname="skill.copied">
-        <source>Skill ID copied to the clipboard.</source>
-        <target state="translated">Skill-ID in die Zwischenablage kopiert.</target>
-      </trans-unit>
-      <trans-unit id="skill.category" resname="skill.category">
-        <source>Category</source>
-        <target state="translated">Kategorie</target>
-      </trans-unit>
       <trans-unit id="skill.source" resname="skill.source">
         <source>Source</source>
         <target state="translated">Quelle</target>
-      </trans-unit>
-      <trans-unit id="skill.license" resname="skill.license">
-        <source>License</source>
-        <target state="translated">Lizenz</target>
-      </trans-unit>
-      <trans-unit id="skill.version" resname="skill.version">
-        <source>Version</source>
-        <target state="translated">Version</target>
-      </trans-unit>
-      <trans-unit id="skill.allowedTools" resname="skill.allowedTools">
-        <source>Allowed tools</source>
-        <target state="translated">Erlaubte Werkzeuge</target>
       </trans-unit>
       <trans-unit id="tab.skills" resname="tab.skills">
         <source>Skills</source>
@@ -223,70 +179,6 @@
       <trans-unit id="search.tags.description" resname="search.tags.description">
         <source>Comma-separated catalogue tags. These override imported tags for search without changing the skill content.</source>
         <target state="translated">Kommagetrennte Katalog-Schlagwörter. Sie ersetzen die importierten Schlagwörter in der Suche, ohne den Skill-Inhalt zu ändern.</target>
-      </trans-unit>
-      <trans-unit id="search.noResults.hint" resname="search.noResults.hint">
-        <source>Try a different or more general search term.</source>
-        <target state="translated">Versuchen Sie einen anderen oder allgemeineren Suchbegriff.</target>
-      </trans-unit>
-      <trans-unit id="search.facet.category" resname="search.facet.category">
-        <source>Category</source>
-        <target state="translated">Kategorie</target>
-      </trans-unit>
-      <trans-unit id="search.facet.tags" resname="search.facet.tags">
-        <source>Tags</source>
-        <target state="translated">Schlagwörter</target>
-      </trans-unit>
-      <trans-unit id="search.facet.source" resname="search.facet.source">
-        <source>Source</source>
-        <target state="translated">Quelle</target>
-      </trans-unit>
-      <trans-unit id="search.facet.tools" resname="search.facet.tools">
-        <source>Allowed tools</source>
-        <target state="translated">Erlaubte Werkzeuge</target>
-      </trans-unit>
-      <trans-unit id="search.facet.license" resname="search.facet.license">
-        <source>License</source>
-        <target state="translated">Lizenz</target>
-      </trans-unit>
-      <trans-unit id="search.facet.trust" resname="search.facet.trust">
-        <source>Trust</source>
-        <target state="translated">Vertrauensstufe</target>
-      </trans-unit>
-      <trans-unit id="search.facet.support" resname="search.facet.support">
-        <source>Support</source>
-        <target state="translated">Unterstützung</target>
-      </trans-unit>
-      <trans-unit id="search.sort.relevance" resname="search.sort.relevance">
-        <source>Relevance</source>
-        <target state="translated">Relevanz</target>
-      </trans-unit>
-      <trans-unit id="search.sort.title" resname="search.sort.title">
-        <source>Title</source>
-        <target state="translated">Titel</target>
-      </trans-unit>
-      <trans-unit id="search.sort.category" resname="search.sort.category">
-        <source>Category</source>
-        <target state="translated">Kategorie</target>
-      </trans-unit>
-      <trans-unit id="search.ter.placeholder" resname="search.ter.placeholder">
-        <source>Search for skills, tags, category …</source>
-        <target state="translated">Skills, Schlagwörter, Kategorien suchen …</target>
-      </trans-unit>
-      <trans-unit id="search.ter.exactMatch" resname="search.ter.exactMatch">
-        <source>exact match</source>
-        <target state="translated">exakter Treffer</target>
-      </trans-unit>
-      <trans-unit id="search.ter.activeFilters" resname="search.ter.activeFilters">
-        <source>Active filters</source>
-        <target state="translated">Aktive Filter</target>
-      </trans-unit>
-      <trans-unit id="search.ter.filters" resname="search.ter.filters">
-        <source>Filters</source>
-        <target state="translated">Filter</target>
-      </trans-unit>
-      <trans-unit id="search.ter.bySource" resname="search.ter.bySource">
-        <source>by %s</source>
-        <target state="translated">von %s</target>
       </trans-unit>
       <trans-unit id="tab.abilities" resname="tab.abilities">
         <source>Skillflow abilities</source>

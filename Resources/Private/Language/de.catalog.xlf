@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="de" datatype="plaintext" original="EXT:skillflow/Resources/Private/Language/catalog.xlf" date="2026-11-08T00:00:00Z" product-name="skillflow">
+    <header/>
+    <body>
+      <trans-unit id="group.proven-site-upgrade" resname="group.proven-site-upgrade">
+        <source>Proven site upgrade</source>
+        <target state="translated">Website-Upgrade mit Nachweis</target>
+      </trans-unit>
+      <trans-unit id="group.proven-site-upgrade.description" resname="group.proven-site-upgrade.description">
+        <source>Upgrade a whole site from 12/13 to 14.3 LTS in local DDEV and prove visitors see no difference.</source>
+        <target state="translated">Eine ganze Website lokal in DDEV von 12/13 auf 14.3 LTS heben und belegen, dass Besucher keinen Unterschied sehen.</target>
+      </trans-unit>
+      <trans-unit id="group.upgrade-planning" resname="group.upgrade-planning">
+        <source>Upgrade planning and migration</source>
+        <target state="translated">Upgrade-Planung und Migration</target>
+      </trans-unit>
+      <trans-unit id="group.upgrade-planning.description" resname="group.upgrade-planning.description">
+        <source>Estimate the effort, migrate step by step with a rollback point, learn from every run.</source>
+        <target state="translated">Den Aufwand schätzen, Schritt für Schritt mit Rücksprungpunkt migrieren, aus jedem Lauf lernen.</target>
+      </trans-unit>
+      <trans-unit id="group.code-migration" resname="group.code-migration">
+        <source>Automated code migration</source>
+        <target state="translated">Automatische Code-Migration</target>
+      </trans-unit>
+      <trans-unit id="group.code-migration.description" resname="group.code-migration.description">
+        <source>Tools move extension code to v14: Rector for PHP, Fractor for the rest, in batches.</source>
+        <target state="translated">Werkzeuge bringen Extension-Code auf v14: Rector für PHP, Fractor für den Rest, in Stapeln.</target>
+      </trans-unit>
+      <trans-unit id="group.content-modelling" resname="group.content-modelling">
+        <source>Content modelling and data</source>
+        <target state="translated">Inhaltsmodelle und Daten</target>
+      </trans-unit>
+      <trans-unit id="group.content-modelling.description" resname="group.content-modelling.description">
+        <source>Content types in YAML, safe imports and translations, news tagged in bulk.</source>
+        <target state="translated">Inhaltstypen in YAML, sichere Importe und Übersetzungen, News in einem Durchgang verschlagwortet.</target>
+      </trans-unit>
+      <trans-unit id="group.editor-experience" resname="group.editor-experience">
+        <source>Editor experience</source>
+        <target state="translated">Komfort für Redaktionen</target>
+      </trans-unit>
+      <trans-unit id="group.editor-experience.description" resname="group.editor-experience.description">
+        <source>Inline editing, staged publishing, card and board record views, a well-set rich-text editor.</source>
+        <target state="translated">Bearbeiten direkt auf der Seite, gestaffeltes Veröffentlichen, Karten- und Board-Ansichten für Datensätze, ein gut eingestellter Rich-Text-Editor.</target>
+      </trans-unit>
+      <trans-unit id="group.design-system" resname="group.design-system">
+        <source>Design system and frontend</source>
+        <target state="translated">Designsystem und Frontend</target>
+      </trans-unit>
+      <trans-unit id="group.design-system.description" resname="group.design-system.description">
+        <source>Design tokens become Fluid elements, a living style guide, a Vite build and v14 icons.</source>
+        <target state="translated">Design-Tokens werden Fluid-Elemente, dazu ein lebendiger Styleguide, ein Vite-Build und v14-Icons.</target>
+      </trans-unit>
+      <trans-unit id="group.v14-development" resname="group.v14-development">
+        <source>TYPO3 v14 development</source>
+        <target state="translated">Entwicklung für TYPO3 v14</target>
+      </trans-unit>
+      <trans-unit id="group.v14-development.description" resname="group.v14-development.description">
+        <source>Correct v14 code, TypoScript and backend components on a local DDEV instance.</source>
+        <target state="translated">Korrekter v14-Code, TypoScript und Backend-Komponenten auf einer lokalen DDEV-Instanz.</target>
+      </trans-unit>
+      <trans-unit id="group.accessibility" resname="group.accessibility">
+        <source>Accessibility</source>
+        <target state="translated">Barrierefreiheit</target>
+      </trans-unit>
+      <trans-unit id="group.accessibility.description" resname="group.accessibility.description">
+        <source>WCAG 2.2 AA scans traced to templates, fixed markup, a drafted statement.</source>
+        <target state="translated">WCAG-2.2-AA-Scans bis ins Template zurückverfolgt, korrigiertes Markup, ein Entwurf der Barrierefreiheitserklärung.</target>
+      </trans-unit>
+      <trans-unit id="group.search-seo-agents" resname="group.search-seo-agents">
+        <source>Search, SEO and agents</source>
+        <target state="translated">Suche, SEO und Agenten</target>
+      </trans-unit>
+      <trans-unit id="group.search-seo-agents.description" resname="group.search-seo-agents.description">
+        <source>Be found by Google, by your own site search and by AI agents.</source>
+        <target state="translated">Gefunden werden: von Google, von der eigenen Website-Suche und von KI-Agenten.</target>
+      </trans-unit>
+      <trans-unit id="group.security-operations" resname="group.security-operations">
+        <source>Security and operations</source>
+        <target state="translated">Sicherheit und Betrieb</target>
+      </trans-unit>
+      <trans-unit id="group.security-operations.description" resname="group.security-operations.description">
+        <source>Harden the installation, exact editor rights, the right scheduled jobs.</source>
+        <target state="translated">Die Installation härten, genaue Redaktionsrechte, die richtigen geplanten Aufgaben.</target>
+      </trans-unit>
+      <trans-unit id="group.testing-quality" resname="group.testing-quality">
+        <source>Testing and code quality</source>
+        <target state="translated">Tests und Codequalität</target>
+      </trans-unit>
+      <trans-unit id="group.testing-quality.description" resname="group.testing-quality.description">
+        <source>Bugs become failing tests, journeys run in a real browser, code is checked and cleaned.</source>
+        <target state="translated">Fehler werden zu fehlschlagenden Tests, Abläufe laufen in einem echten Browser, Code wird geprüft und aufgeräumt.</target>
+      </trans-unit>
+      <trans-unit id="group.release-open-source" resname="group.release-open-source">
+        <source>Release and open source</source>
+        <target state="translated">Release und Open Source</target>
+      </trans-unit>
+      <trans-unit id="group.release-open-source.description" resname="group.release-open-source.description">
+        <source>First public release, docs on docs.typo3.org, a hardened supply chain, Core contributions.</source>
+        <target state="translated">Erstes öffentliches Release, Doku auf docs.typo3.org, eine gehärtete Lieferkette, Beiträge zum Core.</target>
+      </trans-unit>
+      <trans-unit id="audience.site" resname="audience.site">
+        <source>Site builders</source>
+        <target state="translated">Website-Teams</target>
+      </trans-unit>
+      <trans-unit id="audience.extension" resname="audience.extension">
+        <source>Extension authors</source>
+        <target state="translated">Extension-Autor:innen</target>
+      </trans-unit>
+      <trans-unit id="audience.core" resname="audience.core">
+        <source>Core contributors</source>
+        <target state="translated">Core-Mitwirkende</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

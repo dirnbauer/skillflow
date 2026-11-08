@@ -28,9 +28,12 @@ vendor/bin/typo3 extension:setup
 vendor/bin/typo3 cache:flush
 ```
 
-For search, include the `webconsulting/skillflow-solr` site set and point
-`plugin.tx_solr.index.queue.skills.detailPageId` to a page with the
-`skillflow_skilldetail` content element.
+For search, include the `webconsulting/skillflow-solr` site set (after the
+sets that bring EXT:solr's default TypoScript) and set the site settings
+`skillflow.search.pages` (skills search pages, site theme) or
+`skillflow.search.typo3Pages` (typo3.org look), `skillflow.detailPage` (page
+with the `skillflow_skilldetail` content element) and, optionally,
+`skillflow.search.groupPages` (slug below which the topic pages live).
 
 ## Configure
 
@@ -64,10 +67,15 @@ environment variables.
 4. Run them in **Content → Skills** on the page selected in the page tree, or
    from the CLI. A single run opens its report; reports keep status, verdict,
    engine and the output rendered as Markdown.
-5. Publish the catalogue: the `skillflow_skilldetail` content element shows
-   one skill, sets the page title and description from it and follows the
-   site's theme tokens; the `webconsulting/skillflow-solr` set indexes and
-   lists the skills with translated facets.
+5. Publish the catalogue: the `webconsulting/skillflow-solr` set indexes the
+   skills and turns the Solr results plugin on the configured pages into a
+   skills search (results while typing, `/` and type-anywhere, arrow keys,
+   topics with one-line "pack" installs, publisher/audience/maintenance/
+   kind/licence filters, four orders), in the site's theme or the typo3.org
+   look. The `skillflow_skilldetail` content element shows one skill with
+   Command and Prompt install tabs, SKILL.md, facts and related skills. A
+   catalogue file (`Resources/Private/Catalog/typo3-skills.yaml`) adds
+   topics, publishers, evals and install commands.
 
 ```bash
 vendor/bin/typo3 skillflow:skills:sync --all                  # every enabled source

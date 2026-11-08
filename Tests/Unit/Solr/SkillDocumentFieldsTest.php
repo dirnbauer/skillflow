@@ -6,6 +6,9 @@ namespace Webconsulting\Skillflow\Tests\Unit\Solr;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Webconsulting\Skillflow\Domain\Catalog\SkillCatalog;
+use Webconsulting\Skillflow\Domain\Catalog\SkillFacts;
+use Webconsulting\Skillflow\Service\SkillCatalogRepository;
 use Webconsulting\Skillflow\Solr\SkillDocumentFields;
 
 final class SkillDocumentFieldsTest extends TestCase
@@ -68,8 +71,8 @@ final class SkillDocumentFieldsTest extends TestCase
     public static function licences(): iterable
     {
         yield 'plain' => ['MIT', 'MIT'];
-        yield 'dual with a slash' => ['MIT / CC-BY-SA-4.0', 'MIT / CC-BY-SA-4.0'];
-        yield 'note after a semicolon' => ['MIT / CC-BY-SA-4.0; adapted sources retain their original licences', 'MIT / CC-BY-SA-4.0'];
+        yield 'split licensing with a slash is SPDX AND' => ['MIT / CC-BY-SA-4.0', 'MIT AND CC-BY-SA-4.0'];
+        yield 'note after a semicolon' => ['MIT / CC-BY-SA-4.0; adapted sources retain their original licences', 'MIT AND CC-BY-SA-4.0'];
         yield 'parentheses and a sentence' => ['(MIT AND CC-BY-SA-4.0). See LICENSE-MIT and LICENSE-CC-BY-SA-4.0', 'MIT AND CC-BY-SA-4.0'];
         yield 'parentheses only' => ['(MIT AND CC-BY-SA-4.0)', 'MIT AND CC-BY-SA-4.0'];
         yield 'versions keep their dots' => ['Apache-2.0 OR CC-BY-SA-4.0', 'Apache-2.0 OR CC-BY-SA-4.0'];
@@ -131,5 +134,61 @@ final class SkillDocumentFieldsTest extends TestCase
             'category_stringS' => 'TYPO3',
             'tags_stringM' => ['content', 'search'],
         ], $this->fields->fromRecord($record));
+    }
+    public function testSkillTypeIsTheLifecycleClassOnly(): void
+    {
+        self::assertSame(['skillType_stringS' => 'preference'], $this->fields->fromRecord(['raw_frontmatter' => '{"metadata":{"skill_type":"Preference"}}']));
+        self::assertSame([], $this->fields->fromRecord(['raw_frontmatter' => '{"metadata":{"skill_type":"other"}}']));
+    }
+
+    public function testSearchFieldsLetANameBeFoundWhileTyped(): void
+    {
+        self::assertSame([
+            'skillWords_stringEdgeNgramM' => ['typo3', 'upgrade', 'run'],
+            'skillPrefix_textEdgeNgramM' => ['typo3 upgrade run', 'Upgrades a site.', 'Proven site upgrade'],
+        ], $this->fields->searchFields(['name' => 'typo3-upgrade-run', 'description' => ' Upgrades a site. '], 'Proven site upgrade'));
+        self::assertSame([], $this->fields->searchFields([]));
+    }
+
+    public function testCatalogFieldsCarryTopicPublisherEvalsAndDay(): void
+    {
+        $catalog = $this->catalog();
+        $fields = $this->fields->catalogFields($catalog->skills['run'], $catalog, 'Upgrades');
+
+        self::assertSame('upgrades', $fields['skillGroup_stringS']);
+        self::assertSame('Upgrades', $fields['skillGroupTitle_stringS']);
+        self::assertSame('1', $fields['skillSuperfeature_intS']);
+        self::assertSame('webconsulting', $fields['skillOwner_stringS']);
+        self::assertSame('maintained', $fields['skillOrigin_stringS']);
+        self::assertSame(['site', 'extension'], $fields['skillAudience_stringM']);
+        self::assertSame(['8', '3'], [$fields['skillEvals_intS'], $fields['skillEvalsReviewed_intS']]);
+        self::assertSame('2026-10-31T00:00:00Z', $fields['skillUpdated_dateS']);
+        self::assertSame('MIT AND CC-BY-SA-4.0', $fields['license_stringS'], 'the collection licence for its own skill');
+    }
+
+    public function testCatalogLicenceNeverOverridesTheDeclaredOneOrInventsOneForVendoredSkills(): void
+    {
+        $catalog = $this->catalog();
+
+        self::assertArrayNotHasKey('license_stringS', $this->fields->catalogFields($catalog->skills['run'], $catalog, '', 'Apache-2.0'));
+        self::assertArrayNotHasKey('license_stringS', $this->fields->catalogFields($catalog->skills['vendored'], $catalog, ''));
+        self::assertSame('https://github.com/acme/vendored', $this->fields->catalogFields($catalog->skills['vendored'], $catalog, '')['skillUpstream_stringS']);
+    }
+
+    private function catalog(): SkillCatalog
+    {
+        $catalog = SkillCatalogRepository::fromArray([
+            'repository' => 'https://github.com/acme/skills',
+            'license' => 'MIT / CC-BY-SA-4.0',
+            'groups' => ['upgrades' => ['title' => 'Upgrades']],
+            'skills' => [
+                'run' => ['group' => 'upgrades', 'superfeature' => true, 'audience' => ['site', 'extension'], 'owner' => 'webconsulting', 'evals' => ['cases' => 8, 'reviewed' => 3], 'updated' => '2026-10-31'],
+                'vendored' => ['origin' => 'vendored', 'owner' => 'Acme', 'upstream' => 'https://github.com/acme/vendored'],
+            ],
+        ]);
+        self::assertNotNull($catalog);
+        self::assertInstanceOf(SkillFacts::class, $catalog->skills['run']);
+
+        return $catalog;
     }
 }

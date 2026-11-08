@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" datatype="plaintext" original="EXT:skillflow/Resources/Private/Language/search.xlf" date="2026-11-08T00:00:00Z" product-name="skillflow">
+    <header/>
+    <body>
+      <trans-unit id="form.label" resname="form.label">
+        <source>Search the skills</source>
+      </trans-unit>
+      <trans-unit id="form.placeholder" resname="form.placeholder">
+        <source>Search by name, task or topic</source>
+      </trans-unit>
+      <trans-unit id="form.submit" resname="form.submit">
+        <source>Search</source>
+      </trans-unit>
+      <trans-unit id="keys.focus" resname="keys.focus">
+        <source>search</source>
+      </trans-unit>
+      <trans-unit id="keys.move" resname="keys.move">
+        <source>move</source>
+      </trans-unit>
+      <trans-unit id="keys.open" resname="keys.open">
+        <source>open</source>
+      </trans-unit>
+      <trans-unit id="keys.clear" resname="keys.clear">
+        <source>clear</source>
+      </trans-unit>
+      <trans-unit id="status.none" resname="status.none">
+        <source>No skills for ‘%s’</source>
+      </trans-unit>
+      <trans-unit id="status.query.one" resname="status.query.one">
+        <source>1 skill for ‘%s’</source>
+      </trans-unit>
+      <trans-unit id="status.query.other" resname="status.query.other">
+        <source>%1$s skills for ‘%2$s’</source>
+      </trans-unit>
+      <trans-unit id="status.count.one" resname="status.count.one">
+        <source>1 skill</source>
+      </trans-unit>
+      <trans-unit id="status.count.other" resname="status.count.other">
+        <source>%s skills</source>
+      </trans-unit>
+      <trans-unit id="status.corrected" resname="status.corrected">
+        <source>Nothing found for ‘%1$s’, so these are the skills for ‘%2$s’.</source>
+      </trans-unit>
+      <trans-unit id="topics.label" resname="topics.label">
+        <source>Topics</source>
+      </trans-unit>
+      <trans-unit id="topics.all" resname="topics.all">
+        <source>All</source>
+      </trans-unit>
+      <trans-unit id="filters.label" resname="filters.label">
+        <source>Filters</source>
+      </trans-unit>
+      <trans-unit id="filters.active" resname="filters.active">
+        <source>Active filters</source>
+      </trans-unit>
+      <trans-unit id="filters.clear" resname="filters.clear">
+        <source>Clear filters</source>
+      </trans-unit>
+      <trans-unit id="filter.active" resname="filter.active">
+        <source>active</source>
+      </trans-unit>
+      <trans-unit id="filter.selected" resname="filter.selected">
+        <source>selected</source>
+      </trans-unit>
+      <trans-unit id="filter.remove" resname="filter.remove">
+        <source>Remove filter</source>
+      </trans-unit>
+      <trans-unit id="agent.label" resname="agent.label">
+        <source>Commands for</source>
+      </trans-unit>
+      <trans-unit id="sort.label" resname="sort.label">
+        <source>Sort: %s</source>
+      </trans-unit>
+      <trans-unit id="sort.relevance" resname="sort.relevance">
+        <source>Best match</source>
+      </trans-unit>
+      <trans-unit id="sort.name" resname="sort.name">
+        <source>Name</source>
+      </trans-unit>
+      <trans-unit id="sort.updated" resname="sort.updated">
+        <source>Recently updated</source>
+      </trans-unit>
+      <trans-unit id="sort.showcase" resname="sort.showcase">
+        <source>Superfeatures first</source>
+      </trans-unit>
+      <trans-unit id="results.heading" resname="results.heading">
+        <source>Skills</source>
+      </trans-unit>
+      <trans-unit id="empty.title" resname="empty.title">
+        <source>No skills match ‘%s’.</source>
+      </trans-unit>
+      <trans-unit id="empty.filtered" resname="empty.filtered">
+        <source>No skills match these filters.</source>
+      </trans-unit>
+      <trans-unit id="empty.didYouMean" resname="empty.didYouMean">
+        <source>Did you mean</source>
+      </trans-unit>
+      <trans-unit id="empty.hint" resname="empty.hint">
+        <source>Try fewer or other words, or browse a topic:</source>
+      </trans-unit>
+      <trans-unit id="empty.reset" resname="empty.reset">
+        <source>Show all skills</source>
+      </trans-unit>
+      <trans-unit id="packs.title" resname="packs.title">
+        <source>Install a whole topic</source>
+      </trans-unit>
+      <trans-unit id="packs.text" resname="packs.text">
+        <source>Each topic installs with one line: it clones the repository once and links the skill folders into your agent's skills folder.</source>
+      </trans-unit>
+      <trans-unit id="pack.eyebrow" resname="pack.eyebrow">
+        <source>Pack · %s skills</source>
+      </trans-unit>
+      <trans-unit id="pack.copy" resname="pack.copy">
+        <source>Copy the install command for %s</source>
+      </trans-unit>
+      <trans-unit id="pack.show" resname="pack.show">
+        <source>Show the %s skills</source>
+      </trans-unit>
+      <trans-unit id="pack.page" resname="pack.page">
+        <source>About this topic</source>
+      </trans-unit>
+      <trans-unit id="copy.button" resname="copy.button">
+        <source>Copy</source>
+      </trans-unit>
+      <trans-unit id="copy.done" resname="copy.done">
+        <source>Copied</source>
+      </trans-unit>
+      <trans-unit id="row.by" resname="row.by">
+        <source>by %s</source>
+      </trans-unit>
+      <trans-unit id="row.snippet" resname="row.snippet">
+        <source>In SKILL.md:</source>
+      </trans-unit>
+      <trans-unit id="row.facts" resname="row.facts">
+        <source>Facts</source>
+      </trans-unit>
+      <trans-unit id="badge.superfeature" resname="badge.superfeature">
+        <source>Superfeature</source>
+      </trans-unit>
+      <trans-unit id="badge.evals" resname="badge.evals">
+        <source>Evals: %s reviewed</source>
+      </trans-unit>
+      <trans-unit id="origin.maintained" resname="origin.maintained">
+        <source>Maintained here</source>
+      </trans-unit>
+      <trans-unit id="origin.vendored" resname="origin.vendored">
+        <source>Vendored</source>
+      </trans-unit>
+      <trans-unit id="kind.capability" resname="kind.capability">
+        <source>Capability</source>
+      </trans-unit>
+      <trans-unit id="kind.preference" resname="kind.preference">
+        <source>Preference</source>
+      </trans-unit>
+      <trans-unit id="pagination.label" resname="pagination.label">
+        <source>Pages</source>
+      </trans-unit>
+      <trans-unit id="pagination.previous" resname="pagination.previous">
+        <source>Previous</source>
+      </trans-unit>
+      <trans-unit id="pagination.next" resname="pagination.next">
+        <source>Next</source>
+      </trans-unit>
+      <trans-unit id="pagination.page" resname="pagination.page">
+        <source>Page %s</source>
+      </trans-unit>
+      <trans-unit id="facet.group" resname="facet.group">
+        <source>Topic</source>
+      </trans-unit>
+      <trans-unit id="facet.owner" resname="facet.owner">
+        <source>Publisher</source>
+      </trans-unit>
+      <trans-unit id="facet.audience" resname="facet.audience">
+        <source>Audience</source>
+      </trans-unit>
+      <trans-unit id="facet.origin" resname="facet.origin">
+        <source>Maintenance</source>
+      </trans-unit>
+      <trans-unit id="facet.kind" resname="facet.kind">
+        <source>Kind</source>
+      </trans-unit>
+      <trans-unit id="facet.license" resname="facet.license">
+        <source>Licence</source>
+      </trans-unit>
+      <trans-unit id="typo3.eyebrow" resname="typo3.eyebrow">
+        <source>Agent skills for TYPO3</source>
+      </trans-unit>
+      <trans-unit id="typo3.title" resname="typo3.title">
+        <source>Find the skill for your next TYPO3 task</source>
+      </trans-unit>
+      <trans-unit id="typo3.subtitle" resname="typo3.subtitle">
+        <source>Open-source skills that teach coding agents TYPO3 v14: upgrades, content, accessibility, search, security and releases.</source>
+      </trans-unit>
+      <trans-unit id="detail.back" resname="detail.back">
+        <source>All skills</source>
+      </trans-unit>
+      <trans-unit id="detail.breadcrumb" resname="detail.breadcrumb">
+        <source>Skill</source>
+      </trans-unit>
+      <trans-unit id="detail.install" resname="detail.install">
+        <source>Install</source>
+      </trans-unit>
+      <trans-unit id="detail.tab.command" resname="detail.tab.command">
+        <source>Command</source>
+      </trans-unit>
+      <trans-unit id="detail.tab.prompt" resname="detail.tab.prompt">
+        <source>Prompt</source>
+      </trans-unit>
+      <trans-unit id="detail.install.one" resname="detail.install.one">
+        <source>Only this skill:</source>
+      </trans-unit>
+      <trans-unit id="detail.install.all" resname="detail.install.all">
+        <source>All skills of the collection, for every supported agent:</source>
+      </trans-unit>
+      <trans-unit id="detail.install.copy" resname="detail.install.copy">
+        <source>Copy the command</source>
+      </trans-unit>
+      <trans-unit id="detail.prompt.text" resname="detail.prompt.text">
+        <source>Install the agent skill ‘%1$s’ from %2$s: clone the repository, link the whole folder skills/%1$s (not only SKILL.md) into my agent's skills folder, and tell me how to call it.</source>
+      </trans-unit>
+      <trans-unit id="detail.prompt.hint" resname="detail.prompt.hint">
+        <source>Paste this into your agent's chat. The agent needs shell access.</source>
+      </trans-unit>
+      <trans-unit id="detail.prompt.copy" resname="detail.prompt.copy">
+        <source>Copy the prompt</source>
+      </trans-unit>
+      <trans-unit id="detail.url.note" resname="detail.url.note">
+        <source>Pasting the raw SKILL.md URL into a chat gives the model only that text, without the scripts and references of the folder.</source>
+      </trans-unit>
+      <trans-unit id="detail.call.title" resname="detail.call.title">
+        <source>Call it</source>
+      </trans-unit>
+      <trans-unit id="detail.call.text" resname="detail.call.text">
+        <source>Describe your task and the agent picks the skill by its description, or call it by name:</source>
+      </trans-unit>
+      <trans-unit id="detail.facts" resname="detail.facts">
+        <source>Facts</source>
+      </trans-unit>
+      <trans-unit id="detail.fact.topic" resname="detail.fact.topic">
+        <source>Topic</source>
+      </trans-unit>
+      <trans-unit id="detail.fact.owner" resname="detail.fact.owner">
+        <source>Publisher</source>
+      </trans-unit>
+      <trans-unit id="detail.fact.maintenance" resname="detail.fact.maintenance">
+        <source>Maintenance</source>
+      </trans-unit>
+      <trans-unit id="detail.fact.kind" resname="detail.fact.kind">
+        <source>Kind</source>
+      </trans-unit>
+      <trans-unit id="detail.fact.audience" resname="detail.fact.audience">
+        <source>Audience</source>
+      </trans-unit>
+      <trans-unit id="detail.fact.version" resname="detail.fact.version">
+        <source>Version</source>
+      </trans-unit>
+      <trans-unit id="detail.fact.license" resname="detail.fact.license">
+        <source>Licence</source>
+      </trans-unit>
+      <trans-unit id="detail.fact.evals" resname="detail.fact.evals">
+        <source>Evals</source>
+      </trans-unit>
+      <trans-unit id="detail.fact.evals.value" resname="detail.fact.evals.value">
+        <source>%1$s cases, %2$s reviewed</source>
+      </trans-unit>
+      <trans-unit id="detail.fact.updated" resname="detail.fact.updated">
+        <source>Last change</source>
+      </trans-unit>
+      <trans-unit id="detail.fact.source" resname="detail.fact.source">
+        <source>Source</source>
+      </trans-unit>
+      <trans-unit id="detail.fact.upstream" resname="detail.fact.upstream">
+        <source>Upstream</source>
+      </trans-unit>
+      <trans-unit id="detail.fact.tools" resname="detail.fact.tools">
+        <source>Allowed tools</source>
+      </trans-unit>
+      <trans-unit id="detail.fact.abilities" resname="detail.fact.abilities">
+        <source>Abilities</source>
+      </trans-unit>
+      <trans-unit id="detail.source.link" resname="detail.source.link">
+        <source>View the source</source>
+      </trans-unit>
+      <trans-unit id="detail.improve" resname="detail.improve">
+        <source>Suggest an improvement</source>
+      </trans-unit>
+      <trans-unit id="detail.improve.upstream" resname="detail.improve.upstream">
+        <source>Suggest an improvement upstream</source>
+      </trans-unit>
+      <trans-unit id="detail.related" resname="detail.related">
+        <source>More in %s</source>
+      </trans-unit>
+      <trans-unit id="detail.related.page" resname="detail.related.page">
+        <source>About this topic</source>
+      </trans-unit>
+      <trans-unit id="detail.body" resname="detail.body">
+        <source>SKILL.md</source>
+      </trans-unit>
+      <trans-unit id="detail.more" resname="detail.more">
+        <source>Show more</source>
+      </trans-unit>
+      <trans-unit id="detail.less" resname="detail.less">
+        <source>Show less</source>
+      </trans-unit>
+      <trans-unit id="detail.id" resname="detail.id">
+        <source>Skill ID</source>
+      </trans-unit>
+      <trans-unit id="detail.notfound.title" resname="detail.notfound.title">
+        <source>Skill not found</source>
+      </trans-unit>
+      <trans-unit id="detail.notfound.text" resname="detail.notfound.text">
+        <source>This skill does not exist or is not enabled.</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

@@ -1,0 +1,250 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:s="http://typo3.org/ns/ApacheSolrForTypo3/Solr/ViewHelpers"
+    xmlns:sf="http://typo3.org/ns/Webconsulting/Skillflow/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+<f:comment>
+    The skills search, shared by both looks ("site": the theme's tokens,
+    "typo3": the typo3.org look). Works as plain Solr search without
+    JavaScript; skills-search.js adds results while typing, "/" and
+    type-anywhere, Esc, arrow keys, and loads filters in place.
+
+    Structure: form, live status line (outside the part that is replaced),
+    then [data-skillflow-search-results]: topics, filters and sorting,
+    active filters, the selected topic as a pack, the list or the empty
+    state, paging, and the packs of all topics on the unfiltered list.
+</f:comment>
+<f:argument name="resultSet" type="object"/>
+<f:argument name="pagination" type="object" optional="true"/>
+<f:argument name="currentPage" type="mixed" optional="true" default="1"/>
+<f:argument name="searchPageUid" type="mixed" optional="true" default="0"/>
+<f:argument name="pluginNamespace" type="string" optional="true" default="tx_solr"/>
+<f:argument name="look" type="string" optional="true" default="site"/>
+<f:variable name="ll" value="LLL:EXT:skillflow/Resources/Private/Language/search.xlf:" />
+
+<f:variable name="query" value="{resultSet.usedQuery.rawSearchTerm -> f:format.trim()}" />
+<f:if condition="{query} == '*'"><f:variable name="query" value="" /></f:if>
+<f:variable name="count" value="{resultSet.allResultCount}" />
+<f:variable name="groupFacet" value="{resultSet.facets.group}" />
+<f:variable name="selectedGroup" value="" />
+<f:if condition="{groupFacet}">
+    <f:for each="{groupFacet.allFacetItems.selected}" as="item"><f:variable name="selectedGroup" value="{item.value}" /></f:for>
+</f:if>
+<f:variable name="filtered" value="{resultSet.facets.used -> f:count()}" />
+
+<div class="sf-search sf-search--{look}" data-skillflow-search="" data-skillflow-min-chars="2">
+    <s:searchForm id="sf-search-form-{searchPageUid}" pageUid="{searchPageUid}" addSuggestUrl="0" class="sf-search__form" role="search" data-skillflow-search-form="1">
+        <f:for each="{existingParameters}" key="name" as="value">
+            <f:if condition="{name} != '[page]'"><input type="hidden" name="{pluginNamespace}{name}" value="{value}" /></f:if>
+        </f:for>
+        <label class="sf-search__label" for="sf-q-{searchPageUid}"><f:translate key="{ll}form.label" /></label>
+        <div class="sf-search__field">
+            <f:render partial="Skills/Icon" arguments="{name: 'search', class: 'sf-icon sf-search__icon'}" />
+            <input class="sf-search__input" id="sf-q-{searchPageUid}" type="search" name="{pluginNamespace}[q]" value="{query}" placeholder="{f:translate(key: '{ll}form.placeholder')}" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" maxlength="100" aria-describedby="sf-keys-{searchPageUid}" data-skillflow-search-input="" />
+            <kbd class="sf-search__kbd" aria-hidden="true">/</kbd>
+            <button class="sf-search__submit" type="submit"><f:translate key="{ll}form.submit" /></button>
+        </div>
+        <p class="sf-search__keys" id="sf-keys-{searchPageUid}">
+            <span><kbd>/</kbd> <f:translate key="{ll}keys.focus" /></span>
+            <span><kbd>↑</kbd><kbd>↓</kbd> <f:translate key="{ll}keys.move" /></span>
+            <span><kbd>Enter</kbd> <f:translate key="{ll}keys.open" /></span>
+            <span><kbd>Esc</kbd> <f:translate key="{ll}keys.clear" /></span>
+        </p>
+    </s:searchForm>
+
+    <f:comment>Announces the new count after results load in place (skills-search.js); empty on load.</f:comment>
+    <p class="sf-sr-only" role="status" aria-live="polite" aria-atomic="true" data-skillflow-search-live=""></p>
+
+    <div class="sf-search__region" data-skillflow-search-results="" aria-busy="false">
+        <div class="sf-search__aside">
+        <f:if condition="{groupFacet.options -> f:count()}">
+            <nav class="sf-topics" aria-label="{f:translate(key: '{ll}topics.label')}">
+                <ul class="sf-topics__list" role="list">
+                    <li>
+                        <f:if condition="{selectedGroup}">
+                            <f:then><a class="sf-chip" href="{s:uri.facet.removeFacet(facet: groupFacet)}" data-skillflow-nav="" data-skillflow-key="group:*"><f:translate key="{ll}topics.all" /></a></f:then>
+                            <f:else><a class="sf-chip sf-chip--current" href="{s:uri.facet.removeFacet(facet: groupFacet)}" data-skillflow-nav="" data-skillflow-key="group:*" aria-current="true"><f:translate key="{ll}topics.all" /></a></f:else>
+                        </f:if>
+                    </li>
+                    <f:for each="{sf:catalog.sortOptions(options: groupFacet.options)}" as="option">
+                        <li>
+                            <f:if condition="{option.selected}">
+                                <f:then><a class="sf-chip sf-chip--current" href="{s:uri.facet.removeFacet(facet: groupFacet)}" data-skillflow-nav="" data-skillflow-key="group:{option.value}" aria-current="true">{option.label} <span class="sf-chip__count">{option.documentCount}</span></a></f:then>
+                                <f:else><a class="sf-chip" href="{s:uri.facet.setFacetItem(facet: groupFacet, facetItem: option)}" data-skillflow-nav="" data-skillflow-key="group:{option.value}">{option.label} <span class="sf-chip__count">{option.documentCount}</span></a></f:else>
+                            </f:if>
+                        </li>
+                    </f:for>
+                </ul>
+            </nav>
+        </f:if>
+
+            <f:if condition="{resultSet.facets.available -> f:count()}">
+                <div class="sf-filters" role="group" aria-label="{f:translate(key: '{ll}filters.label')}">
+                    <span class="sf-filters__label"><f:render partial="Skills/Icon" arguments="{name: 'filter'}" /><f:translate key="{ll}filters.label" /></span>
+                    <f:for each="{resultSet.facets.available}" as="facet">
+                        <f:if condition="{facet.name} != 'group'">
+                            <f:render partial="Skills/Filter" arguments="{facet: facet, look: look}" />
+                        </f:if>
+                    </f:for>
+                </div>
+            </f:if>
+        </div>
+
+        <div class="sf-search__main">
+            <div class="sf-toolbar">
+            <p class="sf-search__status" data-skillflow-search-status=""><f:spaceless>
+                <f:if condition="{query}">
+                    <f:then>
+                        <f:if condition="{count} == 0">
+                            <f:then><f:translate key="{ll}status.none" arguments="{0: query}" /></f:then>
+                            <f:else if="{count} == 1"><f:translate key="{ll}status.query.one" arguments="{0: query}" /></f:else>
+                            <f:else><f:translate key="{ll}status.query.other" arguments="{0: count, 1: query}" /></f:else>
+                        </f:if>
+                    </f:then>
+                    <f:else>
+                        <f:if condition="{count} == 1">
+                            <f:then><f:translate key="{ll}status.count.one" /></f:then>
+                            <f:else><f:translate key="{ll}status.count.other" arguments="{0: count}" /></f:else>
+                        </f:if>
+                    </f:else>
+                </f:if>
+            </f:spaceless></p>
+                <div class="sf-toolbar__end">
+                <f:variable name="clients" value="{sf:catalog.clients()}" />
+                <f:if condition="{clients -> f:count()} > 1">
+                    <label class="sf-agent" hidden="hidden" data-skillflow-agent="">
+                        <span class="sf-agent__label"><f:translate key="{ll}agent.label" /></span>
+                        <select class="sf-agent__select" data-skillflow-agent-select="" data-skillflow-agent-default="{clients.0.directory}">
+                            <f:for each="{clients}" as="client"><option value="{client.directory}">{client.label}</option></f:for>
+                        </select>
+                    </label>
+                </f:if>
+                <f:if condition="{resultSet.sortings -> f:count()}">
+                    <f:variable name="sortLabel" value="" />
+                    <f:for each="{resultSet.sortings}" as="sorting">
+                        <f:if condition="{sorting.selected}"><f:variable name="sortLabel" value="{sorting.label}" /></f:if>
+                    </f:for>
+                    <f:if condition="!{sortLabel}"><f:variable name="sortLabel"><f:translate key="{ll}sort.relevance" /></f:variable></f:if>
+                    <details class="sf-filter sf-sort" data-skillflow-filter="sort">
+                        <summary class="sf-filter__button">
+                            <f:render partial="Skills/Icon" arguments="{name: 'sort'}" />
+                            <span class="sf-filter__label"><f:translate key="{ll}sort.label" arguments="{0: sortLabel}" /></span>
+                            <f:render partial="Skills/Icon" arguments="{name: 'chevron-down', class: 'sf-icon sf-filter__chevron'}" />
+                        </summary>
+                        <div class="sf-filter__panel sf-filter__panel--end">
+                            <ul class="sf-filter__options" role="list">
+                                <f:for each="{resultSet.sortings}" as="sorting">
+                                    <li>
+                                        <f:if condition="{sorting.isResetOption}">
+                                            <f:then><f:variable name="href" value="{s:uri.sorting.removeSorting()}" /></f:then>
+                                            <f:else><f:variable name="href" value="{s:uri.sorting.setSorting(sortingName: sorting.name, sortingDirection: sorting.direction)}" /></f:else>
+                                        </f:if>
+                                        <f:if condition="{sorting.label} == {sortLabel}">
+                                            <f:then>
+                                                <a class="sf-option sf-option--selected" href="{href}" data-skillflow-nav="" data-skillflow-key="sort:{sorting.name}" rel="nofollow" aria-current="true">
+                                                    <span class="sf-option__box sf-option__box--radio" aria-hidden="true"><f:render partial="Skills/Icon" arguments="{name: 'check', class: 'sf-icon sf-option__check'}" /></span>
+                                                    <span class="sf-option__label">{sorting.label}</span>
+                                                </a>
+                                            </f:then>
+                                            <f:else>
+                                                <a class="sf-option" href="{href}" data-skillflow-nav="" data-skillflow-key="sort:{sorting.name}" rel="nofollow">
+                                                    <span class="sf-option__box sf-option__box--radio" aria-hidden="true"><f:render partial="Skills/Icon" arguments="{name: 'check', class: 'sf-icon sf-option__check'}" /></span>
+                                                    <span class="sf-option__label">{sorting.label}</span>
+                                                </a>
+                                            </f:else>
+                                        </f:if>
+                                    </li>
+                                </f:for>
+                            </ul>
+                        </div>
+                    </details>
+                </f:if>
+                </div>
+            </div>
+
+        <f:variable name="activeFilters" value="0" />
+        <f:for each="{resultSet.facets.used}" as="facet"><f:if condition="{facet.name} != 'group'"><f:variable name="activeFilters" value="1" /></f:if></f:for>
+        <f:if condition="{activeFilters}">
+            <ul class="sf-active" role="list" aria-label="{f:translate(key: '{ll}filters.active')}">
+                <f:for each="{resultSet.facets.used}" as="facet">
+                    <f:if condition="{facet.name} != 'group'">
+                        <f:for each="{facet.allFacetItems.selected}" as="item">
+                            <li><a class="sf-active__chip" href="{s:uri.facet.removeFacetItem(facet: facet, facetItem: item)}" data-skillflow-nav="" rel="nofollow"><span class="sf-sr-only"><f:translate key="{ll}filter.remove" />: </span>{facet.label}: {item.label}<f:render partial="Skills/Icon" arguments="{name: 'x'}" /></a></li>
+                        </f:for>
+                    </f:if>
+                </f:for>
+                <li><a class="sf-active__clear" href="{s:uri.facet.removeAllFacets()}" data-skillflow-nav="" rel="nofollow"><f:translate key="{ll}filters.clear" /></a></li>
+            </ul>
+        </f:if>
+
+        <f:if condition="{selectedGroup}">
+            <f:variable name="group" value="{sf:catalog.group(key: selectedGroup)}" />
+            <f:if condition="{group}">
+                <f:render partial="Skills/Pack" arguments="{group: group}" />
+            </f:if>
+        </f:if>
+
+        <f:if condition="{resultSet.isAutoCorrected}">
+            <p class="sf-search__note"><f:translate key="{ll}status.corrected" arguments="{0: resultSet.initialQueryString, 1: resultSet.correctedQueryString}" /></p>
+        </f:if>
+
+        <h2 class="sf-sr-only" id="sf-results-{searchPageUid}"><f:translate key="{ll}results.heading" /></h2>
+        <f:if condition="{count}">
+            <f:then>
+                <ol class="sf-list" role="list" aria-labelledby="sf-results-{searchPageUid}" data-skillflow-results-list="">
+                    <f:for each="{resultSet.searchResults}" as="document" iteration="iteration">
+                        <f:render partial="Skills/Row" arguments="{document: document, resultSet: resultSet, rank: '{iteration.index + pagination.startRecordNumber}', query: query}" />
+                    </f:for>
+                </ol>
+                <f:if condition="{pagination.lastPageNumber} > 1">
+                    <f:render partial="Skills/Pagination" arguments="{pagination: pagination, currentPage: currentPage}" />
+                </f:if>
+            </f:then>
+            <f:else>
+                <div class="sf-empty">
+                    <f:render partial="Skills/Icon" arguments="{name: 'search', class: 'sf-icon sf-empty__icon'}" />
+                    <p class="sf-empty__title">
+                        <f:if condition="{query}">
+                            <f:then><f:translate key="{ll}empty.title" arguments="{0: query}" /></f:then>
+                            <f:else><f:translate key="{ll}empty.filtered" /></f:else>
+                        </f:if>
+                    </p>
+                    <f:if condition="{resultSet.hasSpellCheckingSuggestions}">
+                        <p class="sf-empty__text">
+                            <f:translate key="{ll}empty.didYouMean" />
+                            <f:for each="{resultSet.spellCheckingSuggestions}" as="suggestion" iteration="suggestionIteration">
+                                <f:link.page pageUid="{searchPageUid}" additionalParams="{tx_solr: {q: suggestion.fullQuery}}" class="sf-empty__suggestion" data-skillflow-nav="1">{suggestion.fullQuery}</f:link.page><f:if condition="!{suggestionIteration.isLast}">, </f:if>
+                            </f:for>?
+                        </p>
+                    </f:if>
+                    <p class="sf-empty__text"><f:translate key="{ll}empty.hint" /></p>
+                    <ul class="sf-topics__list sf-empty__topics" role="list">
+                        <f:for each="{sf:catalog.groups()}" as="group">
+                            <li><f:link.page pageUid="{searchPageUid}" additionalParams="{tx_solr: {filter: {0: 'group:{group.key}'}}}" class="sf-chip" data-skillflow-nav="1">{group.title}</f:link.page></li>
+                        </f:for>
+                    </ul>
+                    <p class="sf-empty__text"><f:link.page pageUid="{searchPageUid}" class="sf-empty__reset" data-skillflow-nav="1"><f:translate key="{ll}empty.reset" /></f:link.page></p>
+                </div>
+            </f:else>
+        </f:if>
+
+        <f:if condition="!{query} && !{filtered} && {count}">
+            <f:variable name="groups" value="{sf:catalog.groups()}" />
+            <f:if condition="{groups}">
+                <section class="sf-packs" aria-labelledby="sf-packs-{searchPageUid}">
+                    <div class="sf-packs__head">
+                        <h2 class="sf-packs__title" id="sf-packs-{searchPageUid}"><f:translate key="{ll}packs.title" /></h2>
+                        <p class="sf-packs__text"><f:translate key="{ll}packs.text" /></p>
+                    </div>
+                    <div class="sf-packs__grid">
+                        <f:for each="{groups}" as="group">
+                            <f:variable name="filterUrl"><f:uri.page pageUid="{searchPageUid}" additionalParams="{tx_solr: {filter: {0: 'group:{group.key}'}}}" /></f:variable>
+                            <f:render partial="Skills/Pack" arguments="{group: group, compact: 1, filterUrl: filterUrl}" />
+                        </f:for>
+                    </div>
+                </section>
+            </f:if>
+        </f:if>
+        </div>
+    </div>
+</div>
+</html>

@@ -76,24 +76,48 @@ Rules
 
 ..  _usage-catalogue:
 
-Search catalogue
-================
+Skills search
+=============
 
 The :yaml:`webconsulting/skillflow-solr` site set indexes active nr_llm skills
-into the ``skills`` index queue (see :ref:`installation-solr`).
+into the ``skills`` index queue (see :ref:`installation-solr`) and turns the
+Solr results plugin on the pages of :yaml:`skillflow.search.pages` and
+:yaml:`skillflow.search.typo3Pages` into a skills search. Two looks share one
+markup: the site's theme (shadcn/ui tokens such as ``--card``,
+``--muted-foreground``, ``--primary``, ``--ring``; Desiderio defines them) and
+the look of the typo3.org relaunch (Source Sans 3, self-hosted under the SIL
+Open Font License, orange and petrol). Editors may also pick either template
+per plugin (:guilabel:`Options > Custom Template`).
 
-*   Category and tags come from the editable catalogue fields on the nr_llm
-    record, falling back to front matter; license and version come from front
-    matter.
-*   Source, allowed-tool, license, trust and support facets are available.
-    The allowed-tool facet lists tool names (``Bash(gh:*)`` counts as
-    ``Bash``) and the license facet the license expression without the note a
-    skill may add; the detail view shows both in full.
-*   Filter search listings with ``type:tx_nrllm_skill`` and use
-    ``tx_nrllm_skill`` in detail route enhancers. The detail plugin accepts an
-    nr_llm skill UID.
-*   Facet and sorting labels are translated (English and German) through the
-    site language.
+*   **Search while typing.** :kbd:`/` focuses the field and typing anywhere on
+    the page types into it; from two characters on the results load in place
+    (debounced, the previous request cancelled), the query lives in the URL
+    (``?tx_solr[q]=…``) so back and forward work, and :kbd:`Esc` clears it.
+    Name and description match as prefixes ("up" finds
+    ``typo3-upgrade-run``); SKILL.md matches too, and the matching part is
+    shown under the description.
+*   **Keyboard.** :kbd:`↓` in the field moves to the first result, :kbd:`↑`
+    and :kbd:`↓` move through the results, :kbd:`Enter` opens one.
+*   **Rows.** Rank, name, publisher and source, the description with the query
+    marked, and badges: topic, superfeature, maintained or vendored,
+    capability or preference, licence, reviewed evals.
+*   **Browse.** Topics (the catalogue's groups, with counts, in its order),
+    filters for publisher, audience, maintenance, kind and licence, and the
+    orders best match, name, recently updated and superfeatures first. Without
+    a query the list shows the superfeatures first, then the topics in order.
+*   **Packs.** A selected topic shows its one-line install for all its
+    skills; the unfiltered list ends with the packs of every topic. An agent
+    switch rewrites the commands for Claude Code, Codex, Cursor, Gemini CLI or
+    Windsurf (remembered in the browser).
+*   **Accessible.** Real labels and links, a polite live region that
+    announces the count after a change, visible focus, no keyboard trap, and
+    colour pairs checked for WCAG 2.2 AA (the typo3.org look uses black text on
+    orange). Without JavaScript the form submits and every topic, filter and
+    order is a plain link.
+*   Category, tags, allowed tools and the trust and support levels are still
+    indexed (``category_stringS``, ``tags_stringM``, ``allowedTools_stringM``,
+    ``trustLevel_stringS``, ``supportStatus_stringS``) for sites that build
+    their own facets.
 
 ..  _usage-detail:
 
@@ -101,8 +125,14 @@ Skill detail plugin
 ===================
 
 The :guilabel:`Skill detail` content element (``skillflow_skilldetail``)
-renders one active skill: name, description, category, source, tags, the skill
-ID with a copy button, license, version, allowed tools and the Markdown body.
+renders one active skill: name, description and badges; an install box with
+the tabs :guilabel:`Command` (the one-line install of this skill and of the
+whole collection) and :guilabel:`Prompt` (a sentence to paste into an agent's
+chat), the ways to call it by name per agent, the SKILL.md (cut to a readable
+height with :guilabel:`Show more`), the facts (topic, publisher, maintenance,
+kind, audience, version, licence, evals, last change, source, upstream,
+abilities, allowed tools, skill ID with a copy button), links to the source
+and to suggest an improvement, and the other skills of its topic.
 
 *   The skill's name becomes the page title and its description the meta
     description, through TYPO3's record title provider, so every detail URL

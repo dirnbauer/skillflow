@@ -1,0 +1,62 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:sf="http://typo3.org/ns/Webconsulting/Skillflow/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+<f:comment>
+    One skill in the list: rank, name (the link; it stretches over the row),
+    publisher and source, a one-line description, the part of SKILL.md that
+    matched, and badges. The query's words are marked in name and description.
+</f:comment>
+<f:argument name="document" type="object"/>
+<f:argument name="resultSet" type="object"/>
+<f:argument name="rank" type="mixed"/>
+<f:argument name="query" type="string" optional="true" default=""/>
+<f:variable name="ll" value="LLL:EXT:skillflow/Resources/Private/Language/search.xlf:" />
+<li class="sf-row{f:if(condition: '{document.skillSuperfeature_intS} == 1', then: ' sf-row--feature')}" data-skillflow-result="">
+    <span class="sf-row__rank" aria-hidden="true">{rank}</span>
+    <div class="sf-row__main">
+        <h3 class="sf-row__title">
+            <f:if condition="{document.url}">
+                <f:then><a class="sf-row__link" href="{document.url}" data-skillflow-result-link=""><sf:search.highlight text="{document.title}" query="{query}" /></a></f:then>
+                <f:else><sf:search.highlight text="{document.title}" query="{query}" /></f:else>
+            </f:if>
+        </h3>
+        <p class="sf-row__meta">
+            <f:if condition="{document.skillOwner_stringS}">
+                <span class="sf-row__owner"><f:translate key="{ll}row.by" arguments="{0: document.skillOwner_stringS}" /></span>
+            </f:if>
+            <f:if condition="{document.sourceTitle_stringS}">
+                <span class="sf-row__source">{document.sourceTitle_stringS}</span>
+            </f:if>
+        </p>
+        <f:if condition="{document.description}">
+            <p class="sf-row__description"><sf:search.highlight text="{document.description}" query="{query}" maxLength="190" /></p>
+        </f:if>
+        <f:if condition="{query}">
+            <f:variable name="snippet" value="{sf:search.snippet(resultSet: resultSet, document: document, query: query, exceptIn: '{document.title} {document.description}')}" />
+            <f:if condition="{snippet}">
+                <p class="sf-row__snippet"><span class="sf-row__snippet-label"><f:translate key="{ll}row.snippet" /></span> <f:format.raw>{snippet}</f:format.raw></p>
+            </f:if>
+        </f:if>
+    </div>
+    <ul class="sf-badges" role="list" aria-label="{f:translate(key: '{ll}row.facts')}">
+        <f:if condition="{document.skillSuperfeature_intS} == 1">
+            <li class="sf-badge sf-badge--feature"><f:render partial="Skills/Icon" arguments="{name: 'sparkles'}" /><f:translate key="{ll}badge.superfeature" /></li>
+        </f:if>
+        <f:if condition="{document.skillGroupTitle_stringS}">
+            <li class="sf-badge sf-badge--topic">{document.skillGroupTitle_stringS}</li>
+        </f:if>
+        <f:if condition="{document.skillOrigin_stringS}">
+            <li class="sf-badge sf-badge--{document.skillOrigin_stringS}"><f:translate key="{ll}origin.{document.skillOrigin_stringS}" /></li>
+        </f:if>
+        <f:if condition="{document.skillType_stringS}">
+            <li class="sf-badge"><f:translate key="{ll}kind.{document.skillType_stringS}" /></li>
+        </f:if>
+        <f:if condition="{document.license_stringS}">
+            <li class="sf-badge sf-badge--license">{document.license_stringS}</li>
+        </f:if>
+        <f:if condition="{document.skillEvalsReviewed_intS} > 0">
+            <li class="sf-badge sf-badge--evals"><f:render partial="Skills/Icon" arguments="{name: 'badge-check'}" /><f:translate key="{ll}badge.evals" arguments="{0: document.skillEvalsReviewed_intS}" /></li>
+        </f:if>
+    </ul>
+</li>
+</html>

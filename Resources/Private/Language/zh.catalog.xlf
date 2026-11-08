@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="zh" datatype="plaintext" original="EXT:skillflow/Resources/Private/Language/catalog.xlf" date="2026-11-08T00:00:00Z" product-name="skillflow">
+    <header/>
+    <body>
+      <trans-unit id="group.proven-site-upgrade" resname="group.proven-site-upgrade">
+        <source>Proven site upgrade</source>
+        <target state="needs-translation">Proven site upgrade</target>
+      </trans-unit>
+      <trans-unit id="group.proven-site-upgrade.description" resname="group.proven-site-upgrade.description">
+        <source>Upgrade a whole site from 12/13 to 14.3 LTS in local DDEV and prove visitors see no difference.</source>
+        <target state="needs-translation">Upgrade a whole site from 12/13 to 14.3 LTS in local DDEV and prove visitors see no difference.</target>
+      </trans-unit>
+      <trans-unit id="group.upgrade-planning" resname="group.upgrade-planning">
+        <source>Upgrade planning and migration</source>
+        <target state="needs-translation">Upgrade planning and migration</target>
+      </trans-unit>
+      <trans-unit id="group.upgrade-planning.description" resname="group.upgrade-planning.description">
+        <source>Estimate the effort, migrate step by step with a rollback point, learn from every run.</source>
+        <target state="needs-translation">Estimate the effort, migrate step by step with a rollback point, learn from every run.</target>
+      </trans-unit>
+      <trans-unit id="group.code-migration" resname="group.code-migration">
+        <source>Automated code migration</source>
+        <target state="needs-translation">Automated code migration</target>
+      </trans-unit>
+      <trans-unit id="group.code-migration.description" resname="group.code-migration.description">
+        <source>Tools move extension code to v14: Rector for PHP, Fractor for the rest, in batches.</source>
+        <target state="needs-translation">Tools move extension code to v14: Rector for PHP, Fractor for the rest, in batches.</target>
+      </trans-unit>
+      <trans-unit id="group.content-modelling" resname="group.content-modelling">
+        <source>Content modelling and data</source>
+        <target state="needs-translation">Content modelling and data</target>
+      </trans-unit>
+      <trans-unit id="group.content-modelling.description" resname="group.content-modelling.description">
+        <source>Content types in YAML, safe imports and translations, news tagged in bulk.</source>
+        <target state="needs-translation">Content types in YAML, safe imports and translations, news tagged in bulk.</target>
+      </trans-unit>
+      <trans-unit id="group.editor-experience" resname="group.editor-experience">
+        <source>Editor experience</source>
+        <target state="needs-translation">Editor experience</target>
+      </trans-unit>
+      <trans-unit id="group.editor-experience.description" resname="group.editor-experience.description">
+        <source>Inline editing, staged publishing, card and board record views, a well-set rich-text editor.</source>
+        <target state="needs-translation">Inline editing, staged publishing, card and board record views, a well-set rich-text editor.</target>
+      </trans-unit>
+      <trans-unit id="group.design-system" resname="group.design-system">
+        <source>Design system and frontend</source>
+        <target state="needs-translation">Design system and frontend</target>
+      </trans-unit>
+      <trans-unit id="group.design-system.description" resname="group.design-system.description">
+        <source>Design tokens become Fluid elements, a living style guide, a Vite build and v14 icons.</source>
+        <target state="needs-translation">Design tokens become Fluid elements, a living style guide, a Vite build and v14 icons.</target>
+      </trans-unit>
+      <trans-unit id="group.v14-development" resname="group.v14-development">
+        <source>TYPO3 v14 development</source>
+        <target state="needs-translation">TYPO3 v14 development</target>
+      </trans-unit>
+      <trans-unit id="group.v14-development.description" resname="group.v14-development.description">
+        <source>Correct v14 code, TypoScript and backend components on a local DDEV instance.</source>
+        <target state="needs-translation">Correct v14 code, TypoScript and backend components on a local DDEV instance.</target>
+      </trans-unit>
+      <trans-unit id="group.accessibility" resname="group.accessibility">
+        <source>Accessibility</source>
+        <target state="needs-translation">Accessibility</target>
+      </trans-unit>
+      <trans-unit id="group.accessibility.description" resname="group.accessibility.description">
+        <source>WCAG 2.2 AA scans traced to templates, fixed markup, a drafted statement.</source>
+        <target state="needs-translation">WCAG 2.2 AA scans traced to templates, fixed markup, a drafted statement.</target>
+      </trans-unit>
+      <trans-unit id="group.search-seo-agents" resname="group.search-seo-agents">
+        <source>Search, SEO and agents</source>
+        <target state="needs-translation">Search, SEO and agents</target>
+      </trans-unit>
+      <trans-unit id="group.search-seo-agents.description" resname="group.search-seo-agents.description">
+        <source>Be found by Google, by your own site search and by AI agents.</source>
+        <target state="needs-translation">Be found by Google, by your own site search and by AI agents.</target>
+      </trans-unit>
+      <trans-unit id="group.security-operations" resname="group.security-operations">
+        <source>Security and operations</source>
+        <target state="needs-translation">Security and operations</target>
+      </trans-unit>
+      <trans-unit id="group.security-operations.description" resname="group.security-operations.description">
+        <source>Harden the installation, exact editor rights, the right scheduled jobs.</source>
+        <target state="needs-translation">Harden the installation, exact editor rights, the right scheduled jobs.</target>
+      </trans-unit>
+      <trans-unit id="group.testing-quality" resname="group.testing-quality">
+        <source>Testing and code quality</source>
+        <target state="needs-translation">Testing and code quality</target>
+      </trans-unit>
+      <trans-unit id="group.testing-quality.description" resname="group.testing-quality.description">
+        <source>Bugs become failing tests, journeys run in a real browser, code is checked and cleaned.</source>
+        <target state="needs-translation">Bugs become failing tests, journeys run in a real browser, code is checked and cleaned.</target>
+      </trans-unit>
+      <trans-unit id="group.release-open-source" resname="group.release-open-source">
+        <source>Release and open source</source>
+        <target state="needs-translation">Release and open source</target>
+      </trans-unit>
+      <trans-unit id="group.release-open-source.description" resname="group.release-open-source.description">
+        <source>First public release, docs on docs.typo3.org, a hardened supply chain, Core contributions.</source>
+        <target state="needs-translation">First public release, docs on docs.typo3.org, a hardened supply chain, Core contributions.</target>
+      </trans-unit>
+      <trans-unit id="audience.site" resname="audience.site">
+        <source>Site builders</source>
+        <target state="needs-translation">Site builders</target>
+      </trans-unit>
+      <trans-unit id="audience.extension" resname="audience.extension">
+        <source>Extension authors</source>
+        <target state="needs-translation">Extension authors</target>
+      </trans-unit>
+      <trans-unit id="audience.core" resname="audience.core">
+        <source>Core contributors</source>
+        <target state="needs-translation">Core contributors</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

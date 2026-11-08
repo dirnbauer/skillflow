@@ -1,0 +1,25 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:sf="http://typo3.org/ns/Webconsulting/Skillflow/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+<f:comment>
+    A command (or prompt) to copy. The copy button ships hidden and appears
+    where the Clipboard API works; without it the text stays selectable.
+    data-skillflow-command marks text the agent switch rewrites.
+</f:comment>
+<f:argument name="command" type="string"/>
+<f:argument name="id" type="string"/>
+<f:argument name="label" type="string"/>
+<f:argument name="prompt" type="boolean" optional="true" default="false"/>
+<f:variable name="ll" value="LLL:EXT:skillflow/Resources/Private/Language/search.xlf:" />
+<div class="sf-command{f:if(condition: prompt, then: ' sf-command--prompt')}">
+    <f:if condition="{prompt}">
+        <f:then><p class="sf-command__text" id="{id}">{command}</p></f:then>
+        <f:else><code class="sf-command__text" id="{id}" data-skillflow-command="">{command}</code></f:else>
+    </f:if>
+    <button type="button" class="sf-copy" hidden="hidden" data-skillflow-copy="{id}" data-skillflow-copied="{f:translate(key: '{ll}copy.done')}" aria-label="{label}">
+        <f:render partial="Skills/Icon" arguments="{name: 'copy', class: 'sf-icon sf-copy__icon'}" />
+        <f:render partial="Skills/Icon" arguments="{name: 'check', class: 'sf-icon sf-copy__done'}" />
+        <span class="sf-copy__label"><f:translate key="{ll}copy.button" /></span>
+    </button>
+</div>
+</html>

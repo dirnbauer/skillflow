@@ -1,0 +1,39 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+<f:comment>
+    A topic as a pack: what it is for, one line that installs all its
+    skills, and the way to its page. "filterUrl" shows the topic's skills
+    in the list (packs overview); empty on the card of the selected topic.
+</f:comment>
+<f:argument name="group" type="array"/>
+<f:argument name="filterUrl" type="string" optional="true" default=""/>
+<f:argument name="compact" type="boolean" optional="true" default="false"/>
+<f:variable name="ll" value="LLL:EXT:skillflow/Resources/Private/Language/search.xlf:" />
+<f:variable name="id" value="sf-pack-{group.key}-{f:if(condition: compact, then: 'card', else: 'active')}" />
+<f:variable name="copyLabel" value="{f:translate(key: '{ll}pack.copy', arguments: {0: group.title})}" />
+<section class="sf-pack{f:if(condition: compact, then: ' sf-pack--compact')}" aria-labelledby="{id}">
+    <div class="sf-pack__head">
+        <p class="sf-pack__kicker"><f:render partial="Skills/Icon" arguments="{name: 'package'}" /><f:translate key="{ll}pack.eyebrow" arguments="{0: group.count}" /></p>
+        <f:if condition="{compact}">
+            <f:then><h3 class="sf-pack__title" id="{id}">{group.title}</h3></f:then>
+            <f:else><h2 class="sf-pack__title" id="{id}">{group.title}</h2></f:else>
+        </f:if>
+        <f:if condition="{group.description}">
+            <p class="sf-pack__text">{group.description}</p>
+        </f:if>
+    </div>
+    <f:if condition="{group.pack}">
+        <f:render partial="Skills/Command" arguments="{command: group.pack, id: '{id}-command', label: copyLabel}" />
+    </f:if>
+    <f:if condition="{filterUrl} || {group.url}">
+        <p class="sf-pack__links">
+            <f:if condition="{filterUrl}">
+                <a class="sf-pack__link" href="{filterUrl}" data-skillflow-nav=""><f:translate key="{ll}pack.show" arguments="{0: group.count}" /></a>
+            </f:if>
+            <f:if condition="{group.url}">
+                <a class="sf-pack__link" href="{group.url}"><f:translate key="{ll}pack.page" /><f:render partial="Skills/Icon" arguments="{name: 'arrow-right'}" /></a>
+            </f:if>
+        </p>
+    </f:if>
+</section>
+</html>

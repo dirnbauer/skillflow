@@ -3,6 +3,7 @@ plugin.tx_solr.index.queue.skills {
   additionalPageIds = 0
 
   # Page containing the skillflow_skilldetail content element.
-  # Solr uses it to build result links.
+  # Solr uses it to build result links. The site setting skillflow.detailPage
+  # takes precedence when it is set.
   detailPageId =
 }
