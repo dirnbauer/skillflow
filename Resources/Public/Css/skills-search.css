@@ -631,19 +631,20 @@
     border-radius: calc(var(--sf-radius) * 1.1);
 }
 
+/* Commands wrap: nothing hidden behind a scroll, every character readable
+   and selectable, also with the keyboard and on a phone. */
 .sf-command__text {
     flex: 1 1 auto;
     min-width: 0;
     margin: 0;
     padding: 0.625rem 0.75rem;
-    overflow-x: auto;
     color: inherit;
     background: none;
     font-family: var(--sf-mono);
     font-size: 0.8125rem;
     line-height: 1.55;
-    white-space: pre;
-    scrollbar-width: thin;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
 }
 
 .sf-command--prompt .sf-command__text {
