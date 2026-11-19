@@ -46,7 +46,9 @@ Runner
     :type: int
     :default: ``2048``
 
-    Output token budget for the API runners.
+    Output token budget for the API runners. When a model uses all of it
+    before it answers (reasoning models count their thinking against it), the
+    nr-llm runner fails the run and names this setting.
 
 ..  confval:: mcpServersJson
     :type: string

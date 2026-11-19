@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.10.1 — 2026-11-20
+
+### Changed
+
+- Allow nr-llm 0.51.1 alongside 0.34, 0.35 and 0.41. The functional tests
+  run against 0.51 as well.
+
+### Fixed
+
+- From nr-llm 0.43.2 on, a model that uses its whole output limit before it
+  answers raises `OutputBudgetExhaustedException` instead of returning an
+  empty text. The nr-llm runner now fails such a run with a message that
+  names the output budget, Skillflow's `maxTokens` setting and the nr_llm
+  configuration whose "Max Tokens" to raise.
+
 ## 1.10.0 — 2026-11-08
 
 ### Added

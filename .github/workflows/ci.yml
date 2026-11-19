@@ -123,11 +123,15 @@ jobs:
             nr-llm: '0.35'
           - php: '8.5'
             nr-llm: '0.35'
-          # The current nr_llm line is tested alongside the retained older lines.
           - php: '8.4'
             nr-llm: '0.41'
           - php: '8.5'
             nr-llm: '0.41'
+          # The current nr_llm line is tested alongside the retained older lines.
+          - php: '8.4'
+            nr-llm: '0.51'
+          - php: '8.5'
+            nr-llm: '0.51'
           # The lowest nr_llm line composer.json still allows.
           - php: '8.4'
             nr-llm: '0.34'

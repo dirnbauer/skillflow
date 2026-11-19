@@ -14,7 +14,7 @@ records, keeps the run reports and exposes active skills in a Solr catalogue.
 ## Requirements
 
 - TYPO3 **14.3.7+** on the 14.x line, PHP **8.4+**
-- `netresearch/nr-llm` **0.34.x or 0.35.x**, EXT:solr **14.0.1+**
+- `netresearch/nr-llm` **0.34.x, 0.35.x, 0.41.3+ or 0.51.1+**, EXT:solr **14.0.1+**
 - Optional: `webconsulting/typo3-abilities` **1.3+** for skills that
   declare `abilities`
 - For the catalogue: a Solr server/configset from the

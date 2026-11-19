@@ -4,10 +4,24 @@
 Upgrading
 =========
 
+..  _upgrade-1-10-1:
+
+1.10.1
+======
+
+No database changes. nr_llm 0.51.1 is allowed beside 0.34, 0.35 and 0.41.
+Updating nr_llm from 0.41 to 0.51 needs nr_vault 1.5.1 or later and nr_llm's
+own database changes: run the database analyzer after the update. Skillflow's
+fields on :sql:`tx_nrllm_skill` and the skill tables it reads are unchanged.
+
+From nr_llm 0.43.2 on, a run whose model uses its whole output limit before it
+answers fails with a message naming :confval:`maxTokens` and the nr_llm
+configuration, instead of "nr_llm returned an empty response".
+
 ..  _upgrade-unreleased:
 
-Next release (skills search)
-============================
+1.10.0 (skills search)
+======================
 
 No database changes. Clear the caches and reindex the skills
 (``skillflow:solr:index``): the documents get the catalogue fields.

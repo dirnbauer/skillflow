@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webconsulting\Skillflow\Runner;
 
+use Netresearch\NrLlm\Exception\OutputBudgetExhaustedException;
 use Netresearch\NrLlm\Service\LlmServiceManagerInterface;
 use Netresearch\NrLlm\Service\Option\ChatOptions;
 use Webconsulting\Skillflow\Configuration\ExtensionSettings;
@@ -62,6 +63,16 @@ final readonly class NrLlmRunner implements SkillRunnerInterface
                 [['role' => 'user', 'content' => $this->promptBuilder->buildUserPrompt($content)]],
                 $options,
             );
+        } catch (OutputBudgetExhaustedException $e) {
+            // nr_llm 0.43.2+ throws this where it used to return an empty
+            // text with finish reason "length". Name the limit Skillflow
+            // passes as well as the configuration's own.
+            throw new \RuntimeException(sprintf(
+                'The model used its whole output budget (%d tokens) before it wrote an answer. Raise the Skillflow setting "maxTokens" (now %d) or "Max Tokens" on the nr_llm configuration "%s".',
+                $e->outputTokens,
+                $this->settings->maxTokens,
+                $e->configurationIdentifier,
+            ), 1760002003, $e);
         } catch (\Throwable $e) {
             throw new \RuntimeException('nr_llm chat request failed: ' . $e->getMessage(), 1760002001, $e);
         }

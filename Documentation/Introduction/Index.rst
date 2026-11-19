@@ -44,7 +44,7 @@ Requirements
     *   -   PHP
         -   8.4 or later
     *   -   netresearch/nr-llm
-        -   0.34.x or 0.35.x
+        -   0.34.x, 0.35.x, 0.41.x (0.41.3 or later) or 0.51.x (0.51.1 or later)
     *   -   apache-solr-for-typo3/solr
         -   14.0.1 or later, with a Solr server and configset from the
             `EXT:solr version matrix
